@@ -1,0 +1,331 @@
+<!doctype html>
+<!--
+  PROTOTYPE — throwaway. Answers: "What should the Training form screen look like?"
+  Four structurally different variants of the add/edit form, switchable via ?variant=A|B|C|D
+  and the floating bar (or ← / → when no input is focused). Dark theme only, Polish strings,
+  Material 3 baseline dark tokens (same as training-list.html).
+  Interactive: type in the field (or on the fake keyboard), clear it to see the disabled Save,
+  toggle add/edit mode and the keyboard in the side panel. Save / back only log.
+-->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training form prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #D0BCFF; --on-primary: #381E72;
+    --primary-container: #4F378B; --on-primary-container: #EADDFF;
+    --secondary-container: #4A4458; --on-secondary-container: #E8DEF8;
+    --surface: #141218; --on-surface: #E6E0E9; --on-surface-variant: #CAC4D0;
+    --surface-c-lowest: #0F0D13; --surface-c-low: #1D1B20; --surface-c: #211F26;
+    --surface-c-high: #2B2930; --surface-c-highest: #36343B;
+    --outline: #938F99; --outline-variant: #49454F;
+    --error: #F2B8B5;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #050506; color: var(--on-surface);
+    font-family: Roboto, system-ui, sans-serif; }
+  body { display: flex; align-items: flex-start; justify-content: center; gap: 24px; padding: 24px 16px 96px; }
+
+  .phone { position: relative; width: 412px; max-width: 100%; height: 860px; background: var(--surface);
+    border-radius: 28px; overflow: hidden; box-shadow: 0 0 0 10px #1a1a1d, 0 20px 60px rgba(0,0,0,.6);
+    display: flex; flex-direction: column; }
+  .statusbar { height: 32px; flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; font-size: 13px; }
+  .navbar { height: 24px; flex: none; display: flex; align-items: center; justify-content: center; }
+  .navbar::after { content: ""; width: 108px; height: 4px; border-radius: 2px; background: var(--on-surface); opacity: .6; }
+  .screen { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .content { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+  .bottom { flex: none; }
+
+  .icon { width: 24px; height: 24px; fill: currentColor; flex: none; }
+  .icon-btn { width: 48px; height: 48px; border: 0; background: none; color: var(--on-surface);
+    border-radius: 50%; display: grid; place-items: center; cursor: pointer; flex: none; }
+  .icon-btn:hover { background: rgba(230,224,233,.08); }
+
+  /* Top app bars */
+  .tab { height: 64px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 4px; }
+  .tab .title { flex: 1; font-size: 22px; padding-left: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tab.center .title { text-align: center; padding: 0; }
+  .tab.center::after { content: ""; width: 48px; flex: none; }
+
+  /* Buttons */
+  .btn { border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 500 14px Roboto, sans-serif; letter-spacing: .1px; }
+  .btn.filled { background: var(--primary); color: var(--on-primary); }
+  .btn.tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .btn.text { background: none; color: var(--primary); }
+  .btn:disabled { cursor: default; background: rgba(230,224,233,.12); color: rgba(230,224,233,.38); box-shadow: none; }
+  .btn.text:disabled { background: none; }
+  .btn .icon { width: 18px; height: 18px; }
+
+  /* Outlined text field */
+  .of { position: relative; margin-top: 8px; }
+  .of input { width: 100%; height: 56px; padding: 0 16px; border-radius: 4px; border: 1px solid var(--outline);
+    background: none; color: var(--on-surface); font: 400 16px Roboto; outline: none; caret-color: var(--primary); }
+  .of input:focus { border: 2px solid var(--primary); padding: 0 15px; }
+  .of label { position: absolute; left: 12px; top: -8px; padding: 0 4px; background: var(--surface);
+    font-size: 12px; line-height: 16px; color: var(--on-surface-variant); }
+  .of input:focus + label { color: var(--primary); }
+  .support { font-size: 12px; line-height: 16px; padding: 4px 16px 0; color: var(--on-surface-variant); min-height: 20px; }
+  .support.err { color: var(--error); }
+  .of.err input { border-color: var(--error); }
+  .of.err label { color: var(--error); }
+
+  /* Filled text field */
+  .ff { position: relative; background: var(--surface-c-highest); border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid var(--on-surface-variant); }
+  .ff:focus-within { border-bottom: 2px solid var(--primary); }
+  .ff label { position: absolute; left: 16px; top: 8px; font-size: 12px; color: var(--on-surface-variant); }
+  .ff:focus-within label { color: var(--primary); }
+  .ff input { width: 100%; padding: 26px 16px 10px; border: 0; background: none; color: var(--on-surface);
+    outline: none; caret-color: var(--primary); font: 400 16px Roboto; }
+
+  /* A: classic */
+  .a-body { padding: 16px; }
+  .a-bottom { padding: 16px; }
+  .a-bottom .btn { width: 100%; height: 56px; border-radius: 28px; font-size: 16px; }
+
+  /* B: big headline, big input, FAB-like save */
+  .b-head { padding: 8px 24px 0; }
+  .b-head h1 { margin: 0 0 8px; font: 400 32px/40px Roboto; }
+  .b-head p { margin: 0 0 32px; color: var(--on-surface-variant); font-size: 14px; line-height: 20px; }
+  .b-input { margin: 0 24px; border-bottom: 2px solid var(--outline-variant); }
+  .b-input:focus-within { border-bottom-color: var(--primary); }
+  .b-input input { width: 100%; border: 0; background: none; outline: none; color: var(--on-surface);
+    font: 400 28px/36px Roboto; padding: 8px 0; caret-color: var(--primary); }
+  .b-input input::placeholder { color: var(--outline); }
+  .b-bottom { display: flex; justify-content: flex-end; padding: 16px; }
+  .b-bottom .btn { height: 56px; padding: 0 20px 0 16px; border-radius: 16px; font-size: 14px;
+    box-shadow: 0 3px 6px rgba(0,0,0,.35); background: var(--primary-container); color: var(--on-primary-container); }
+  .b-bottom .btn .icon { width: 24px; height: 24px; }
+  .b-bottom .btn:disabled { background: rgba(230,224,233,.12); color: rgba(230,224,233,.38); box-shadow: none; }
+
+  /* C: card with live monogram, inline save under the field */
+  .c-body { padding: 8px 16px; }
+  .c-card { background: var(--surface-c); border-radius: 16px; padding: 20px 16px 16px; }
+  .c-preview { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; min-height: 40px; }
+  .c-mono { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none;
+    background: var(--primary-container); color: var(--on-primary-container); font-weight: 500; }
+  .c-mono.empty { background: var(--surface-c-highest); color: var(--outline); }
+  .c-preview .name { font-size: 16px; line-height: 24px; overflow-wrap: anywhere; }
+  .c-preview .name.ph { color: var(--outline); }
+  .c-card .of label { background: var(--surface-c); }
+  .c-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .c-actions .btn { height: 40px; padding: 0 24px 0 16px; border-radius: 20px; }
+
+  /* D: full-screen dialog, save in the top bar */
+  .d-body { padding: 8px 16px; }
+  .tab .btn.text { height: 40px; padding: 0 12px; border-radius: 20px; margin-right: 8px; }
+
+  /* Fake keyboard */
+  .kb { flex: none; background: #1b1b1f; padding: 8px 4px 6px; display: none; user-select: none; }
+  .kb.on { display: block; }
+  .kb-row { display: flex; justify-content: center; gap: 6px; margin-bottom: 10px; }
+  .kb-key { flex: 0 0 34px; height: 46px; border-radius: 6px; background: #3a3a40; color: #eee; display: grid;
+    place-items: center; font-size: 19px; cursor: pointer; }
+  .kb-key.wide { flex-basis: 52px; background: #2c2c31; font-size: 15px; }
+  .kb-key.space { flex: 1 1 auto; max-width: 190px; }
+  .kb-key.done { background: var(--primary); color: var(--on-primary); }
+  .kb-key:active { filter: brightness(1.3); }
+
+  /* Prototype chrome (deliberately not Material) */
+  .panel { width: 280px; flex: none; font: 13px/1.5 ui-monospace, Consolas, monospace; color: #bbb; }
+  .panel h3 { font-size: 13px; color: #fff; margin: 0 0 8px; }
+  .panel label { display: flex; gap: 8px; align-items: center; cursor: pointer; margin-bottom: 6px; }
+  .panel button { font: inherit; background: #222; color: #ddd; border: 1px solid #444; border-radius: 4px;
+    padding: 4px 8px; cursor: pointer; margin: 0 4px 6px 0; }
+  .panel pre { background: #111; border: 1px solid #333; padding: 8px; white-space: pre-wrap; margin: 12px 0 0; }
+  .panel p { margin: 0 0 12px; }
+  .switcher { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 10; display: flex;
+    align-items: center; gap: 4px; background: #ffd400; color: #111; border-radius: 999px; padding: 4px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.6); font: 600 14px ui-monospace, Consolas, monospace; }
+  .switcher button { border: 0; background: #111; color: #ffd400; width: 36px; height: 36px; border-radius: 50%;
+    cursor: pointer; font-size: 18px; }
+  .switcher span { padding: 0 12px; min-width: 280px; text-align: center; }
+  @media (max-width: 760px) { body { flex-direction: column; align-items: center; } .panel { width: 412px; max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>▴ ◢ ▮</span></div>
+  <div class="screen" id="screen"></div>
+  <div class="kb" id="kb"></div>
+  <div class="navbar"></div>
+</div>
+
+<div class="panel">
+  <h3 id="vname"></h3>
+  <p id="vdesc"></p>
+  <h3>Stan</h3>
+  <label><input type="radio" name="mode" value="edit" checked> Edycja (dane wypełnione)</label>
+  <label><input type="radio" name="mode" value="add"> Dodawanie (puste pole)</label>
+  <label><input type="checkbox" id="kbToggle"> Klawiatura otwarta</label>
+  <button id="clear">Wyczyść pole (Zapisz wyłączony)</button>
+  <button id="spaces">Same spacje</button>
+  <button id="long">Długa nazwa</button>
+  <p style="margin-top:8px">Klik w pole otwiera klawiaturę, klik poza nim ją chowa. ✓ na klawiaturze = akcja IME „Gotowe” (zapis).
+    „Zapisz” / wstecz tylko logują.</p>
+  <pre id="state"></pre>
+</div>
+
+<div class="switcher">
+  <button id="prev" title="Poprzedni (←)">‹</button>
+  <span id="label"></span>
+  <button id="next" title="Następny (→)">›</button>
+</div>
+
+<script>
+const I = {
+  back: '<svg class="icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2Z"/></svg>',
+  close: '<svg class="icon" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>',
+  check: '<svg class="icon" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17Z"/></svg>',
+};
+
+const EDIT_NAME = 'Push day';
+let mode = 'edit';
+let name = EDIT_NAME;
+let kbOpen = false;
+let touched = false;      // user cleared the field at least once (for B's error hint)
+const log = [];
+
+const V = {
+  A: { name: 'Klasyczny', desc: 'Mały top bar ze strzałką wstecz i tytułem „Edytuj trening” / „Nowy trening”. Pole outlined „Nazwa”. Pełnoszeroki przycisk filled „Zapisz” przypięty do dołu — jedzie nad klawiaturą (imePadding).', render: renderA },
+  B: { name: 'Duży nagłówek', desc: 'Top bar tylko ze strzałką. Nagłówek 32sp i opis w treści, duże pole bez ramki (28sp) jak „nadawanie nazwy”. Zapis jako rozszerzony FAB „Zapisz” ✓ w prawym dolnym rogu, nad klawiaturą. Podpowiedź błędu po wyczyszczeniu.', render: renderB },
+  C: { name: 'Karta z podglądem', desc: 'Wyśrodkowany top bar jak na liście. Pole w karcie 16dp (surfaceContainer) z podglądem wiersza listy: monogram + nazwa na żywo. Przycisk tonal „Zapisz” tuż pod polem w karcie — nie przypięty, więc zawsze widoczny nad klawiaturą bez przesuwania.', render: renderC },
+  D: { name: 'Pełnoekranowy dialog', desc: 'Odchylenie od ticketu dla porównania: ✕ zamiast strzałki, „Zapisz” jako text button w top barze (wzorzec M3 full-screen dialog). Na dole nic — klawiatura niczego nie zasłania. Pole filled.', render: renderD },
+};
+const KEYS = Object.keys(V);
+let variant = new URLSearchParams(location.search).get('variant');
+if (!V[variant]) variant = 'A';
+
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const valid = () => name.trim().length > 0;
+const title = () => mode === 'edit' ? 'Edytuj trening' : 'Nowy trening';
+const dis = () => valid() ? '' : 'disabled';
+const field = (cls = '') => `<div class="of ${cls}"><input id="name" value="${esc(name)}" autocomplete="off"><label for="name">Nazwa</label></div>`;
+
+function renderA() {
+  return `<div class="tab"><button class="icon-btn" data-back aria-label="Wstecz">${I.back}</button><span class="title">${title()}</span></div>
+    <div class="content a-body">${field()}</div>
+    <div class="bottom a-bottom"><button class="btn filled" data-save ${dis()}>Zapisz</button></div>`;
+}
+function renderB() {
+  const err = touched && !valid();
+  return `<div class="tab"><button class="icon-btn" data-back aria-label="Wstecz">${I.back}</button></div>
+    <div class="content"><div class="b-head"><h1>${title()}</h1><p>${mode === 'edit' ? 'Zmień nazwę treningu.' : 'Jak nazwiesz ten trening?'}</p></div>
+      <div class="b-input"><input id="name" value="${esc(name)}" placeholder="Nazwa treningu" autocomplete="off"></div>
+      <div class="support ${err ? 'err' : ''}" style="padding:6px 24px">${err ? 'Nazwa nie może być pusta' : ''}</div></div>
+    <div class="bottom b-bottom"><button class="btn" data-save ${dis()}>${I.check}Zapisz</button></div>`;
+}
+function renderC() {
+  const t = name.trim();
+  return `<div class="tab center"><button class="icon-btn" data-back aria-label="Wstecz">${I.back}</button><span class="title">${title()}</span></div>
+    <div class="content c-body"><div class="c-card">
+      <div class="c-preview"><span class="c-mono ${t ? '' : 'empty'}" id="mono">${t ? esc(t[0].toUpperCase()) : '?'}</span>
+        <span class="name ${t ? '' : 'ph'}" id="pv">${t ? esc(name) : 'Podgląd na liście'}</span></div>
+      ${field()}
+      <div class="c-actions"><button class="btn tonal" data-save ${dis()}>${I.check}Zapisz</button></div>
+    </div></div>`;
+}
+function renderD() {
+  return `<div class="tab"><button class="icon-btn" data-back aria-label="Zamknij">${I.close}</button><span class="title">${title()}</span>
+      <button class="btn text" data-save ${dis()}>Zapisz</button></div>
+    <div class="content d-body"><div class="ff"><label for="name">Nazwa</label><input id="name" value="${esc(name)}" autocomplete="off"></div></div>`;
+}
+
+const ROWS = ['ąćęłńóśźż', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+function renderKb() {
+  const kb = document.getElementById('kb');
+  kb.classList.toggle('on', kbOpen);
+  kb.innerHTML = ROWS.map((r, i) => `<div class="kb-row">${i === 3 ? '<span class="kb-key wide" data-k="shift">⇧</span>' : ''}${[...r].map(c => `<span class="kb-key" data-k="${c}">${c}</span>`).join('')}${i === 3 ? '<span class="kb-key wide" data-k="bs">⌫</span>' : ''}</div>`).join('') +
+    `<div class="kb-row"><span class="kb-key wide" data-k="123">?123</span><span class="kb-key">,</span><span class="kb-key space" data-k=" ">polski</span><span class="kb-key">.</span><span class="kb-key wide done" data-k="done">✓</span></div>`;
+}
+
+function updateLive() {
+  // update dependent bits without re-rendering the input (keeps focus/caret)
+  document.querySelectorAll('[data-save]').forEach(b => b.disabled = !valid());
+  if (variant === 'C') {
+    const t = name.trim(), m = document.getElementById('mono'), p = document.getElementById('pv');
+    m.textContent = t ? t[0].toUpperCase() : '?'; m.classList.toggle('empty', !t);
+    p.textContent = t ? name : 'Podgląd na liście'; p.classList.toggle('ph', !t);
+  }
+  if (variant === 'B') {
+    const s = document.querySelector('.support'), err = touched && !valid();
+    s.textContent = err ? 'Nazwa nie może być pusta' : ''; s.classList.toggle('err', err);
+  }
+  showState();
+}
+function showState() {
+  document.getElementById('state').textContent = JSON.stringify({
+    variant, mode, name, trimmed: name.trim(), saveEnabled: valid(), keyboard: kbOpen, log: log.slice(-4),
+  }, null, 2);
+}
+
+function render(focus) {
+  const s = document.getElementById('screen');
+  s.innerHTML = V[variant].render();
+  const inp = document.getElementById('name');
+  inp.addEventListener('input', () => { name = inp.value; if (!valid()) touched = true; updateLive(); });
+  inp.addEventListener('focus', () => { if (!kbOpen) { kbOpen = true; syncKb(); } });
+  if (focus) { inp.focus(); inp.setSelectionRange(name.length, name.length); }
+  document.getElementById('label').textContent = `${variant} (${V[variant].name})`;
+  document.getElementById('vname').textContent = `Wariant ${variant} — ${V[variant].name}`;
+  document.getElementById('vdesc').textContent = V[variant].desc;
+  renderKb(); showState();
+}
+function syncKb() { document.getElementById('kbToggle').checked = kbOpen; renderKb(); showState(); }
+
+function save(src) {
+  if (!valid()) return;
+  log.push(`${src} → zapis „${name.trim()}” (${mode}) → wstecz`);
+  showState();
+}
+
+function setVariant(k) {
+  variant = k;
+  const u = new URL(location); u.searchParams.set('variant', k); history.replaceState(null, '', u);
+  render(kbOpen);
+}
+const step = d => setVariant(KEYS[(KEYS.indexOf(variant) + d + KEYS.length) % KEYS.length]);
+
+document.getElementById('screen').addEventListener('click', e => {
+  if (e.target.closest('[data-back]')) { log.push('Wstecz → lista (bez dialogu)'); return showState(); }
+  if (e.target.closest('[data-save]')) return save('Zapisz');
+  if (!e.target.closest('input') && kbOpen) { kbOpen = false; document.activeElement.blur(); syncKb(); }
+});
+document.getElementById('kb').addEventListener('mousedown', e => {
+  e.preventDefault(); // keep focus in the input
+  const k = e.target.closest('[data-k]'); if (!k) return;
+  const v = k.dataset.k;
+  if (v === 'done') return save('IME ✓');
+  if (v === 'shift' || v === '123') return;
+  name = v === 'bs' ? name.slice(0, -1) : name + v;
+  if (!valid()) touched = true;
+  document.getElementById('name').value = name;
+  updateLive();
+});
+document.getElementById('prev').onclick = () => step(-1);
+document.getElementById('next').onclick = () => step(1);
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input:not([type=radio]):not([type=checkbox]), textarea, [contenteditable]')) {
+    if (e.key === 'Enter') save('Enter');
+    return;
+  }
+  if (e.key === 'ArrowLeft') step(-1);
+  if (e.key === 'ArrowRight') step(1);
+});
+document.querySelectorAll('input[name=mode]').forEach(r => r.onchange = () => {
+  mode = r.value; name = mode === 'edit' ? EDIT_NAME : ''; touched = false; render(kbOpen);
+});
+document.getElementById('kbToggle').onchange = e => { kbOpen = e.target.checked; render(kbOpen); };
+document.getElementById('clear').onclick = () => { name = ''; touched = true; render(kbOpen); };
+document.getElementById('spaces').onclick = () => { name = '   '; touched = true; render(kbOpen); };
+document.getElementById('long').onclick = () => { name = 'Trening siłowy górnej partii ciała z akcentem na barki'; render(kbOpen); };
+render(false);
+</script>
+</body>
+</html>

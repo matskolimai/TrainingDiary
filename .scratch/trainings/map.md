@@ -21,6 +21,9 @@ Every decision for the first feature — managing **Trainings** (list, add/edit 
 - [Prototype: Training list screen](issues/04-prototype-training-list.md): variant E — centred top bar, plural count, separated
   16dp-rounded rows with monogram + ⋮, standard FAB, Edytuj/Usuń sheet, undo snackbar.
 - [Library landscape for the AGP 9.4 stack](issues/02-library-landscape.md): Nav3 1.2.1, Room 3.0.3, Koin 4.2.2, KSP 2.3.13, JUnit 6 via mannodermaus 2.0.2; Kotlin 2.2.10 must be bumped (≈2.4.21); stable Detekt doesn't support AGP 9 (alpha or defer).
+- [Prototype: Training form screen](issues/05-prototype-training-form.md): variant A — small top bar with ← and
+  „Nowy trening” / „Edytuj trening”, outlined „Nazwa” field, full-width filled „Zapisz” pinned above the keyboard;
+  autofocus in add mode only.
 
 ## Not yet specified
 
