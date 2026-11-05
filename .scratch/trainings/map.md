@@ -24,10 +24,14 @@ Every decision for the first feature — managing **Trainings** (list, add/edit 
 - [Prototype: Training form screen](issues/05-prototype-training-form.md): variant A — small top bar with ← and
   „Nowy trening” / „Edytuj trening”, outlined „Nazwa” field, full-width filled „Zapisz” pinned above the keyboard;
   autofocus in add mode only.
+- [Module structure and build-logic](issues/03-module-structure.md): 3 layer modules per feature + 4 core modules; JVM domain;
+  Kotlin 2.4.21 / AGP 9.5.0 / BOM 2026.09; `convention.*` included-build plugins; ktlint + Detekt 2.0 alpha + compose-rules;
+  `internal` by default; skill rewritten Android-only.
 
 ## Not yet specified
 
-- **Cross-cutting house style**: conventions no single skill owns (naming, file/package layout inside a module, Kotlin idioms, visibility, comment policy). May surface as a dedicated skill or as edits spread across skills, once the first few foundation tickets show the pattern.
+- **Cross-cutting house style**: conventions no single skill owns (file/package layout inside a module, Kotlin idioms,
+  comment policy; module naming and visibility are settled in Module structure and build-logic). May surface as a dedicated skill or as edits spread across skills, once the first few foundation tickets show the pattern.
 - **Persistence-seam ADR**: whether the backend-ready repository boundary (ids, local-vs-remote source of truth) merits an ADR; depends on the data-layer ticket.
 - **Spec-to-ticket slicing order**: the concrete order of implementation slices (scaffold modules → theme → data → list → form → delete/undo …) — derivable once the foundation decisions are in; may need its own grilling before `/to-tickets`.
 
