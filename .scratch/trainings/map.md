@@ -1,0 +1,38 @@
+Label: wayfinder:map
+
+# Trainings + project foundation
+
+## Destination
+
+Every decision for the first feature — managing **Trainings** (list, add/edit form, delete with undo) — and for the project foundation it sits on (modules, build-logic, error handling, data/persistence seam, DI, MVI, components/design system, navigation, testing) is settled, and each Android skill reflects the user's overrides. `/mattpocock-skills:to-spec` can then write `.scratch/trainings/spec.md` with no new questions.
+
+## Notes
+
+- **Domain**: Android app, Kotlin + Jetpack Compose, single user (the author), never distributed. Minimalism: only the features discussed, nothing more. Vocabulary in `GLOSSARY.md` (Training = template; Training session = performed instance, not modelled yet).
+- **Skills baseline**: Philip Lackner's skills in `~/.claude/skills/android-*` (module-structure, error-handling, data-layer, di-koin, presentation-mvi, compose-components, navigation, unit-testing, ui-testing) are the *baseline*, not law. Each foundation grilling ticket: (1) present what the skill prescribes, (2) user accepts or overrides each point, (3) rewrite the skill file using `/mattpocock-skills:writing-for-agents` so it is well-formed for agents. The ticket's answer records the decisions *and* that the skill file was updated. The goal is skills reusable across the user's future projects.
+- **Code style**: the user is a senior Android dev (10+ yrs) with no written style guide yet — the overrides gathered in these tickets *are* the style guide. Ask, don't assume.
+- **UI**: dark theme only (no light theme at all). All user-visible strings in **Polish** (string resources); all code, identifiers, comments in English.
+- **Downstream workflow**: `/to-spec` → `/to-tickets` → `/implement` per ticket. `/implement`'s automatic code review stays on, then the user reviews by hand. Therefore `/to-tickets` must produce small slices with one clear purpose each, reviewable in ~15 minutes, never mixing infrastructure scaffolding with feature behaviour in one ticket. The user may amend skills between implementation tickets.
+- **Tracker**: local markdown, see `docs/agents/issue-tracker.md`. No git remote, so research branches stay local.
+
+## Decisions so far
+
+- [Training product rules](issues/01-training-product-rules.md): trimmed name, blank = empty, duplicates allowed, creation order, undo restores same identity, missing-on-edit navigates back.
+- [Prototype: Training list screen](issues/04-prototype-training-list.md): variant E — centred top bar, plural count, separated
+  16dp-rounded rows with monogram + ⋮, standard FAB, Edytuj/Usuń sheet, undo snackbar.
+- [Library landscape for the AGP 9.4 stack](issues/02-library-landscape.md): Nav3 1.2.1, Room 3.0.3, Koin 4.2.2, KSP 2.3.13, JUnit 6 via mannodermaus 2.0.2; Kotlin 2.2.10 must be bumped (≈2.4.21); stable Detekt doesn't support AGP 9 (alpha or defer).
+
+## Not yet specified
+
+- **Cross-cutting house style**: conventions no single skill owns (naming, file/package layout inside a module, Kotlin idioms, visibility, comment policy). May surface as a dedicated skill or as edits spread across skills, once the first few foundation tickets show the pattern.
+- **Persistence-seam ADR**: whether the backend-ready repository boundary (ids, local-vs-remote source of truth) merits an ADR; depends on the data-layer ticket.
+- **Spec-to-ticket slicing order**: the concrete order of implementation slices (scaffold modules → theme → data → list → form → delete/undo …) — derivable once the foundation decisions are in; may need its own grilling before `/to-tickets`.
+
+## Out of scope
+
+- Backend / remote sync, auth (only the swappable seam is built).
+- Light theme.
+- Unsaved-changes dialog on back; delete confirmation.
+- Localization beyond Polish.
+- CI pipeline.
+- Training session and any training content beyond a name (future Wayfinder maps).

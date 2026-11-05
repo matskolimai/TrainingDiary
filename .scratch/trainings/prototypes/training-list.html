@@ -1,0 +1,319 @@
+<!doctype html>
+<!--
+  PROTOTYPE — throwaway. Answers: "What should the Training list screen look like?"
+  Four structurally different variants of the Training list, switchable via ?variant=A|B|C|D
+  and the floating bar (or ← / →). Dark theme only, Polish strings, Material 3 baseline dark tokens.
+  Interactive: ⋮ opens the bottom sheet, "Usuń" deletes with an undo snackbar, "Cofnij" restores in place.
+-->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training list prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* M3 baseline dark scheme */
+    --primary: #D0BCFF; --on-primary: #381E72;
+    --primary-container: #4F378B; --on-primary-container: #EADDFF;
+    --secondary-container: #4A4458; --on-secondary-container: #E8DEF8;
+    --tertiary: #EFB8C8;
+    --surface: #141218; --on-surface: #E6E0E9; --on-surface-variant: #CAC4D0;
+    --surface-c-lowest: #0F0D13; --surface-c-low: #1D1B20; --surface-c: #211F26;
+    --surface-c-high: #2B2930; --surface-c-highest: #36343B;
+    --outline: #938F99; --outline-variant: #49454F;
+    --inverse-surface: #E6E0E9; --inverse-on-surface: #322F35; --inverse-primary: #6750A4;
+    --scrim: rgba(0,0,0,.32);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #050506; color: var(--on-surface);
+    font-family: Roboto, system-ui, sans-serif; }
+  body { display: flex; align-items: flex-start; justify-content: center; gap: 24px; padding: 24px 16px 96px; }
+
+  .phone { position: relative; width: 412px; max-width: 100%; height: 860px; background: var(--surface);
+    border-radius: 28px; overflow: hidden; box-shadow: 0 0 0 10px #1a1a1d, 0 20px 60px rgba(0,0,0,.6);
+    display: flex; flex-direction: column; }
+  .statusbar { height: 32px; flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; font-size: 13px; color: var(--on-surface); }
+  .navbar { height: 24px; flex: none; display: flex; align-items: center; justify-content: center; }
+  .navbar::after { content: ""; width: 108px; height: 4px; border-radius: 2px; background: var(--on-surface); opacity: .6; }
+  .screen { position: relative; flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .scroll { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  .icon { width: 24px; height: 24px; fill: currentColor; flex: none; }
+  .icon-btn { width: 48px; height: 48px; border: 0; background: none; color: var(--on-surface-variant);
+    border-radius: 50%; display: grid; place-items: center; cursor: pointer; flex: none; }
+  .icon-btn:hover { background: rgba(230,224,233,.08); }
+
+  /* Top app bars */
+  .tab-small { height: 64px; flex: none; display: flex; align-items: center; padding: 0 16px; font-size: 22px; }
+  .tab-center { height: 64px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .tab-large { padding: 36px 16px 20px; font-size: 32px; line-height: 40px; }
+
+  /* FABs */
+  .fab { position: absolute; right: 16px; bottom: 16px; border: 0; cursor: pointer; display: flex;
+    align-items: center; gap: 12px; color: var(--on-primary-container); background: var(--primary-container);
+    box-shadow: 0 3px 6px rgba(0,0,0,.35); transition: transform .25s ease; font: 500 14px Roboto, sans-serif; }
+  .fab.std { width: 56px; height: 56px; border-radius: 16px; justify-content: center; }
+  .fab.ext { height: 56px; padding: 0 20px 0 16px; border-radius: 16px; }
+  .fab.lg { width: 96px; height: 96px; border-radius: 28px; justify-content: center; }
+  .fab.lg .icon { width: 36px; height: 36px; }
+
+  /* Empty states */
+  .empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center; padding: 0 48px; color: var(--on-surface-variant);
+    pointer-events: none; }
+  .empty .big { width: 64px; height: 64px; margin-bottom: 16px; opacity: .7; }
+  .empty h2 { margin: 0 0 8px; font: 400 22px/28px Roboto; color: var(--on-surface); }
+  .empty p { margin: 0; font-size: 14px; line-height: 20px; }
+
+  /* A: classic list with dividers */
+  .a-row { display: flex; align-items: center; min-height: 56px; padding: 8px 4px 8px 16px;
+    border-bottom: 1px solid var(--outline-variant); font-size: 16px; line-height: 24px; }
+  .a-row .name { flex: 1; }
+
+  /* B: cards */
+  .b-list { padding: 0 16px 104px; display: flex; flex-direction: column; gap: 12px; }
+  .b-card { display: flex; align-items: center; min-height: 72px; padding: 12px 4px 12px 20px; border-radius: 16px;
+    background: var(--surface-c-high); font-size: 18px; line-height: 24px; font-weight: 500; }
+  .b-card .name { flex: 1; }
+
+  /* C: segmented group with leading monograms */
+  .c-list { padding: 8px 16px 136px; display: flex; flex-direction: column; gap: 2px; }
+  .c-item { display: flex; align-items: center; gap: 16px; min-height: 64px; padding: 8px 4px 8px 16px;
+    background: var(--surface-c); border-radius: 4px; font-size: 16px; line-height: 24px; }
+  .c-item:first-child { border-top-left-radius: 20px; border-top-right-radius: 20px; }
+  .c-item:last-child { border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
+  .c-mono { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none;
+    background: var(--primary-container); color: var(--on-primary-container); font-weight: 500; }
+  .c-item .name { flex: 1; }
+  .e-list { padding: 8px 16px 88px; display: flex; flex-direction: column; gap: 12px; }
+  .e-list .c-item { border-radius: 16px; }
+  .c-count { padding: 16px 32px 4px; font-size: 14px; color: var(--primary); font-weight: 500; }
+
+  /* D: dense, numbered, no top app bar */
+  .d-head { padding: 28px 24px 12px; display: flex; align-items: baseline; gap: 12px; }
+  .d-head h1 { margin: 0; font: 400 45px/52px Roboto; }
+  .d-head span { color: var(--on-surface-variant); font-size: 16px; }
+  .d-row { display: flex; align-items: center; min-height: 48px; padding: 0 4px 0 24px; font-size: 16px; }
+  .d-num { width: 32px; color: var(--outline); font-variant-numeric: tabular-nums; font-size: 14px; }
+  .d-row .name { flex: 1; }
+  .d-row:nth-child(odd) { background: var(--surface-c-lowest); }
+
+  /* Bottom sheet */
+  .scrim { position: absolute; inset: 0; background: var(--scrim); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .scrim.on { opacity: 1; pointer-events: auto; }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--surface-c-low);
+    border-radius: 28px 28px 0 0; transform: translateY(100%); transition: transform .25s ease; padding-bottom: 16px; }
+  .sheet.on { transform: none; }
+  .handle { width: 32px; height: 4px; border-radius: 2px; background: var(--on-surface-variant); opacity: .4; margin: 16px auto 8px; }
+  .sheet-title { padding: 8px 24px 12px; font-size: 16px; font-weight: 500; color: var(--on-surface-variant);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sheet-item { display: flex; align-items: center; gap: 16px; height: 56px; padding: 0 24px; cursor: pointer; font-size: 16px; }
+  .sheet-item:hover { background: rgba(230,224,233,.08); }
+  .sheet-item .icon { color: var(--on-surface-variant); }
+  .sheet-btns { display: flex; gap: 12px; padding: 8px 24px 8px; }
+  .sheet-btns button { flex: 1; height: 56px; border-radius: 28px; border: 0; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; gap: 8px; font: 500 16px Roboto; }
+  .sb-tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .sb-outline { background: none; color: var(--tertiary); box-shadow: inset 0 0 0 1px var(--outline); }
+
+  /* Snackbar */
+  .snack { position: absolute; left: 16px; right: 16px; bottom: 16px; min-height: 48px; border-radius: 4px;
+    background: var(--inverse-surface); color: var(--inverse-on-surface); display: flex; align-items: center;
+    padding: 0 8px 0 16px; font-size: 14px; box-shadow: 0 3px 6px rgba(0,0,0,.35);
+    transform: translateY(calc(100% + 24px)); transition: transform .25s ease; }
+  .snack.on { transform: none; }
+  .snack .msg { flex: 1; padding: 14px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .snack button { border: 0; background: none; color: var(--inverse-primary); font: 500 14px Roboto; height: 40px;
+    padding: 0 12px; border-radius: 20px; cursor: pointer; }
+
+  /* Prototype chrome (deliberately not Material) */
+  .panel { width: 260px; flex: none; font: 13px/1.5 ui-monospace, Consolas, monospace; color: #bbb; }
+  .panel h3 { font-size: 13px; color: #fff; margin: 0 0 8px; }
+  .panel label { display: flex; gap: 8px; align-items: center; cursor: pointer; margin-bottom: 6px; }
+  .panel button { font: inherit; background: #222; color: #ddd; border: 1px solid #444; border-radius: 4px;
+    padding: 4px 8px; cursor: pointer; margin: 0 4px 6px 0; }
+  .panel pre { background: #111; border: 1px solid #333; padding: 8px; white-space: pre-wrap; margin: 12px 0 0; }
+  .panel p { margin: 0 0 12px; }
+  .switcher { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 10; display: flex;
+    align-items: center; gap: 4px; background: #ffd400; color: #111; border-radius: 999px; padding: 4px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.6); font: 600 14px ui-monospace, Consolas, monospace; }
+  .switcher button { border: 0; background: #111; color: #ffd400; width: 36px; height: 36px; border-radius: 50%;
+    cursor: pointer; font-size: 18px; }
+  .switcher span { padding: 0 12px; min-width: 260px; text-align: center; }
+  @media (max-width: 760px) { body { flex-direction: column; align-items: center; } .panel { width: 412px; max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>▴ ◢ ▮</span></div>
+  <div class="screen" id="screen"></div>
+  <div class="navbar"></div>
+</div>
+
+<div class="panel">
+  <h3 id="vname"></h3>
+  <p id="vdesc"></p>
+  <h3>Stan</h3>
+  <label><input type="checkbox" id="empty"> Pusta lista</label>
+  <label><input type="checkbox" id="many"> Długa lista (przewijanie)</label>
+  <button id="reset">Reset danych</button>
+  <p style="margin-top:8px">Klik ⋮ → arkusz. „Usuń” → snackbar z „Cofnij”. Klik FAB / „Edytuj” tylko loguje.</p>
+  <pre id="state"></pre>
+</div>
+
+<div class="switcher">
+  <button id="prev" title="Poprzedni (←)">‹</button>
+  <span id="label"></span>
+  <button id="next" title="Następny (→)">›</button>
+</div>
+
+<script>
+const I = {
+  more: '<svg class="icon" viewBox="0 0 24 24"><path d="M12 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>',
+  add: '<svg class="icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z"/></svg>',
+  edit: '<svg class="icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25ZM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"/></svg>',
+  del: '<svg class="icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V7H6v12ZM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4Z"/></svg>',
+  fit: '<svg class="icon big" viewBox="0 0 24 24"><path d="M20.57 14.86 22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29l-1.43-1.43Z"/></svg>',
+};
+
+const BASE = ['Push', 'Pull', 'Nogi', 'Full body A', 'Trening siłowy górnej partii ciała z akcentem na barki', 'Bieganie — interwały'];
+const MORE = ['Mobilność', 'Core', 'Full body B', 'Rower 60 min', 'Basen', 'Rozciąganie wieczorne', 'Kettlebell', 'Plecy + biceps'];
+
+let nextId = 1;
+const make = names => names.map(n => ({ id: nextId++, name: n }));
+let items = make(BASE);
+let sheetFor = null;          // training id the sheet is open for
+let undo = null;              // { item }
+let snackTimer = null;
+const log = [];
+
+const V = {
+  A: { name: 'Klasyczna lista', desc: 'Mały top bar, pełnoszerokie wiersze z separatorami, standardowy FAB +. Najbliżej „czystego” M3 ListItem.', render: renderA },
+  B: { name: 'Karty + duży tytuł', desc: 'Duży tytuł przewijany z treścią, każdy trening jako zaokrąglona karta z większą czcionką, rozszerzony FAB „Nowy trening”. Arkusz z nazwą treningu i dwoma przyciskami.', render: renderB },
+  C: { name: 'Grupa z monogramami', desc: 'Wyśrodkowany top bar, licznik, segmentowana grupa (styl Android 16 / M3 Expressive) z inicjałem w kółku, duży FAB.', render: renderC },
+  E: { name: 'Wybrany: C + odstępy z B + FAB z D', desc: 'Wariant C (kolory, monogram, licznik, wyśrodkowany top bar), ale wiersze rozdzielone odstępem 12dp i każdy zaokrąglony 16dp jak karty w B; standardowy FAB 56dp jak w D.', render: renderE },
+  D: { name: 'Gęsta, numerowana', desc: 'Bez top bara — nagłówek display w treści, gęste wiersze 48dp z numerem kolejności i paskami, standardowy FAB.', render: renderD },
+};
+const KEYS = Object.keys(V);
+let variant = new URLSearchParams(location.search).get('variant');
+if (!V[variant]) variant = 'E';
+
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const more = id => `<button class="icon-btn" data-more="${id}" aria-label="Więcej opcji">${I.more}</button>`;
+const emptyStd = `<div class="empty">${I.fit}<h2>Brak treningów</h2><p>Dodaj pierwszy trening przyciskiem +</p></div>`;
+
+function renderA() {
+  return `<div class="tab-small">Treningi</div>
+    <div class="scroll" style="padding-bottom:88px">${items.map(t => `<div class="a-row"><span class="name">${esc(t.name)}</span>${more(t.id)}</div>`).join('')}</div>
+    ${items.length ? '' : emptyStd}
+    <button class="fab std" data-fab aria-label="Dodaj trening">${I.add}</button>`;
+}
+function renderB() {
+  return `<div class="scroll"><div class="tab-large">Treningi</div>
+    <div class="b-list">${items.map(t => `<div class="b-card"><span class="name">${esc(t.name)}</span>${more(t.id)}</div>`).join('')}</div></div>
+    ${items.length ? '' : `<div class="empty">${I.fit}<h2>Nie masz jeszcze treningów</h2><p>Utwórz pierwszy przyciskiem „Nowy trening”</p></div>`}
+    <button class="fab ext" data-fab>${I.add}Nowy trening</button>`;
+}
+function renderC() {
+  const n = items.length;
+  return `<div class="tab-center">Treningi</div>
+    <div class="scroll">${n ? `<div class="c-count">${n} ${plural(n)}</div>` : ''}
+    <div class="c-list">${items.map(t => `<div class="c-item"><span class="c-mono">${esc(t.name.trim()[0].toUpperCase())}</span><span class="name">${esc(t.name)}</span>${more(t.id)}</div>`).join('')}</div></div>
+    ${n ? '' : emptyStd}
+    <button class="fab lg" data-fab aria-label="Dodaj trening">${I.add}</button>`;
+}
+function renderE() {
+  const n = items.length;
+  return `<div class="tab-center">Treningi</div>
+    <div class="scroll">${n ? `<div class="c-count">${n} ${plural(n)}</div>` : ''}
+    <div class="e-list">${items.map(t => `<div class="c-item"><span class="c-mono">${esc(t.name.trim()[0].toUpperCase())}</span><span class="name">${esc(t.name)}</span>${more(t.id)}</div>`).join('')}</div></div>
+    ${n ? '' : emptyStd}
+    <button class="fab std" data-fab aria-label="Dodaj trening">${I.add}</button>`;
+}
+function renderD() {
+  return `<div class="scroll" style="padding-bottom:88px"><div class="d-head"><h1>Treningi</h1>${items.length ? `<span>${items.length}</span>` : ''}</div>
+    <div>${items.map((t, i) => `<div class="d-row"><span class="d-num">${i + 1}</span><span class="name">${esc(t.name)}</span>${more(t.id)}</div>`).join('')}</div></div>
+    ${items.length ? '' : emptyStd}
+    <button class="fab std" data-fab aria-label="Dodaj trening">${I.add}</button>`;
+}
+function plural(n) {
+  if (n === 1) return 'trening';
+  const d = n % 10, h = n % 100;
+  return d >= 2 && d <= 4 && !(h >= 12 && h <= 14) ? 'treningi' : 'treningów';
+}
+
+function sheetHtml() {
+  const t = items.find(x => x.id === sheetFor);
+  if (variant === 'B') {
+    return `<div class="handle"></div><div class="sheet-title">${t ? esc(t.name) : ''}</div>
+      <div class="sheet-btns"><button class="sb-tonal" data-act="edit">${I.edit}Edytuj</button><button class="sb-outline" data-act="del">${I.del}Usuń</button></div>`;
+  }
+  return `<div class="handle"></div>
+    <div class="sheet-item" data-act="edit">${I.edit}Edytuj</div>
+    <div class="sheet-item" data-act="del">${I.del}Usuń</div>`;
+}
+
+function render() {
+  const s = document.getElementById('screen');
+  s.innerHTML = V[variant].render() +
+    `<div class="scrim ${sheetFor != null ? 'on' : ''}" data-scrim></div>
+     <div class="sheet ${sheetFor != null ? 'on' : ''}">${sheetHtml()}</div>
+     <div class="snack ${undo ? 'on' : ''}"><span class="msg">${undo ? `Usunięto „${esc(undo.item.name)}”` : ''}</span><button data-undo>Cofnij</button></div>`;
+  const fab = s.querySelector('[data-fab]');
+  if (undo && fab) fab.style.transform = 'translateY(-64px)';
+  document.getElementById('label').textContent = `${variant} (${V[variant].name})`;
+  document.getElementById('vname').textContent = `Wariant ${variant} — ${V[variant].name}`;
+  document.getElementById('vdesc').textContent = V[variant].desc;
+  document.getElementById('empty').checked = items.length === 0;
+  document.getElementById('state').textContent = JSON.stringify({
+    variant, items: items.map(t => `${t.id}: ${t.name}`), sheetFor, undo: undo && undo.item, log: log.slice(-4),
+  }, null, 2);
+}
+
+function setVariant(k) {
+  variant = k; sheetFor = null;
+  const u = new URL(location); u.searchParams.set('variant', k); history.replaceState(null, '', u);
+  render();
+}
+const step = d => setVariant(KEYS[(KEYS.indexOf(variant) + d + KEYS.length) % KEYS.length]);
+
+document.getElementById('screen').addEventListener('click', e => {
+  const m = e.target.closest('[data-more]');
+  if (m) { sheetFor = +m.dataset.more; return render(); }
+  if (e.target.closest('[data-scrim]')) { sheetFor = null; return render(); }
+  if (e.target.closest('[data-fab]')) { log.push('FAB → formularz (dodawanie)'); return render(); }
+  if (e.target.closest('[data-undo]')) {
+    if (undo) { items.push(undo.item); items.sort((a, b) => a.id - b.id); log.push(`Cofnij → przywrócono id ${undo.item.id}`); }
+    undo = null; clearTimeout(snackTimer); return render();
+  }
+  const a = e.target.closest('[data-act]');
+  if (a) {
+    const t = items.find(x => x.id === sheetFor);
+    sheetFor = null;
+    if (a.dataset.act === 'edit') log.push(`Edytuj → formularz (id ${t.id})`);
+    else {
+      items = items.filter(x => x !== t); undo = { item: t }; log.push(`Usuń id ${t.id}`);
+      clearTimeout(snackTimer); snackTimer = setTimeout(() => { undo = null; render(); }, 4000);
+    }
+    render();
+  }
+});
+document.getElementById('prev').onclick = () => step(-1);
+document.getElementById('next').onclick = () => step(1);
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input, textarea, [contenteditable]')) return;
+  if (e.key === 'ArrowLeft') step(-1);
+  if (e.key === 'ArrowRight') step(1);
+});
+document.getElementById('empty').onchange = e => { items = e.target.checked ? [] : make(BASE); undo = null; render(); };
+document.getElementById('many').onchange = e => { items = e.target.checked ? items.concat(make(MORE)) : items.filter(t => !MORE.includes(t.name)); render(); };
+document.getElementById('reset').onclick = () => { nextId = 1; items = make(BASE); undo = null; sheetFor = null; log.length = 0;
+  document.getElementById('many').checked = false; render(); };
+render();
+</script>
+</body>
+</html>
