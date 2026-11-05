@@ -6,12 +6,17 @@ Blocked by: —
 
 ## Question
 
-What should the Training form screen look like in edit mode with data filled? Build one HTML page (`.scratch/trainings/prototypes/training-form.html`) with at least 3 switchable variants at phone size, Material 3, **dark theme only**, Polish strings: a single name text field and a Save button at the bottom (also show its disabled look). The user picks one; the answer records the choice and visual details (top bar/title for add vs edit, button placement relative to the keyboard).
+What should the Training form screen look like in edit mode with data filled? Build one HTML page
+(`.scratch/trainings/prototypes/training-form.html`) with at least 3 switchable variants at phone size, Material 3,
+**dark theme only**, Polish strings: a single name text field and a Save button at the bottom (also show its disabled
+look). The user picks one; the answer records the choice and visual details (top bar/title for add vs edit, button
+placement relative to the keyboard).
 
 ## Answer
 
 Resolved with the user on 2026-11-05. **Winner: variant A (Klasyczny)**, unchanged.
-Prototype: `.scratch/trainings/prototypes/training-form.html` (`?variant=A`). All four variants are captured on the throwaway
+Prototype: `.scratch/trainings/prototypes/training-form.html` (`?variant=A`). All four variants are captured on the
+throwaway
 branch `prototype/training-form` (never merged).
 
 Visual and behavioural details the design system and presentation layer must honour (dark theme, M3 baseline dark tokens
@@ -25,7 +30,8 @@ until the design-system ticket picks a palette):
   area with 16dp padding, **pinned to the bottom of the screen and lifted above the keyboard** (`imePadding`).
   Disabled look = standard M3 disabled filled button (on-surface 12% container, 38% content); disabled exactly when the
   trimmed name is empty (see Training product rules).
-- **Focus / keyboard**: in **add mode** the field gets focus and the keyboard opens when the form appears; in **edit mode**
+- **Focus / keyboard**: in **add mode** the field gets focus and the keyboard opens when the form appears; in **edit
+  mode**
   nothing is focused and the keyboard stays closed until the user taps the field.
 - **Not decided**: whether the keyboard's Done (IME) action also saves. Raise it in the presentation-MVI or
   components grilling.

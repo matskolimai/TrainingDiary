@@ -9,5 +9,6 @@ A named, reusable template the user configures once (e.g. "Push day") and perfor
 _Avoid_: Workout, plan, routine
 
 **Training session**:
-One occurrence of the user actually performing a Training. Not yet modelled; reserved so it is never confused with Training.
+One occurrence of the user actually performing a Training. Not yet modelled; reserved so it is never confused with
+Training.
 _Avoid_: Training (for the performed instance), workout log

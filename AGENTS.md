@@ -8,7 +8,8 @@ Issues are tracked as local markdown files under `.scratch/<feature>/`. See `doc
 
 ### Triage labels
 
-Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See
+`docs/agents/triage-labels.md`.
 
 ### Domain docs
 
@@ -16,4 +17,4 @@ Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/ag
 
 ### Markdown formatting
 
-When creating or editing `.md` files, keep each line at most 140 characters; wrap longer lines.
+When creating or editing `.md` files, keep each line at most 120 characters; wrap longer lines.

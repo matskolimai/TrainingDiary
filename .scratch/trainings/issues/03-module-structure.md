@@ -6,14 +6,22 @@ Blocked by: 02
 
 ## Question
 
-Which parts of `android-module-structure` does the user accept or override for this app: feature-layered modules (`:feature:trainings:{domain,data,presentation}`), `:core:*` submodules (incl. `:core:database`, `:core:design-system`), `:build-logic` convention plugins (which ones, given AGP 9), version-catalog rules, and static analysis (ktlint/Detekt, how enforced)? Is the domain layer a pure Kotlin/JVM module? Following the library-landscape research: which Kotlin version to bump to (2.2.10 is too old for Koin 4.2.2 and kotlinx-serialization 1.12), and whether to use Detekt 2.0 alpha or defer Detekt.
+Which parts of `android-module-structure` does the user accept or override for this app: feature-layered modules
+(`:feature:trainings:{domain,data,presentation}`), `:core:*` submodules (incl. `:core:database`, `:core:design-system`),
+`:build-logic` convention plugins (which ones, given AGP 9), version-catalog rules, and static analysis (ktlint/Detekt,
+how enforced)? Is the domain layer a pure Kotlin/JVM module? Following the library-landscape research: which Kotlin
+version to bump to (2.2.10 is too old for Koin 4.2.2 and kotlinx-serialization 1.12), and whether to use Detekt 2.0
+alpha or defer Detekt.
 
-Resolve by presenting the skill's prescriptions point by point, then rewrite `~/.claude/skills/android-module-structure/SKILL.md` with `/mattpocock-skills:writing-for-agents` to reflect the outcome.
+Resolve by presenting the skill's prescriptions point by point, then rewrite
+`~/.claude/skills/android-module-structure/SKILL.md` with `/mattpocock-skills:writing-for-agents` to reflect the
+outcome.
 
 ## Answer
 
 Settled with the user on 2026-11-05, point by point against `android-module-structure`. The skill was rewritten to match
-(`~/.claude/skills/android-module-structure/SKILL.md`, Android-only, written with `/mattpocock-skills:writing-for-agents`).
+(`~/.claude/skills/android-module-structure/SKILL.md`, Android-only, written with
+`/mattpocock-skills:writing-for-agents`).
 
 - **Modules**: each feature gets three layer modules, `:feature:trainings:{domain,data,presentation}`. Features never
   depend on each other. `:app` stays thin.
@@ -47,7 +55,8 @@ Settled with the user on 2026-11-05, point by point against `android-module-stru
   before review.
 - **Naming**: the feature module is plural, `:feature:trainings`. Namespace and package equal the module path
   (`pl.skolim.trainingdiary.feature.trainings.domain`). Type-safe project accessors are on.
-- **Visibility**: `data` and `presentation` are `internal` by default, and their public surface is the DI module plus the
+- **Visibility**: `data` and `presentation` are `internal` by default, and their public surface is the DI module plus
+  the
   nav entry. Exactly how those are exposed is left to the DI and Navigation tickets. Domain types are public, and
   explicit API mode is off.
 - **Key libraries** in the skill are defaults, added only when needed: Nav3, Room 3 with KSP, JUnit 6 through
