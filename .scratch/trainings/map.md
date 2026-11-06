@@ -48,14 +48,18 @@ system, navigation, testing) is settled, and each Android skill reflects the use
   Kotlin 2.4.21 / AGP 9.5.0 / BOM 2026.09; `convention.*` included-build plugins; ktlint + Detekt 2.0 alpha +
   compose-rules;
   `internal` by default; skill rewritten Android-only.
+- [Error handling](issues/06-error-handling.md): missing = `null`; blank name not an error; catch only named
+  exceptions. Typed `Result` / exhaustive `toUiText()` are dormant (nothing produces an error yet); skill file
+  unchanged.
+- [Data layer and backend-ready seam](issues/07-data-layer.md): `TrainingRepository` in domain, `internal`
+  `RoomTrainingRepository`; writes return `Unit`, nothing caught; plain `Long` AUTOINCREMENT id; all Room in
+  `:core:database` with `AndroidSQLiteDriver`; no ADR; skill rewritten.
 
 ## Not yet specified
 
 - **Cross-cutting house style**: conventions no single skill owns (file/package layout inside a module, Kotlin idioms,
   comment policy; module naming and visibility are settled in Module structure and build-logic). May surface as a
   dedicated skill or as edits spread across skills, once the first few foundation tickets show the pattern.
-- **Persistence-seam ADR**: whether the backend-ready repository boundary (ids, local-vs-remote source of truth) merits
-  an ADR; depends on the data-layer ticket.
 - **Spec-to-ticket slicing order**: the concrete order of implementation slices (scaffold modules → theme → data → list
   → form → delete/undo …) — derivable once the foundation decisions are in; may need its own grilling before
   `/to-tickets`.
@@ -68,3 +72,5 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 - Localization beyond Polish.
 - CI pipeline.
 - Training session and any training content beyond a name (future Wayfinder maps).
+- Rewriting `android-error-handling`: this feature produces no typed error (see Data layer and backend-ready seam), so
+  the rewrite waits for the first expected failure, likely a backend.
