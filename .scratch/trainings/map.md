@@ -54,12 +54,21 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 - [Data layer and backend-ready seam](issues/07-data-layer.md): `TrainingRepository` in domain, `internal`
   `RoomTrainingRepository`; writes return `Unit`, nothing caught; plain `Long` AUTOINCREMENT id; all Room in
   `:core:database` with `AndroidSQLiteDriver`; no ADR; skill rewritten.
+- [Dependency injection](issues/08-di-koin.md): Koin DSL only; one public `val` Koin module per Gradle module that
+  provides something; `startKoin` in `Application`, no logger; ViewModels take their Nav3 key via `parametersOf`;
+  `verifyAll` JVM test in `:app`; skill rewritten.
+- [Presentation: MVI](issues/09-presentation-mvi.md): `TrainingList` / `TrainingEditor`; domain `Training` in State (no
+  UI model); sheet in State; events named by what happened; Root intercepts nav Actions; keyboard Done saves; no
+  `SavedStateHandle`; skill rewritten.
 
 ## Not yet specified
 
 - **Cross-cutting house style**: conventions no single skill owns (file/package layout inside a module, Kotlin idioms,
   comment policy; module naming and visibility are settled in Module structure and build-logic). May surface as a
   dedicated skill or as edits spread across skills, once the first few foundation tickets show the pattern.
+- **ViewModel-driven navigation**: the user wants a reusable way for a ViewModel to navigate, replacing the
+  Root-intercept plus Event pattern from Presentation: MVI. It isn't needed for this feature; revisit with or after
+  Navigation, or in a later effort.
 - **Spec-to-ticket slicing order**: the concrete order of implementation slices (scaffold modules → theme → data → list
   → form → delete/undo …) — derivable once the foundation decisions are in; may need its own grilling before
   `/to-tickets`.

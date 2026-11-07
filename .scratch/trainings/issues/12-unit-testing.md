@@ -13,3 +13,11 @@ ticket as the code, or TDD via `/mattpocock-skills:tdd`)?
 
 Resolve point by point, then rewrite `~/.claude/skills/android-unit-testing/SKILL.md` with
 `/mattpocock-skills:writing-for-agents`.
+
+## Comments
+
+- 2026-11-06 (from Presentation: MVI): the units to test are `TrainingListViewModel` (combine + `stateIn`,
+  sheet state, delete → `TrainingDeleted`, undo restores the same identity, only the latest delete can be undone),
+  `TrainingEditorViewModel` (`onStart` load with the `hasLoaded` guard, `TrainingMissing`, `canSave`, save ignored
+  while `isSaving`, `TrainingSaved`), the domain `isValidTrainingName`, and the monogram function (emoji / surrogate
+  pairs). Nothing runs in `init`, so tests start the work by collecting `state`.
