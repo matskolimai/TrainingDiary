@@ -1,20 +1,13 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
+    id("convention.android.application")
+    id("convention.android.compose")
 }
 
 android {
     namespace = "pl.skolim.trainingdiary"
-    compileSdk {
-        version = release(37)
-    }
 
     defaultConfig {
         applicationId = "pl.skolim.trainingdiary"
-        minSdk = 35
-        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -28,39 +21,17 @@ android {
             }
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
-    }
-}
-
-kotlin {
-    jvmToolchain(17)
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
-        // Opt out per module by setting `trainingdiary.allowCompilerWarnings=true` in the module's gradle.properties,
-        // only for unfixable warnings from an experimental API.
-        allWarningsAsErrors = findProperty("trainingdiary.allowCompilerWarnings")?.toString()?.toBoolean() != true
-    }
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    testImplementation(libs.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    debugImplementation(libs.androidx.compose.ui.tooling)
 }
