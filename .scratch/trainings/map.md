@@ -70,6 +70,9 @@ system, navigation, testing) is settled, and each Android skill reflects the use
   driver → whole app with in-memory Room, on a Pixel 9 Gradle Managed Device; 12 cases; unit tests only for pure
   many-input functions; Paparazzi 2.0.0-alpha5.1 snapshots every (now `internal`) preview; UI testing merged in;
   skills rewritten (`android-acceptance-testing`, `android-screenshot-testing`, `android-ui-testing` deleted).
+- [Cross-cutting house style](issues/14-house-style.md): tools are the whole style guide — `ktlint_official` at
+  120 columns, Detekt as shipped plus Compose adaptations only; unenforced preferences listed for manual review; no
+  style skill; `android-module-structure` Static analysis rewritten.
 
 ## Not yet specified
 
