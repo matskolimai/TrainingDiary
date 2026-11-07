@@ -60,6 +60,8 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 - [Presentation: MVI](issues/09-presentation-mvi.md): `TrainingList` / `TrainingEditor`; domain `Training` in State (no
   UI model); sheet in State; events named by what happened; Root intercepts nav Actions; keyboard Done saves; no
   `SavedStateHandle`; skill rewritten.
+- [Navigation](issues/11-navigation.md): Nav3 1.2.1; public `<Screen>Key`s + `trainingsEntries(backStack)` (no Koin
+  entry DSL); `AppNavDisplay` in `:app`; `push`/`pop(key)` guards in `:core:presentation`; skill rewritten.
 
 ## Not yet specified
 
@@ -67,8 +69,8 @@ system, navigation, testing) is settled, and each Android skill reflects the use
   comment policy; module naming and visibility are settled in Module structure and build-logic). May surface as a
   dedicated skill or as edits spread across skills, once the first few foundation tickets show the pattern.
 - **ViewModel-driven navigation**: the user wants a reusable way for a ViewModel to navigate, replacing the
-  Root-intercept plus Event pattern from Presentation: MVI. It isn't needed for this feature; revisit with or after
-  Navigation, or in a later effort.
+  Root-intercept plus Event pattern from Presentation: MVI. It isn't needed for this feature; Navigation deferred it
+  (entries push/pop the back stack directly for now), so it is revisited in a later effort.
 - **Spec-to-ticket slicing order**: the concrete order of implementation slices (scaffold modules → theme → data → list
   → form → delete/undo …) — derivable once the foundation decisions are in; may need its own grilling before
   `/to-tickets`.

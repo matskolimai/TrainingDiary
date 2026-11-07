@@ -21,3 +21,6 @@ Resolve point by point, then rewrite `~/.claude/skills/android-unit-testing/SKIL
   `TrainingEditorViewModel` (`onStart` load with the `hasLoaded` guard, `TrainingMissing`, `canSave`, save ignored
   while `isSaving`, `TrainingSaved`), the domain `isValidTrainingName`, and the monogram function (emoji / surrogate
   pairs). Nothing runs in `init`, so tests start the work by collecting `state`.
+- 2026-11-07 (from Navigation): add the back-stack guards in `:core:presentation` to the units under test:
+  `push(key)` does nothing when the key is already on top, and `pop(key)` does nothing unless the key is on top
+  (a double push, a double pop, and popping a key that isn't on top).
