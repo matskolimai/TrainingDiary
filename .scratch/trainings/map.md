@@ -73,15 +73,9 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 
 ## Not yet specified
 
-- **Cross-cutting house style**: conventions no single skill owns (file/package layout inside a module, Kotlin idioms,
-  comment policy; module naming and visibility are settled in Module structure and build-logic). May surface as a
-  dedicated skill or as edits spread across skills, once the first few foundation tickets show the pattern.
 - **ViewModel-driven navigation**: the user wants a reusable way for a ViewModel to navigate, replacing the
   Root-intercept plus Event pattern from Presentation: MVI. It isn't needed for this feature; Navigation deferred it
   (entries push/pop the back stack directly for now), so it is revisited in a later effort.
-- **Spec-to-ticket slicing order**: the concrete order of implementation slices (scaffold modules → theme → data → list
-  → form → delete/undo …) — derivable once the foundation decisions are in; may need its own grilling before
-  `/to-tickets`.
 
 ## Out of scope
 
