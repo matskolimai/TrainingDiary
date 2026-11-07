@@ -60,6 +60,9 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 - [Presentation: MVI](issues/09-presentation-mvi.md): `TrainingList` / `TrainingEditor`; domain `Training` in State (no
   UI model); sheet in State; events named by what happened; Root intercepts nav Actions; keyboard Done saves; no
   `SavedStateHandle`; skill rewritten.
+- [Compose components and design system](issues/10-components-design-system.md): every component app-agnostic
+  `App*` in `:core:design-system`; dark-only `AppTheme` on M3 defaults; `AppIcons` over icons-extended; `Spacing`
+  object; `AppPreview`; feature M3 allowlist; row tap does nothing; skill rewritten.
 - [Navigation](issues/11-navigation.md): Nav3 1.2.1; public `<Screen>Key`s + `trainingsEntries(backStack)` (no Koin
   entry DSL); `AppNavDisplay` in `:app`; `push`/`pop(key)` guards in `:core:presentation`; skill rewritten.
 
