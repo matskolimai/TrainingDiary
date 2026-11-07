@@ -36,8 +36,7 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 - [Training product rules](issues/01-training-product-rules.md): trimmed name, blank = empty, duplicates allowed,
   creation order, undo restores same identity, missing-on-edit navigates back.
 - [Prototype: Training list screen](issues/04-prototype-training-list.md): variant E — centred top bar, plural count,
-  separated
-  16dp-rounded rows with monogram + ⋮, standard FAB, Edytuj/Usuń sheet, undo snackbar.
+  separated 16dp-rounded rows with name + ⋮ (monogram later dropped), standard FAB, Edytuj/Usuń sheet, undo snackbar.
 - [Library landscape for the AGP 9.4 stack](issues/02-library-landscape.md): Nav3 1.2.1, Room 3.0.3, Koin 4.2.2, KSP
   2.3.13, JUnit 6 via mannodermaus 2.0.2; Kotlin 2.2.10 must be bumped (≈2.4.21); stable Detekt doesn't support AGP 9
   (alpha or defer).
@@ -73,12 +72,13 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 - [Cross-cutting house style](issues/14-house-style.md): tools are the whole style guide — `ktlint_official` at
   120 columns, Detekt as shipped plus Compose adaptations only; unenforced preferences listed for manual review; no
   style skill; `android-module-structure` Static analysis rewritten.
+- [Spec-to-ticket slicing order](issues/15-slicing-order.md): infrastructure just before it's needed, risk checks
+  (harness, Paparazzi) first with agreed fallbacks and one throwaway self-test each; behaviour slices S1–S7 with their
+  acceptance cases; one ticket per component; monogram dropped from the row.
 
 ## Not yet specified
 
-- **ViewModel-driven navigation**: the user wants a reusable way for a ViewModel to navigate, replacing the
-  Root-intercept plus Event pattern from Presentation: MVI. It isn't needed for this feature; Navigation deferred it
-  (entries push/pop the back stack directly for now), so it is revisited in a later effort.
+Nothing: every in-scope decision is settled.
 
 ## Out of scope
 
@@ -90,3 +90,6 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 - Training session and any training content beyond a name (future Wayfinder maps).
 - Rewriting `android-error-handling`: this feature produces no typed error (see Data layer and backend-ready seam), so
   the rewrite waits for the first expected failure, likely a backend.
+- ViewModel-driven navigation: a reusable way for a ViewModel to navigate, replacing the Root-intercept plus Event
+  pattern from [Presentation: MVI](issues/09-presentation-mvi.md). This feature doesn't need it (see
+  [Navigation](issues/11-navigation.md)), so it waits for a later effort.

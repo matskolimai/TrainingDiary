@@ -64,3 +64,6 @@ match (`~/.claude/skills/android-presentation-mvi/SKILL.md`, Android-only, writt
   holds no strings, and `UiText` stays dormant with errors. *Provisional*: the user may change this once they see real
   code.
 - No glossary changes and no ADR.
+
+> **Superseded in part** (2026-11-07): the monogram was dropped from the row, so `AppMonogram`, the monogram
+> function and its unit tests are gone. See [Spec-to-ticket slicing order](15-slicing-order.md).

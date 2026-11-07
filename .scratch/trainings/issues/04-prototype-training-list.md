@@ -41,3 +41,6 @@ palette):
 - **Empty state**: centred on screen, 64dp icon (`fitness_center`, dimmed), headline „Brak treningów” (22sp,
   `onSurface`),
   body „Dodaj pierwszy trening przyciskiem +” (14sp, `onSurfaceVariant`). FAB stays visible.
+
+> **Superseded in part** (2026-11-07): the monogram was dropped from the row, so `AppMonogram`, the monogram
+> function and its unit tests are gone. See [Spec-to-ticket slicing order](15-slicing-order.md).

@@ -82,3 +82,6 @@ with `/mattpocock-skills:writing-for-agents`: new `android-acceptance-testing` a
   - Risk: if the alpha doesn't render with AGP 9.5 / Compose 1.12, the first screenshot ticket brings it back.
 - **Slicing**: tests ship in the same ticket as the behaviour they cover; scaffolding tickets have none.
 - No glossary changes and no ADR: all reversible, and the skills document it.
+
+> **Superseded in part** (2026-11-07): the monogram was dropped from the row, so `AppMonogram`, the monogram
+> function and its unit tests are gone. See [Spec-to-ticket slicing order](15-slicing-order.md).

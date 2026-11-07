@@ -56,3 +56,6 @@ match (`~/.claude/skills/android-compose-components/SKILL.md`, Android-only, wri
 - **Row tap**: does nothing for now; only ⋮ opens the sheet. Other interactions come later.
 - **Keyboard Done** saves, as already settled in Presentation: MVI.
 - No glossary changes and no ADR.
+
+> **Superseded in part** (2026-11-07): the monogram was dropped from the row, so `AppMonogram`, the monogram
+> function and its unit tests are gone. See [Spec-to-ticket slicing order](15-slicing-order.md).
