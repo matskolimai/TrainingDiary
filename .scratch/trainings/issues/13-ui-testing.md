@@ -1,7 +1,7 @@
 # UI testing
 
 Type: grilling
-Status: open
+Status: resolved
 Blocked by: 11, 12
 
 ## Question
@@ -13,3 +13,8 @@ state) — or is UI testing deferred for now?
 
 Resolve point by point, then rewrite `~/.claude/skills/android-ui-testing/SKILL.md` with
 `/mattpocock-skills:writing-for-agents`.
+
+## Answer
+
+2026-11-07: merged into [Testing strategy](12-unit-testing.md). UI tests became the acceptance suite's protocol
+driver; `android-ui-testing` was deleted and its useful parts moved into `android-acceptance-testing`.

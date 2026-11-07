@@ -15,7 +15,8 @@ system, navigation, testing) is settled, and each Android skill reflects the use
   features discussed, nothing more. Vocabulary in `GLOSSARY.md` (Training = template; Training session = performed
   instance, not modelled yet).
 - **Skills baseline**: Philip Lackner's skills in `~/.claude/skills/android-*` (module-structure, error-handling,
-  data-layer, di-koin, presentation-mvi, compose-components, navigation, unit-testing, ui-testing) are the *baseline*,
+  data-layer, di-koin, presentation-mvi, compose-components, navigation, unit-testing; plus the user's own
+  acceptance-testing and screenshot-testing) are the *baseline*,
   not law. Each foundation grilling ticket: (1) present what the skill prescribes, (2) user accepts or overrides each
   point, (3) rewrite the skill file using `/mattpocock-skills:writing-for-agents` so it is well-formed for agents. The
   ticket's answer records the decisions *and* that the skill file was updated. The goal is skills reusable across the
@@ -65,6 +66,10 @@ system, navigation, testing) is settled, and each Android skill reflects the use
   object; `AppPreview`; feature M3 allowlist; row tap does nothing; skill rewritten.
 - [Navigation](issues/11-navigation.md): Nav3 1.2.1; public `<Screen>Key`s + `trainingsEntries(backStack)` (no Koin
   entry DSL); `AppNavDisplay` in `:app`; `push`/`pop(key)` guards in `:core:presentation`; skill rewritten.
+- [Testing strategy](issues/12-unit-testing.md): acceptance tests are primary — domain-language cases → DSL → UI
+  driver → whole app with in-memory Room, on a Pixel 9 Gradle Managed Device; 12 cases; unit tests only for pure
+  many-input functions; Paparazzi 2.0.0-alpha5.1 snapshots every (now `internal`) preview; UI testing merged in;
+  skills rewritten (`android-acceptance-testing`, `android-screenshot-testing`, `android-ui-testing` deleted).
 
 ## Not yet specified
 
