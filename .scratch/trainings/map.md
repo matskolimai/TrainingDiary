@@ -33,48 +33,47 @@ system, navigation, testing) is settled, and each Android skill reflects the use
 
 ## Decisions so far
 
-- [Training product rules](issues/01-training-product-rules.md): trimmed name, blank = empty, duplicates allowed,
-  creation order, undo restores same identity, missing-on-edit navigates back.
-- [Prototype: Training list screen](issues/04-prototype-training-list.md): variant E — centred top bar, plural count,
-  separated 16dp-rounded rows with name + ⋮ (monogram later dropped), standard FAB, Edytuj/Usuń sheet, undo snackbar.
-- [Library landscape for the AGP 9.4 stack](issues/02-library-landscape.md): Nav3 1.2.1, Room 3.0.3, Koin 4.2.2, KSP
-  2.3.13, JUnit 6 via mannodermaus 2.0.2; Kotlin 2.2.10 must be bumped (≈2.4.21); stable Detekt doesn't support AGP 9
-  (alpha or defer).
-- [Prototype: Training form screen](issues/05-prototype-training-form.md): variant A — small top bar with ← and
-  „Nowy trening” / „Edytuj trening”, outlined „Nazwa” field, full-width filled „Zapisz” pinned above the keyboard;
+- [Training product rules](issues/wayfinding/01-training-product-rules.md): trimmed name, blank = empty, duplicates
+  allowed, creation order, undo restores same identity, missing-on-edit navigates back.
+- [Prototype: Training list screen](issues/wayfinding/04-prototype-training-list.md): variant E — centred top bar,
+  plural count, separated 16dp-rounded rows with name + ⋮ (monogram later dropped), standard FAB, Edytuj/Usuń sheet,
+  undo snackbar.
+- [Library landscape for the AGP 9.4 stack](issues/wayfinding/02-library-landscape.md): Nav3 1.2.1, Room 3.0.3, Koin
+  4.2.2, KSP 2.3.13, JUnit 6 via mannodermaus 2.0.2; Kotlin 2.2.10 must be bumped (≈2.4.21); stable Detekt doesn't
+  support AGP 9 (alpha or defer).
+- [Prototype: Training form screen](issues/wayfinding/05-prototype-training-form.md): variant A — small top bar with ←
+  and „Nowy trening” / „Edytuj trening”, outlined „Nazwa” field, full-width filled „Zapisz” pinned above the keyboard;
   autofocus in add mode only.
-- [Module structure and build-logic](issues/03-module-structure.md): 3 layer modules per feature + 4 core modules; JVM
-  domain;
-  Kotlin 2.4.21 / AGP 9.5.0 / BOM 2026.09; `convention.*` included-build plugins; ktlint + Detekt 2.0 alpha +
-  compose-rules;
-  `internal` by default; skill rewritten Android-only.
-- [Error handling](issues/06-error-handling.md): missing = `null`; blank name not an error; catch only named
+- [Module structure and build-logic](issues/wayfinding/03-module-structure.md): 3 layer modules per feature + 4 core
+  modules; JVM domain; Kotlin 2.4.21 / AGP 9.5.0 / BOM 2026.09; `convention.*` included-build plugins; ktlint + Detekt
+  2.0 alpha + compose-rules; `internal` by default; skill rewritten Android-only.
+- [Error handling](issues/wayfinding/06-error-handling.md): missing = `null`; blank name not an error; catch only named
   exceptions. Typed `Result` / exhaustive `toUiText()` are dormant (nothing produces an error yet); skill file
   unchanged.
-- [Data layer and backend-ready seam](issues/07-data-layer.md): `TrainingRepository` in domain, `internal`
+- [Data layer and backend-ready seam](issues/wayfinding/07-data-layer.md): `TrainingRepository` in domain, `internal`
   `RoomTrainingRepository`; writes return `Unit`, nothing caught; plain `Long` AUTOINCREMENT id; all Room in
   `:core:database` with `AndroidSQLiteDriver`; no ADR; skill rewritten.
-- [Dependency injection](issues/08-di-koin.md): Koin DSL only; one public `val` Koin module per Gradle module that
-  provides something; `startKoin` in `Application`, no logger; ViewModels take their Nav3 key via `parametersOf`;
+- [Dependency injection](issues/wayfinding/08-di-koin.md): Koin DSL only; one public `val` Koin module per Gradle module
+  that provides something; `startKoin` in `Application`, no logger; ViewModels take their Nav3 key via `parametersOf`;
   `verifyAll` JVM test in `:app`; skill rewritten.
-- [Presentation: MVI](issues/09-presentation-mvi.md): `TrainingList` / `TrainingEditor`; domain `Training` in State (no
-  UI model); sheet in State; events named by what happened; Root intercepts nav Actions; keyboard Done saves; no
-  `SavedStateHandle`; skill rewritten.
-- [Compose components and design system](issues/10-components-design-system.md): every component app-agnostic
+- [Presentation: MVI](issues/wayfinding/09-presentation-mvi.md): `TrainingList` / `TrainingEditor`; domain `Training` in
+  State (no UI model); sheet in State; events named by what happened; Root intercepts nav Actions; keyboard Done saves;
+  no `SavedStateHandle`; skill rewritten.
+- [Compose components and design system](issues/wayfinding/10-components-design-system.md): every component app-agnostic
   `App*` in `:core:design-system`; dark-only `AppTheme` on M3 defaults; `AppIcons` over icons-extended; `Spacing`
   object; `AppPreview`; feature M3 allowlist; row tap does nothing; skill rewritten.
-- [Navigation](issues/11-navigation.md): Nav3 1.2.1; public `<Screen>Key`s + `trainingsEntries(backStack)` (no Koin
-  entry DSL); `AppNavDisplay` in `:app`; `push`/`pop(key)` guards in `:core:presentation`; skill rewritten.
-- [Testing strategy](issues/12-unit-testing.md): acceptance tests are primary — domain-language cases → DSL → UI
-  driver → whole app with in-memory Room, on a Pixel 9 Gradle Managed Device; 12 cases; unit tests only for pure
-  many-input functions; Paparazzi 2.0.0-alpha5.1 snapshots every (now `internal`) preview; UI testing merged in;
-  skills rewritten (`android-acceptance-testing`, `android-screenshot-testing`, `android-ui-testing` deleted).
-- [Cross-cutting house style](issues/14-house-style.md): tools are the whole style guide — `ktlint_official` at
-  120 columns, Detekt as shipped plus Compose adaptations only; unenforced preferences listed for manual review; no
+- [Navigation](issues/wayfinding/11-navigation.md): Nav3 1.2.1; public `<Screen>Key`s + `trainingsEntries(backStack)`
+  (no Koin entry DSL); `AppNavDisplay` in `:app`; `push`/`pop(key)` guards in `:core:presentation`; skill rewritten.
+- [Testing strategy](issues/wayfinding/12-unit-testing.md): acceptance tests are primary — domain-language cases → DSL →
+  UI driver → whole app with in-memory Room, on a Pixel 9 Gradle Managed Device; 12 cases; unit tests only for pure
+  many-input functions; Paparazzi 2.0.0-alpha5.1 snapshots every (now `internal`) preview; UI testing merged in; skills
+  rewritten (`android-acceptance-testing`, `android-screenshot-testing`, `android-ui-testing` deleted).
+- [Cross-cutting house style](issues/wayfinding/14-house-style.md): tools are the whole style guide — `ktlint_official`
+  at 120 columns, Detekt as shipped plus Compose adaptations only; unenforced preferences listed for manual review; no
   style skill; `android-module-structure` Static analysis rewritten.
-- [Spec-to-ticket slicing order](issues/15-slicing-order.md): infrastructure just before it's needed, risk checks
-  (harness, Paparazzi) first with agreed fallbacks and one throwaway self-test each; behaviour slices S1–S7 with their
-  acceptance cases; one ticket per component; monogram dropped from the row.
+- [Spec-to-ticket slicing order](issues/wayfinding/15-slicing-order.md): infrastructure just before it's needed, risk
+  checks (harness, Paparazzi) first with agreed fallbacks and one throwaway self-test each; behaviour slices S1–S7 with
+  their acceptance cases; one ticket per component; monogram dropped from the row.
 
 ## Not yet specified
 
@@ -91,5 +90,5 @@ Nothing: every in-scope decision is settled.
 - Rewriting `android-error-handling`: this feature produces no typed error (see Data layer and backend-ready seam), so
   the rewrite waits for the first expected failure, likely a backend.
 - ViewModel-driven navigation: a reusable way for a ViewModel to navigate, replacing the Root-intercept plus Event
-  pattern from [Presentation: MVI](issues/09-presentation-mvi.md). This feature doesn't need it (see
-  [Navigation](issues/11-navigation.md)), so it waits for a later effort.
+  pattern from [Presentation: MVI](issues/wayfinding/09-presentation-mvi.md). This feature doesn't need it (see
+  [Navigation](issues/wayfinding/11-navigation.md)), so it waits for a later effort.
