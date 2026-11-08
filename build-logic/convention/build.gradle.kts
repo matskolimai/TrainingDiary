@@ -59,5 +59,9 @@ gradlePlugin {
             id = "convention.static-analysis"
             implementationClass = "StaticAnalysisConventionPlugin"
         }
+        register("paparazzi") {
+            id = "convention.paparazzi"
+            implementationClass = "PaparazziConventionPlugin"
+        }
     }
 }

@@ -157,11 +157,12 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 
 ### Toolchain and modules
 
-- Kotlin 2.4.21, KSP 2.3.13, AGP 9.5.0, Compose BOM 2026.09.00 (Compose 1.12.1), JVM target/toolchain 17. A single
-  `kotlin` catalog version for built-in Kotlin and `kotlin-jvm`. Never apply `kotlin-android`.
+- Kotlin 2.4.21, KSP 2.3.13, AGP 9.5.0, Compose BOM 2026.09.00 (Compose 1.12.1), JVM target/toolchain 17 (test
+  tasks in `convention.paparazzi` modules run on a JDK 21 launcher; see "Screenshot tests"). A single `kotlin` catalog
+  version for built-in Kotlin and `kotlin-jvm`. Never apply `kotlin-android`.
 - Libraries: Navigation 3 1.2.1, `lifecycle-viewmodel-navigation3` 2.11.0, Room 3.0.3 (`androidx.room3`) with KSP,
   Koin 4.2.2 (BOM), kotlinx-serialization, coroutines, `material-icons-extended`, JUnit 6 via mannodermaus plugin
-  2.0.2, Truth, Paparazzi 2.0.0-alpha5.1. Every coordinate in `libs.versions.toml`; BOMs where available.
+  2.0.2, Truth, Paparazzi 2.0.0-alpha05.1. Every coordinate in `libs.versions.toml`; BOMs where available.
 - Modules: `:app`, `:feature:trainings:domain` (pure Kotlin/JVM), `:feature:trainings:data`,
   `:feature:trainings:presentation`, `:core:presentation`, `:core:design-system`, `:core:database`. `:core:domain` is
   **not created** — nothing in this feature needs it (no `Result`/`DataError` is built); it appears with its first
@@ -374,8 +375,10 @@ Plus one JVM check of the DI graph (`verifyAll`), and unit tests only for pure f
 
 ### Screenshot tests
 
-- Paparazzi 2.0.0-alpha5.1 via `convention.paparazzi` (Paparazzi + JUnit 4 + vintage engine), only on modules with
+- Paparazzi 2.0.0-alpha05.1 via `convention.paparazzi` (Paparazzi + JUnit 4 + vintage engine), only on modules with
   screenshot tests. A test in the same module calls each preview directly, so previews are `internal`.
+- Paparazzi 2 is compiled for Java 21, so `convention.paparazzi` runs the module's test tasks (JUnit 6 ones included)
+  on a JDK 21 launcher, provisioned by foojay. Bytecode stays at target 17.
 - Previews: one per design-system component; per-State Screen previews named `<Screen>Preview<State>` with literal
   State.
 - One configuration: Pixel 9 (custom `DeviceConfig` if no constant), dark, `pl`, font scale 1.0. Reference images in

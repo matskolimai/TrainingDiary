@@ -22,6 +22,8 @@ ktlint = "1.8.0"
 ktlintGradle = "14.2.0"
 detekt = "2.0.0-alpha.6"
 composeRules = "0.6.8"
+paparazzi = "2.0.0-alpha05.1"
+junit4 = "4.13.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,6 +50,8 @@ junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api" }
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine" }
+junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 compose-rules-detekt = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "composeRules" }
 
@@ -71,3 +75,4 @@ room3 = { id = "androidx.room3", version.ref = "room3" }
 android-junit = { id = "de.mannodermaus.android-junit", version.ref = "androidJunit" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
+paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
