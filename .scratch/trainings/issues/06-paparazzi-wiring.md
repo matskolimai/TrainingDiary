@@ -15,6 +15,6 @@ Paparazzi alpha renders with AGP 9.5 / Compose 1.12. See the spec's "Screenshot 
 - [x] `check` runs `verifyPaparazziDebug`
 - [x] On failure, stop and report to the user: there is no agreed fallback
 
-Outcome: renders with AGP 9.5 / Compose 1.12 once the test JVM is Java 21 (Paparazzi 2 is class file 65); the user
-accepted that deviation. `DeviceConfig.PIXEL_9` exists, so no custom config. Default diff tolerance kept: a single
-changed diacritic passes `verifyPaparazziDebug`, a changed word fails it.
+Outcome: renders with AGP 9.5 / Compose 1.12 on Java 21 (Paparazzi 2 is class file 65), so the whole project moved
+from JVM target/toolchain 17 to 21. `DeviceConfig.PIXEL_9` exists, so no custom config. Default diff tolerance kept:
+a single changed diacritic passes `verifyPaparazziDebug`, a changed word fails it.

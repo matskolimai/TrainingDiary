@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
-private const val JVM_VERSION = 17
+private const val JVM_VERSION = 21
 
 // Opt out per module by setting `trainingdiary.allowCompilerWarnings=true` in the module's gradle.properties,
 // only for unfixable warnings from an experimental API.
