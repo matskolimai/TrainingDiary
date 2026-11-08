@@ -1,0 +1,7 @@
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+
+style:
+  UnusedPrivateFunction:
+    ignoreAnnotated: ['Preview']

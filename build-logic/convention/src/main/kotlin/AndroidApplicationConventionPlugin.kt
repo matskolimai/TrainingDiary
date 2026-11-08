@@ -17,6 +17,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 defaultConfig.targetSdk = libs.versionInt("android-targetSdk")
             }
             apply(plugin = "convention.testing")
+            apply(plugin = "convention.static-analysis")
         }
     }
 }

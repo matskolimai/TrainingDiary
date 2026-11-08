@@ -15,6 +15,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 configureAndroid(this)
             }
             apply(plugin = "convention.testing")
+            apply(plugin = "convention.static-analysis")
         }
     }
 }

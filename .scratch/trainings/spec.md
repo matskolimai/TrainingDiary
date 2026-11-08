@@ -181,11 +181,14 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 
 ### Static analysis and style
 
-- Tools are the whole style guide. Root `.editorconfig`: `ktlint_code_style = ktlint_official`, `max_line_length = 120`
-  (ktlint 1.8.0 via ktlint-gradle 14.2.0).
-- Detekt 2.0.0-alpha.6 (`dev.detekt`), `buildUponDefaultConfig`, `maxIssues: 0`, no baseline, plus compose-rules
-  `io.nlopez.compose.rules:detekt` 0.6.8. `config/detekt/detekt.yml` holds only Compose adaptations a composable
-  proves necessary (`FunctionNaming`, `LongParameterList` ignoring `@Composable`). No other rule toggled.
+- Tools are the whole style guide. Root `.editorconfig`: `ktlint_code_style = ktlint_official`, `max_line_length = 120`,
+  plus the one Compose adaptation `ktlint_function_naming_ignore_when_annotated_with = Composable` (ktlint 1.8.0 via
+  ktlint-gradle 14.2.0).
+- Detekt 2.0.0-alpha.6 (`dev.detekt`), `buildUponDefaultConfig`, no baseline, plus compose-rules
+  `io.nlopez.compose.rules:detekt` 0.6.8. Detekt 2 has no `maxIssues`; `failOnSeverity = Info` makes any finding fail.
+  `config/detekt/detekt.yml` holds only Compose adaptations a composable proves necessary: `FunctionNaming` ignoring
+  `@Composable` and `UnusedPrivateFunction` ignoring `@Preview` (the template's composables needed both);
+  `LongParameterList` ignoring `@Composable` when a composable trips it. No other rule toggled.
 - The gate runs the type-resolving `detektMain` / `detektTest` tasks. Backtick test names count toward 120 columns.
 - Versioned pre-commit hook running `ktlintCheck`, installed with `git config core.hooksPath config/git-hooks`.
 - Unenforced review preferences (expression bodies, `when` without `else` for sealed/enum, named literal arguments,

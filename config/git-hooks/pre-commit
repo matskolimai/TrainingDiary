@@ -1,0 +1,4 @@
+#!/bin/sh
+# Rejects the commit when ktlint finds a violation; `./gradlew ktlintFormat` fixes most of them.
+# Installed by `git config core.hooksPath config/git-hooks` (see README.md).
+exec ./gradlew ktlintCheck --quiet

@@ -11,6 +11,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
             apply(plugin = libs.pluginId("kotlin-jvm"))
             configureKotlinJvm()
             apply(plugin = "convention.testing")
+            apply(plugin = "convention.static-analysis")
         }
     }
 }

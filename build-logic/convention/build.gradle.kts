@@ -10,6 +10,8 @@ dependencies {
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.room3.gradlePlugin)
+    compileOnly(libs.ktlint.gradlePlugin)
+    compileOnly(libs.detekt.gradlePlugin)
 }
 
 tasks {
@@ -52,6 +54,10 @@ gradlePlugin {
         register("testing") {
             id = "convention.testing"
             implementationClass = "TestingConventionPlugin"
+        }
+        register("staticAnalysis") {
+            id = "convention.static-analysis"
+            implementationClass = "StaticAnalysisConventionPlugin"
         }
     }
 }

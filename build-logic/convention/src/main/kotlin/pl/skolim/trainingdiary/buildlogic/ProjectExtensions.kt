@@ -14,4 +14,6 @@ fun VersionCatalog.library(alias: String): Provider<MinimalExternalModuleDepende
 
 fun VersionCatalog.pluginId(alias: String): String = findPlugin(alias).get().get().pluginId
 
-fun VersionCatalog.versionInt(alias: String): Int = findVersion(alias).get().requiredVersion.toInt()
+fun VersionCatalog.version(alias: String): String = findVersion(alias).get().requiredVersion
+
+fun VersionCatalog.versionInt(alias: String): Int = version(alias).toInt()
