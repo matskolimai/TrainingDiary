@@ -24,6 +24,12 @@ android {
 }
 
 dependencies {
+    implementation(projects.feature.trainings.domain)
+    implementation(projects.feature.trainings.data)
+    implementation(projects.feature.trainings.presentation)
+    implementation(projects.core.presentation)
+    implementation(projects.core.designSystem)
+    implementation(projects.core.database)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)

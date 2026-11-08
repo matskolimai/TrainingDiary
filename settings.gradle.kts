@@ -27,4 +27,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "TrainingDiary"
 include(":app")
- 
+include(":feature:trainings:domain")
+include(":feature:trainings:data")
+include(":feature:trainings:presentation")
+include(":core:presentation")
+include(":core:design-system")
+include(":core:database")
