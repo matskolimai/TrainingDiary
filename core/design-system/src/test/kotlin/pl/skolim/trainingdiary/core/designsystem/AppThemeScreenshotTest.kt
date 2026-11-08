@@ -6,7 +6,7 @@ import com.android.resources.NightMode
 import org.junit.Rule
 import org.junit.Test
 
-class PaparazziWiringScreenshotTest {
+class AppThemeScreenshotTest {
     @get:Rule
     val paparazzi =
         Paparazzi(
@@ -14,5 +14,5 @@ class PaparazziWiringScreenshotTest {
         )
 
     @Test
-    fun wiring() = paparazzi.snapshot { PaparazziWiringPreview() }
+    fun theme() = paparazzi.snapshot { AppThemePreview() }
 }
