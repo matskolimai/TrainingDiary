@@ -341,7 +341,7 @@ There are two seams, both already agreed in the Testing strategy ticket:
 2. **Previews** (visual). Every preview in `:core:design-system` and `:feature:trainings:presentation` is snapshotted
    with Paparazzi.
 
-Plus one JVM check of the DI graph (`verifyAll`), and unit tests only for pure functions with many inputs.
+Plus one JVM check of the DI graph (Koin `verify`), and unit tests only for pure functions with many inputs.
 
 ### Acceptance tests (primary suite)
 
@@ -385,7 +385,8 @@ Plus one JVM check of the DI graph (`verifyAll`), and unit tests only for pure f
 
 ### Other tests
 
-- `KoinModulesTest` in `:app` JVM tests: `verifyAll` with `extraTypes = listOf(Context::class)` and an
+- `KoinModulesTest` in `:app` JVM tests: `verify` on `module { includes(appModules) }` (Koin's `verifyAll` checks
+  each module alone, so cross-module bindings fail) with `extraTypes = listOf(Context::class)` and an
   `injectedParameters` entry for `TrainingEditorViewModel` ← `TrainingEditorKey`. Every new `parametersOf` type gets an
   entry.
 - Unit tests (JUnit 6 + Truth, no Turbine, no MockK) only for pure functions with many inputs, written with

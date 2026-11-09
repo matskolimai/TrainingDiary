@@ -2,5 +2,5 @@ package pl.skolim.trainingdiary.acceptance.driver
 
 import android.app.Application
 
-/** Starts nothing itself, so each test can set up the app's graph with its own overrides. */
+// Starts no Koin itself; InMemoryAppExtension starts the app's graph with test overrides before each test.
 class AcceptanceTestApplication : Application()

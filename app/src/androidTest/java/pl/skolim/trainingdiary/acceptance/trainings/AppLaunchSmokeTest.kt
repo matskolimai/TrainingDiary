@@ -5,12 +5,15 @@ import androidx.compose.ui.test.isRoot
 import com.google.common.truth.Truth.assertThat
 import de.mannodermaus.junit5.compose.createAndroidComposeExtension
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.RegisterExtension
 import pl.skolim.trainingdiary.MainActivity
 import pl.skolim.trainingdiary.acceptance.driver.AcceptanceTestApplication
+import pl.skolim.trainingdiary.acceptance.driver.InMemoryAppExtension
 
 // Throwaway harness check; ticket 12 replaces it with the first acceptance case.
 @OptIn(ExperimentalTestApi::class)
+@ExtendWith(InMemoryAppExtension::class)
 class AppLaunchSmokeTest {
     @JvmField
     @RegisterExtension

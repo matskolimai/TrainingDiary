@@ -1,6 +1,7 @@
 plugins {
     id("convention.android.library")
     id("convention.android.room")
+    id("convention.koin")
 }
 
 android {

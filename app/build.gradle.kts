@@ -1,6 +1,7 @@
 plugins {
     id("convention.android.application")
     id("convention.android.compose")
+    id("convention.koin")
 }
 
 android {
@@ -36,5 +37,14 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.koin.android)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    testImplementation(libs.koin.test)
+
+    // The in-memory database the acceptance tests swap in.
+    androidTestImplementation(libs.androidx.room3.runtime)
 }

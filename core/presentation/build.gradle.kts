@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "pl.skolim.trainingdiary.core.presentation"
 }
+
+dependencies {
+    implementation(libs.androidx.navigation3.runtime)
+}
