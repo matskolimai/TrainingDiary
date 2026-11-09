@@ -8,7 +8,6 @@
       "CronList",
       "EnterPlanMode",
       "ExitPlanMode",
-      "PushNotification",
       "RemoteTrigger",
       "ReportFindings",
       "ScheduleWakeup",
