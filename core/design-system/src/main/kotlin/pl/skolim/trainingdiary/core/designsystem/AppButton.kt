@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 /** A 56dp-high, fully rounded filled button labelled [text]. Its width comes from [modifier]. */
 @Composable
@@ -22,7 +21,7 @@ fun AppButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.height(56.dp),
+        modifier = modifier.height(Sizes.buttonHeight),
         enabled = enabled,
         shape = CircleShape,
     ) {
