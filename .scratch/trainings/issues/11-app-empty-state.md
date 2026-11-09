@@ -4,10 +4,10 @@
 
 **Blocked by:** 07 (Design-system foundation)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `AppEmptyState`: centred, dimmed 64dp icon, headline (22sp, `onSurface`) and body (14sp, `onSurfaceVariant`);
+- [x] `AppEmptyState`: centred, dimmed 64dp icon, headline (22sp, `onSurface`) and body (14sp, `onSurfaceVariant`);
       icon and texts are parameters
-- [ ] Built from `Surface` / `Column`, not an M3 counterpart
-- [ ] App-agnostic and public; one `internal` preview through `AppPreview`, snapshotted; reference image committed
-- [ ] `./gradlew check` is green
+- [x] Built from `Surface` / `Column`, not an M3 counterpart
+- [x] App-agnostic and public; one `internal` preview through `AppPreview`, snapshotted; reference image committed
+- [x] `./gradlew check` is green
