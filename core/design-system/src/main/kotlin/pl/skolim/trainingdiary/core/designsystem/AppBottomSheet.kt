@@ -2,8 +2,10 @@
 
 package pl.skolim.trainingdiary.core.designsystem
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,9 +69,11 @@ private fun AppBottomSheetExpanded(
 @Composable
 internal fun AppBottomSheetPreview() {
     AppPreview {
-        AppBottomSheetExpanded {
-            AppSheetItem(icon = AppIcons.Edit, text = "Edit", onClick = {})
-            AppSheetItem(icon = AppIcons.Delete, text = "Delete", onClick = {})
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            AppBottomSheetExpanded {
+                AppSheetItem(icon = AppIcons.Edit, text = "Edit", onClick = {})
+                AppSheetItem(icon = AppIcons.Delete, text = "Delete", onClick = {})
+            }
         }
     }
 }
