@@ -1,10 +1,8 @@
 package pl.skolim.trainingdiary.core.designsystem
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -17,15 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
-/**
- * The screen frame: [topBar] at the top, [fab] in the bottom-end corner and snackbars from [snackbarHostState] at the
- * bottom. A shown snackbar pushes the FAB up above it.
- */
+/** The screen frame: [topBar] at the top, [fab] in the bottom-end corner and snackbars from [snackbarHostState]. */
 @Composable
 fun AppScaffold(
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
-    fab: (@Composable () -> Unit)? = null,
+    fab: @Composable () -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -38,29 +33,20 @@ fun AppScaffold(
     )
 }
 
-/** [AppScaffold] with the snackbar as a slot, so a preview can show a snackbar without a running host. */
+/** [AppScaffold] with the snackbar as a slot, so the preview can show a snackbar without a running host. */
 @Composable
-internal fun AppScaffold(
+private fun AppScaffold(
     snackbar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
-    fab: (@Composable () -> Unit)? = null,
+    fab: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = topBar,
-        // M3 places the snackbar above the FAB; stacking both in the snackbar slot puts the FAB above instead.
-        snackbarHost = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                if (fab != null) {
-                    Box(modifier = Modifier.align(Alignment.End).padding(Spacing.large)) {
-                        fab()
-                    }
-                }
-                snackbar()
-            }
-        },
+        snackbarHost = snackbar,
+        floatingActionButton = fab,
         content = content,
     )
 }

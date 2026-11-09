@@ -112,7 +112,8 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 39. As the user, I want „Cofnij” to restore the Training in its original position, so that undo really undoes.
 40. As the user, I want only my latest delete to be undoable, with an older snackbar replaced by the newer one, so that
     undo is never ambiguous.
-41. As the user, I want the FAB to move up while the snackbar is shown, so that the snackbar never hides it.
+41. As the user, I want the FAB to stay in place while the snackbar is shown, so that nothing jumps; the snackbar is
+    brief.
 
 ### Look and language
 
@@ -164,7 +165,8 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
   Koin 4.2.2 (BOM), kotlinx-serialization, coroutines, `material-icons-extended`, JUnit 6 via mannodermaus plugin
   2.0.2, Truth, Paparazzi 2.0.0-alpha05.1. Every coordinate in `libs.versions.toml`; BOMs where available.
 - Modules: `:app`, `:feature:trainings:domain` (pure Kotlin/JVM), `:feature:trainings:data`,
-  `:feature:trainings:presentation`, `:core:presentation`, `:core:design-system`, `:core:database`. `:core:domain` is
+  `:feature:trainings:presentation`, `:core:presentation`, `:core:design-system`, `:core:database`,
+  `:core:screenshot-testing` (JVM, the shared Paparazzi rule). `:core:domain` is
   **not created** — nothing in this feature needs it (no `Result`/`DataError` is built); it appears with its first
   content. No `:core:data` until a remote API exists. Features never depend on each other.
 - Namespace and package equal the module path under `pl.skolim.trainingdiary`. Type-safe project accessors on.
@@ -307,8 +309,9 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
   start, hidden when empty. List horizontal padding 16dp, 12dp between rows, bottom padding leaving room for the FAB.
   Row: `surfaceContainer`, 16dp corners, min height 64dp, padding 16dp start / 4dp end; name bodyLarge `onSurface`,
   wrapping; trailing 48dp `more_vert` in `onSurfaceVariant` („Więcej opcji”). FAB: standard 56dp, 16dp corners,
-  `primaryContainer`, `add` („Dodaj trening”), 16dp margin, moves above the snackbar. Sheet: modal,
-  `surfaceContainerLow`, 28dp top corners, drag handle, two 56dp items `edit` „Edytuj” and `delete` „Usuń”, no title.
+  `primaryContainer`, `add` („Dodaj trening”), 16dp margin, stays in place when a snackbar shows (standard M3).
+  Sheet: modal, `surfaceContainerLow`, 28dp top corners, drag handle, two 56dp items `edit` „Edytuj” and `delete`
+  „Usuń”, no title.
   Snackbar: standard M3, default duration. Empty state: centred, dimmed 64dp `fitness_center`, „Brak treningów”
   (22sp `onSurface`), „Dodaj pierwszy trening przyciskiem +” (14sp `onSurfaceVariant`).
 - **Editor**: small top bar, ← („Wstecz”), title „Nowy trening” / „Edytuj trening”, no actions. One outlined
@@ -376,7 +379,8 @@ Plus one JVM check of the DI graph (Koin `verify`), and unit tests only for pure
 ### Screenshot tests
 
 - Paparazzi 2.0.0-alpha05.1 via `convention.paparazzi` (Paparazzi + JUnit 4 + vintage engine), only on modules with
-  screenshot tests. A test in the same module calls each preview directly, so previews are `internal`.
+  screenshot tests; it also adds `:core:screenshot-testing`, whose `appPaparazzi()` is the one rule every test uses.
+  A test in the same module calls each preview directly, so previews are `internal`.
 - Previews: one per design-system component; per-State Screen previews named `<Screen>Preview<State>` with literal
   State.
 - One configuration: Pixel 9 (custom `DeviceConfig` if no constant), dark, `pl`, font scale 1.0. Reference images in

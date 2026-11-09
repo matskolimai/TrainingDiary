@@ -12,6 +12,6 @@ stories 37, 38 and 41.
 - [ ] The ViewModel deletes the Training, keeps it, and emits `TrainingDeleted(name)`
 - [ ] The list Root owns `SnackbarHostState`, passed through `AppScaffold`, and dismisses the current snackbar before
       showing a new one
-- [ ] The FAB moves above the snackbar
+- [ ] The FAB stays in place when the snackbar shows (standard M3 `Scaffold`)
 - [ ] Polish strings for the message and „Cofnij”
 - [ ] `./gradlew check` and the managed-device test task are green
