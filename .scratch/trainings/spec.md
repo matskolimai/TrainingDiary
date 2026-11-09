@@ -310,7 +310,7 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 - **List**: centred top bar „Treningi” (titleLarge). Count label titleSmall in `primary`, padding 16dp top / 32dp
   start, hidden when empty. List horizontal padding 16dp, 12dp between rows, bottom padding leaving room for the FAB.
   Row: `surfaceContainer`, 16dp corners, min height 64dp, padding 16dp start / 4dp end; name bodyLarge `onSurface`,
-  wrapping; trailing 48dp `more_vert` in `onSurfaceVariant` („Więcej opcji”). FAB: standard 56dp, 16dp corners,
+  wrapping; trailing 48dp `more_vert` in `onSurface` („Więcej opcji”). FAB: standard 56dp, 16dp corners,
   `primaryContainer`, `add` („Dodaj trening”), 16dp margin, stays in place when a snackbar shows (standard M3).
   Sheet: modal, `surfaceContainerLow`, 28dp top corners, drag handle, two 56dp items `edit` „Edytuj” and `delete`
   „Usuń”, no title.
