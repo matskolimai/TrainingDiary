@@ -5,10 +5,10 @@ details".
 
 **Blocked by:** 07 (Design-system foundation)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `AppBottomSheet` wrapping the M3 modal bottom sheet: `surfaceContainerLow`, 28dp top corners, drag handle,
+- [x] `AppBottomSheet` wrapping the M3 modal bottom sheet: `surfaceContainerLow`, 28dp top corners, drag handle,
       content slot and dismiss callback; no title
-- [ ] `AppSheetItem`: a 56dp item with a leading icon, text and click callback
-- [ ] App-agnostic and public; `internal` previews through `AppPreview`, snapshotted; reference images committed
-- [ ] `./gradlew check` is green
+- [x] `AppSheetItem`: a 56dp item with a leading icon, text and click callback
+- [x] App-agnostic and public; `internal` previews through `AppPreview`, snapshotted; reference images committed
+- [x] `./gradlew check` is green
