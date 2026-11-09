@@ -32,8 +32,12 @@ class TrainingsUiDriver(
 
     fun assertEmptyEditorForAdding() {
         compose.onNodeWithText(resources.getString(R.string.training_editor_title_add)).assertIsDisplayed()
+        compose.onNode(nameField() and hasNoInput()).assertIsDisplayed()
+    }
+
+    fun assertNameFieldFocused() {
         // The field is focused by an effect after the first frame, so wait for it rather than assert at once.
-        compose.waitUntilExactlyOneExists(nameField() and hasNoInput() and isFocused())
+        compose.waitUntilExactlyOneExists(nameField() and isFocused())
     }
 
     fun typeName(name: String) {

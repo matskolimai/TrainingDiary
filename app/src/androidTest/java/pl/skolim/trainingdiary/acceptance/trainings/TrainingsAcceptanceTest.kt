@@ -28,6 +28,7 @@ class TrainingsAcceptanceTest {
         trainings {
             openNewTrainingScreen()
             assertNewTrainingScreenIsEmpty()
+            assertNameReadyToType()
         }
 
     @Test

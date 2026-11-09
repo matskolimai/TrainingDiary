@@ -11,6 +11,8 @@ class TrainingsDsl(
 
     fun assertNewTrainingScreenIsEmpty() = driver.assertEmptyEditorForAdding()
 
+    fun assertNameReadyToType() = driver.assertNameFieldFocused()
+
     fun enterName(name: String) = driver.typeName(name)
 
     fun leaveWithoutSaving() = driver.leaveEditor()
