@@ -6,4 +6,5 @@ import androidx.compose.ui.unit.dp
 object Sizes {
     val buttonHeight = 56.dp
     val iconBig = 64.dp
+    val listItemHeight = 56.dp
 }
