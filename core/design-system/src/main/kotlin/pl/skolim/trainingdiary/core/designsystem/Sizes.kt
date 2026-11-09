@@ -7,4 +7,5 @@ object Sizes {
     val buttonHeight = 56.dp
     val iconBig = 64.dp
     val listRowMinHeight = 64.dp
+    val sheetItemHeight = 56.dp
 }
