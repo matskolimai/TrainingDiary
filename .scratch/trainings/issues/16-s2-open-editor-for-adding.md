@@ -13,7 +13,7 @@ keyboard open; ← or system back returns to the list with nothing changed. Savi
 - [x] The list Root intercepts `OnAddClick` and pushes `TrainingEditorKey()` through the `push` guard
 - [x] `TrainingEditor` Root and Screen wired for `TrainingEditorKey`; `TrainingEditorViewModel(key, repository)`
       obtained with `koinViewModel { parametersOf(key) }`; `KoinModulesTest` gets the matching injected-parameters
-      entry (the ViewModel is internal, so the test finds it by name next to `TrainingEditorKey`)
+      entry
 - [x] Editor state `name`, `isEditMode`, `isLoading`, `isSaving`; `OnNameChange` updates the name; nothing in `init`
 - [x] „Nazwa” field, and a disabled „Zapisz” pinned to the bottom above the keyboard (`imePadding`)
 - [x] Add mode autofocuses the field (a Compose-internal effect)

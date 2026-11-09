@@ -24,16 +24,16 @@ class TrainingsAcceptanceTest {
         }
 
     @Test
-    fun `starting to add shows a new training with an empty name`() =
+    fun `opening the new training screen shows an empty name ready to type`() =
         trainings {
-            startAdding()
-            assertNewTrainingWithEmptyName()
+            openNewTrainingScreen()
+            assertNewTrainingScreenIsEmpty()
         }
 
     @Test
-    fun `leaving a new training without saving changes nothing`() =
+    fun `leaving the new training screen without saving changes nothing`() =
         trainings {
-            startAdding()
+            openNewTrainingScreen()
             enterName("Push day")
             leaveWithoutSaving()
             assertNoTrainings()

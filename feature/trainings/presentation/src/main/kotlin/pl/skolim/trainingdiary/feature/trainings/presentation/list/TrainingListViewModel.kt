@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import pl.skolim.trainingdiary.feature.trainings.domain.TrainingRepository
 
-internal class TrainingListViewModel(
+class TrainingListViewModel(
     repository: TrainingRepository,
 ) : ViewModel() {
     val state: StateFlow<TrainingListState> =

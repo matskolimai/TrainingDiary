@@ -10,7 +10,7 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 
 // The repository starts saving in ticket 18 and loading in ticket 21.
 @Suppress("UnusedPrivateProperty")
-internal class TrainingEditorViewModel(
+class TrainingEditorViewModel(
     key: TrainingEditorKey,
     private val repository: TrainingRepository,
 ) : ViewModel() {

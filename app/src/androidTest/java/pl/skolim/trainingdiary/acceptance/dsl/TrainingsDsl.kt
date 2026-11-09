@@ -7,9 +7,9 @@ class TrainingsDsl(
 ) {
     fun assertNoTrainings() = driver.assertEmptyList()
 
-    fun startAdding() = driver.openEditorForAdding()
+    fun openNewTrainingScreen() = driver.openEditorForAdding()
 
-    fun assertNewTrainingWithEmptyName() = driver.assertEmptyEditorForAdding()
+    fun assertNewTrainingScreenIsEmpty() = driver.assertEmptyEditorForAdding()
 
     fun enterName(name: String) = driver.typeName(name)
 

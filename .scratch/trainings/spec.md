@@ -179,7 +179,8 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 - Compiler: `allWarningsAsErrors = true` with a per-module Gradle-property opt-out for unfixable experimental-API
   warnings; `@OptIn` at the use site.
 - Visibility: `data` and `presentation` are `internal` by default. Their public surface is the Koin module `val`, the
-  Nav3 keys and the entries function. Domain types are public. Explicit API mode off.
+  Nav3 keys, the entries function and each ViewModel with its State and Action (so `KoinModulesTest` in `:app` can
+  name the ViewModel). Domain types are public. Explicit API mode off.
 - The template's `ui/theme` (`Color.kt`, `Type.kt`, light scheme) and `Example*` tests are deleted.
 
 ### Static analysis and style
@@ -229,7 +230,8 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 ### Dependency injection (Koin)
 
 - Koin DSL only, no annotations. One public top-level `val` Koin module per Gradle module that provides something:
-  `coreDatabaseModule`, `trainingsDataModule`, `trainingsPresentationModule`. Everything they bind stays `internal`.
+  `coreDatabaseModule`, `trainingsDataModule`, `trainingsPresentationModule`. Everything they bind stays `internal`,
+  except ViewModels, which are public.
 - `singleOf` / `viewModelOf` by default, binding via `{ bind<Interface>() }`; lambdas only for the Room builder and DAO
   accessors; no `factory`.
 - `startKoin { androidContext(...); modules(appModules) }` in `TrainingDiaryApp : Application`; no logger. `:app`
