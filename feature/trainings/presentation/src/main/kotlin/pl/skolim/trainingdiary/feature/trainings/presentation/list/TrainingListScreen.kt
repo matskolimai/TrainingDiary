@@ -18,9 +18,20 @@ import pl.skolim.trainingdiary.core.designsystem.AppTopBar
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 
 @Composable
-internal fun TrainingListRoot(viewModel: TrainingListViewModel = koinViewModel()) {
+internal fun TrainingListRoot(
+    onAddTraining: () -> Unit,
+    viewModel: TrainingListViewModel = koinViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    TrainingListScreen(state = state, onAction = viewModel::onAction)
+    TrainingListScreen(
+        state = state,
+        onAction = { action ->
+            when (action) {
+                TrainingListAction.OnAddClick -> onAddTraining()
+            }
+            viewModel.onAction(action)
+        },
+    )
 }
 
 @Composable

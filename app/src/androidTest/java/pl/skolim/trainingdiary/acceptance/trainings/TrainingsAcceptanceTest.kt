@@ -23,6 +23,22 @@ class TrainingsAcceptanceTest {
             assertNoTrainings()
         }
 
+    @Test
+    fun `starting to add shows a new training with an empty name`() =
+        trainings {
+            startAdding()
+            assertNewTrainingWithEmptyName()
+        }
+
+    @Test
+    fun `leaving a new training without saving changes nothing`() =
+        trainings {
+            startAdding()
+            enterName("Push day")
+            leaveWithoutSaving()
+            assertNoTrainings()
+        }
+
     private fun trainings(steps: TrainingsDsl.() -> Unit) =
         compose.use {
             TrainingsDsl(TrainingsUiDriver(compose = this, resources = compose.activity.resources)).steps()
