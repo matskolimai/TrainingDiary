@@ -6,18 +6,18 @@ runs against a fresh in-memory database. Scaffolding: nothing new is visible. Se
 
 **Blocked by:** 05 (Acceptance-test harness), 07 (Design-system foundation), 08 (Database + repository)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `TrainingDiaryApp : Application` calls `startKoin { androidContext(...); modules(appModules) }` with no logger;
+- [x] `TrainingDiaryApp : Application` calls `startKoin { androidContext(...); modules(appModules) }` with no logger;
       `:app` exposes `appModules`
-- [ ] Public Koin module `val`s: `coreDatabaseModule` (the database with `AndroidSQLiteDriver`, and the DAO),
+- [x] Public Koin module `val`s: `coreDatabaseModule` (the database with `AndroidSQLiteDriver`, and the DAO),
       `trainingsDataModule` (binds the repository) and `trainingsPresentationModule` (empty until a ViewModel exists)
-- [ ] Public keys `TrainingListKey` and `TrainingEditorKey(trainingId: Long? = null)`, and an empty public
+- [x] Public keys `TrainingListKey` and `TrainingEditorKey(trainingId: Long? = null)`, and an empty public
       `trainingsEntries(backStack)`
-- [ ] `AppNavDisplay` in `:app`, called from `MainActivity` inside `AppTheme`, with
+- [x] `AppNavDisplay` in `:app`, called from `MainActivity` inside `AppTheme`, with
       `rememberNavBackStack(TrainingListKey)`, `onBack = removeLastOrNull` and both entry decorators
-- [ ] `push(key)` / `pop(key)` back-stack guards in `:core:presentation` (no unit tests, per the spec)
-- [ ] `KoinModulesTest` in `:app` JVM tests runs `verifyAll` with `Context` as an extra type
-- [ ] The harness's JUnit extension starts Koin with `appModules` + an in-memory database override before each test
+- [x] `push(key)` / `pop(key)` back-stack guards in `:core:presentation` (no unit tests, per the spec)
+- [x] `KoinModulesTest` in `:app` JVM tests runs `verifyAll` with `Context` as an extra type
+- [x] The harness's JUnit extension starts Koin with `appModules` + an in-memory database override before each test
       and stops it after; `AcceptanceTestApplication` doesn't start Koin itself; the smoke test stays green
-- [ ] `./gradlew check` and the managed-device test task are green; the app launches
+- [x] `./gradlew check` and the managed-device test task are green; the app launches
