@@ -1,28 +1,30 @@
 package pl.skolim.trainingdiary.acceptance.trainings
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.isRoot
-import com.google.common.truth.Truth.assertThat
 import de.mannodermaus.junit5.compose.createAndroidComposeExtension
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.RegisterExtension
 import pl.skolim.trainingdiary.MainActivity
-import pl.skolim.trainingdiary.acceptance.driver.AcceptanceTestApplication
 import pl.skolim.trainingdiary.acceptance.driver.InMemoryAppExtension
+import pl.skolim.trainingdiary.acceptance.driver.TrainingsUiDriver
+import pl.skolim.trainingdiary.acceptance.dsl.TrainingsDsl
 
-// Throwaway harness check; ticket 12 replaces it with the first acceptance case.
 @OptIn(ExperimentalTestApi::class)
 @ExtendWith(InMemoryAppExtension::class)
-class AppLaunchSmokeTest {
+class TrainingsAcceptanceTest {
     @JvmField
     @RegisterExtension
     val compose = createAndroidComposeExtension<MainActivity>()
 
     @Test
-    fun `the app launches under the acceptance test application`() =
+    fun `first launch shows that there are no trainings`() =
+        trainings {
+            assertNoTrainings()
+        }
+
+    private fun trainings(steps: TrainingsDsl.() -> Unit) =
         compose.use {
-            waitUntilExactlyOneExists(isRoot())
-            assertThat(compose.activity.application).isInstanceOf(AcceptanceTestApplication::class.java)
+            TrainingsDsl(TrainingsUiDriver(compose = this, resources = compose.activity.resources)).steps()
         }
 }
