@@ -5,12 +5,12 @@ the spec's "Design system" and "Visual details".
 
 **Blocked by:** 07 (Design-system foundation)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `AppScaffold` wrapping the M3 scaffold, with parameters for the top bar, FAB and snackbar host (the FAB moves
+- [x] `AppScaffold` wrapping the M3 scaffold, with parameters for the top bar, FAB and snackbar host (the FAB moves
       above a shown snackbar)
-- [ ] `AppTopBar`: centre-aligned top bar with a title
-- [ ] `AppFab`: standard 56dp, 16dp corners, `primaryContainer`, with icon and content-description parameters
-- [ ] App-agnostic and public, no app strings; one `internal` preview each through `AppPreview`
-- [ ] Snapshot tests for every preview; reference images committed
-- [ ] `./gradlew check` is green
+- [x] `AppTopBar`: centre-aligned top bar with a title
+- [x] `AppFab`: standard 56dp, 16dp corners, `primaryContainer`, with icon and content-description parameters
+- [x] App-agnostic and public, no app strings; one `internal` preview each through `AppPreview`
+- [x] Snapshot tests for every preview; reference images committed
+- [x] `./gradlew check` is green
