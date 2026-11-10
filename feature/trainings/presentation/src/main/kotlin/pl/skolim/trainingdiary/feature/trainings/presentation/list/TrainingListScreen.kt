@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,10 +53,12 @@ internal fun TrainingListRoot(
                 scope.launch {
                     // showSnackbar queues, so a newer delete replaces the shown snackbar instead of waiting behind it.
                     snackbarHostState.currentSnackbarData?.dismiss()
-                    snackbarHostState.showSnackbar(
-                        message = resources.getString(R.string.training_list_deleted, event.name),
-                        actionLabel = resources.getString(R.string.training_list_undo),
-                    )
+                    val result =
+                        snackbarHostState.showSnackbar(
+                            message = resources.getString(R.string.training_list_deleted, event.name),
+                            actionLabel = resources.getString(R.string.training_list_undo),
+                        )
+                    if (result == SnackbarResult.ActionPerformed) viewModel.onAction(TrainingListAction.OnUndoClick)
                 }
             }
         }
@@ -73,6 +76,7 @@ internal fun TrainingListRoot(
                 is TrainingListAction.OnOptionsClick,
                 TrainingListAction.OnOptionsDismiss,
                 is TrainingListAction.OnDeleteClick,
+                TrainingListAction.OnUndoClick,
                 -> Unit
             }
             viewModel.onAction(action)

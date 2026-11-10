@@ -36,6 +36,7 @@ class TrainingListViewModel(
             TrainingListAction.OnOptionsDismiss -> optionsSheetTrainingId.value = null
             is TrainingListAction.OnEditClick -> optionsSheetTrainingId.value = null
             is TrainingListAction.OnDeleteClick -> delete(action.trainingId)
+            TrainingListAction.OnUndoClick -> undo()
             TrainingListAction.OnAddClick -> Unit
         }
     }
@@ -48,6 +49,12 @@ class TrainingListViewModel(
             deletedTraining = training
             _events.send(TrainingListEvent.TrainingDeleted(training.name))
         }
+    }
+
+    private fun undo() {
+        val training = deletedTraining ?: return
+        deletedTraining = null
+        viewModelScope.launch { repository.restoreTraining(training) }
     }
 }
 

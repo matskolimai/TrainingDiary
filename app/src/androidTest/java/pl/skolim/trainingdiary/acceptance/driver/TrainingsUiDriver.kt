@@ -86,6 +86,11 @@ class TrainingsUiDriver(
         compose.onNode(undoAction()).assertIsDisplayed()
     }
 
+    fun undoDelete() {
+        compose.waitUntilExactlyOneExists(undoAction())
+        compose.onNode(undoAction()).performClick()
+    }
+
     fun assertEditorForEditing(name: String) {
         compose.onNodeWithText(resources.getString(R.string.training_editor_title_edit)).assertIsDisplayed()
         compose.onNode(nameField() and hasInput(name)).assertIsDisplayed()

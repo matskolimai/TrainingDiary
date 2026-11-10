@@ -7,10 +7,10 @@ latest delete can be undone. See the spec's "Product rules" and user stories 39 
 
 **Status:** ready-for-agent
 
-- [ ] Written test-first: acceptance cases 7 "Undo restores it in its original position" and 8 "Only the latest
+- [x] Written test-first: acceptance cases 7 "Undo restores it in its original position" and 8 "Only the latest
       delete can be undone"
-- [ ] `ActionPerformed` sends `OnUndoClick`; the ViewModel calls `restoreTraining` with the kept Training (its
+- [x] `ActionPerformed` sends `OnUndoClick`; the ViewModel calls `restoreTraining` with the kept Training (its
       original id)
-- [ ] A newer delete replaces the kept Training, so an older one can no longer be restored
-- [ ] The pending undo isn't saved across process death
-- [ ] `./gradlew check` and the managed-device test task are green
+- [x] A newer delete replaces the kept Training, so an older one can no longer be restored
+- [x] The pending undo isn't saved across process death
+- [x] `./gradlew check` and the managed-device test task are green

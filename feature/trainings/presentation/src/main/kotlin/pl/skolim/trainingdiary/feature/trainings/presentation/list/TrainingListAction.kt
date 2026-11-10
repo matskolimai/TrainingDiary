@@ -16,4 +16,6 @@ sealed interface TrainingListAction {
     data class OnDeleteClick(
         val trainingId: Long,
     ) : TrainingListAction
+
+    data object OnUndoClick : TrainingListAction
 }

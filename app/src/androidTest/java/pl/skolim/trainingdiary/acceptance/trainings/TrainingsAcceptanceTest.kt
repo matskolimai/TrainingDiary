@@ -109,6 +109,26 @@ class TrainingsAcceptanceTest {
             assertUndoOffered("Nogi")
         }
 
+    @Test
+    fun `undoing a delete puts the training back in its place`() =
+        trainings {
+            givenTrainings("Push day", "Nogi", "Plecy")
+            delete("Nogi")
+            undoDelete()
+            assertTrainingsListed("Push day", "Nogi", "Plecy")
+        }
+
+    @Test
+    fun `only the latest delete can be undone`() =
+        trainings {
+            givenTrainings("Push day", "Nogi", "Plecy")
+            delete("Nogi")
+            delete("Plecy")
+            assertUndoOffered("Plecy")
+            undoDelete()
+            assertTrainingsListed("Push day", "Plecy")
+        }
+
     private fun trainings(steps: TrainingsDsl.() -> Unit) =
         compose.use {
             TrainingsDsl(TrainingsUiDriver(compose = this, resources = compose.activity.resources)).steps()

@@ -38,4 +38,6 @@ class TrainingsDsl(
     fun delete(name: String) = driver.deleteTraining(name)
 
     fun assertUndoOffered(name: String) = driver.assertUndoDeleteOffered(name)
+
+    fun undoDelete() = driver.undoDelete()
 }
