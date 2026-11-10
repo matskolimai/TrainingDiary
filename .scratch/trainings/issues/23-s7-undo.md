@@ -5,7 +5,7 @@ latest delete can be undone. See the spec's "Product rules" and user stories 39 
 
 **Blocked by:** 22 (S6 Delete)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Written test-first: acceptance cases 7 "Undo restores it in its original position" and 8 "Only the latest
       delete can be undone"

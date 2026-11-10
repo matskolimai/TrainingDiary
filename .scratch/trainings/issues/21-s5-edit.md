@@ -7,7 +7,7 @@ Training is missing, the editor closes. „Usuń” does nothing yet. See the sp
 
 **Blocked by:** 19 (S4 Top-bar count), 20 (AppBottomSheet + AppSheetItem)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Written test-first: acceptance cases 12 "Starting to edit opens the editor titled „Edytuj trening” with the
       name filled in" and 5 "Editing renames the Training, keeping its position"

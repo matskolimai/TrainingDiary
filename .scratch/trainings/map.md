@@ -1,4 +1,5 @@
 Label: wayfinder:map
+Status: done
 
 # Trainings + project foundation
 

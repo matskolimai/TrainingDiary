@@ -6,7 +6,7 @@ stories 37, 38 and 41.
 
 **Blocked by:** 21 (S5 Edit)
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Written test-first: acceptance case 6 "Delete removes it and offers undo"
 - [x] The ViewModel deletes the Training, keeps it, and emits `TrainingDeleted(name)`

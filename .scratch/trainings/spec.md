@@ -1,6 +1,6 @@
 # Spec: Trainings + project foundation
 
-Status: ready-for-agent
+Status: done
 
 Source: the Wayfinder map `map.md` in this directory and its resolved tickets under `issues/wayfinding/`. Where this
 spec and a ticket disagree, the later "Superseded" note or comment wins (the monogram is gone; error-handling decisions
