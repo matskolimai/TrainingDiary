@@ -51,15 +51,6 @@ class TrainingsAcceptanceTest {
         }
 
     @Test
-    fun `saving the new training screen from the keyboard lists the training`() =
-        trainings {
-            openNewTrainingScreen()
-            enterName("Nogi")
-            saveFromKeyboard()
-            assertTrainingsListed("Nogi")
-        }
-
-    @Test
     fun `saving the new training screen trims the name`() =
         trainings {
             openNewTrainingScreen()

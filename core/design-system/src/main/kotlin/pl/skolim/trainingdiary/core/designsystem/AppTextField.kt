@@ -2,7 +2,6 @@ package pl.skolim.trainingdiary.core.designsystem
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -12,7 +11,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
- * An outlined single-line text field labelled [label]; the keyboard's Done action calls [onDone].
+ * An outlined single-line text field labelled [label]; the keyboard's Done action only hides the keyboard.
  *
  * Width comes from [modifier]; to focus the field (for example on first composition), pass
  * `Modifier.focusRequester(...)`.
@@ -22,7 +21,6 @@ fun AppTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    onDone: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
@@ -32,7 +30,6 @@ fun AppTextField(
         label = { Text(text = label) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onDone() }),
     )
 }
 
@@ -44,7 +41,6 @@ internal fun AppTextFieldPreviewEmpty() {
             value = "",
             onValueChange = {},
             label = "Label",
-            onDone = {},
             modifier = Modifier.fillMaxWidth().padding(Spacing.large),
         )
     }
@@ -58,7 +54,6 @@ internal fun AppTextFieldPreviewFilled() {
             value = "Value",
             onValueChange = {},
             label = "Label",
-            onDone = {},
             modifier = Modifier.fillMaxWidth().padding(Spacing.large),
         )
     }

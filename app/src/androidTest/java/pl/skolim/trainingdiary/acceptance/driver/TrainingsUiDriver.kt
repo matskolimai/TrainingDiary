@@ -14,7 +14,6 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.text.AnnotatedString
 import com.google.common.truth.Truth.assertThat
@@ -75,17 +74,8 @@ class TrainingsUiDriver(
         compose.waitUntilDoesNotExist(nameField())
     }
 
-    fun pressDone() {
-        compose.onNode(nameField()).performImeAction()
-        compose.waitUntilDoesNotExist(nameField())
-    }
-
-    // Done must be ignored too: the editor stays open after it.
     fun assertCannotSave() {
         compose.onNode(saveButton()).assertIsNotEnabled()
-        compose.onNode(nameField()).performImeAction()
-        compose.waitForIdle()
-        compose.onNode(nameField()).assertIsDisplayed()
     }
 
     fun leaveEditor() {

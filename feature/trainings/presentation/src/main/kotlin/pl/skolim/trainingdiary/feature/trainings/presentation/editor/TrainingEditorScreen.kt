@@ -79,7 +79,6 @@ internal fun TrainingEditorScreen(
                 NameField(
                     name = state.name,
                     onNameChange = { onAction(TrainingEditorAction.OnNameChange(it)) },
-                    onDone = { onAction(TrainingEditorAction.OnSaveClick) },
                     autofocus = !state.isEditMode,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -101,7 +100,6 @@ internal fun TrainingEditorScreen(
 private fun NameField(
     name: String,
     onNameChange: (String) -> Unit,
-    onDone: () -> Unit,
     autofocus: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -113,7 +111,6 @@ private fun NameField(
         value = name,
         onValueChange = onNameChange,
         label = stringResource(R.string.training_editor_name_label),
-        onDone = onDone,
         modifier = modifier.focusRequester(focusRequester),
     )
 }

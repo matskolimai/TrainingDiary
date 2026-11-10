@@ -21,8 +21,6 @@ class TrainingsDsl(
 
     fun save() = driver.tapSave()
 
-    fun saveFromKeyboard() = driver.pressDone()
-
     fun assertSaveUnavailable() = driver.assertCannotSave()
 
     fun leaveWithoutSaving() = driver.leaveEditor()

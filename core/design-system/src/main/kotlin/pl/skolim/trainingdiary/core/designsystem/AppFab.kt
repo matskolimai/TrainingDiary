@@ -1,6 +1,7 @@
 package pl.skolim.trainingdiary.core.designsystem
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -9,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 
-/** A standard 56dp floating action button showing [icon]. */
+/** A standard floating action button, [Sizes.fab] square, showing [icon]. */
 @Composable
 fun AppFab(
     icon: ImageVector,
@@ -19,7 +20,7 @@ fun AppFab(
 ) {
     FloatingActionButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.size(Sizes.fab),
         shape = MaterialTheme.shapes.large,
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {

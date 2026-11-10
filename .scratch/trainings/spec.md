@@ -75,8 +75,8 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 23. As the user, I want no limit on name length, so that I can name a Training however I like.
 24. As the user, I want „Zapisz” pinned to the bottom and lifted above the keyboard, so that I can save without closing
     the keyboard.
-25. As the user, I want the keyboard's Done key to save when saving is allowed, so that I can add a Training without
-    reaching for the button.
+25. As the user, I want the keyboard's Done key only to hide the keyboard, never to save, so that a form with more
+    than a name (later: the Training's exercises) isn't submitted by accident.
 26. As the user, I want to return to the list after saving, with the new Training at the end, so that I see the result.
 27. As the user, I want a double tap on „Zapisz” to save only once, so that I don't get duplicate Trainings by
     accident.
@@ -277,9 +277,9 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
   `ActionPerformed` sends `OnUndoClick`.
 - **Editor ViewModel**: private `MutableStateFlow`, loaded from `onStart` + `stateIn` with a `hasLoaded` guard. State:
   `name`, `isEditMode`, `isLoading` (only while edit mode loads), `isSaving`; computed
-  `canSave = !isSaving && isValidTrainingName(name)`. Edit mode draws the form only after loading. `OnSaveClick` (and
-  keyboard Done) is ignored unless `canSave`. Events `TrainingSaved` and `TrainingMissing`; the Root maps both to
-  `onBack()` (which calls `pop(key)`).
+  `canSave = !isSaving && isValidTrainingName(name)`. Edit mode draws the form only after loading. `OnSaveClick` is
+  ignored unless `canSave`. The keyboard's Done only hides the keyboard (Compose's default); it sends no Action.
+  Events `TrainingSaved` and `TrainingMissing`; the Root maps both to `onBack()` (which calls `pop(key)`).
 - Events transport: `Channel` → `receiveAsFlow()` → `ObserveAsEvents` (in `:core:presentation`, `Main.immediate`,
   `STARTED`).
 - Add-mode autofocus is a Compose-internal effect; edit mode focuses nothing.
