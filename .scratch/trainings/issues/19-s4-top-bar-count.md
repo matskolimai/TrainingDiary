@@ -8,10 +8,10 @@ stories 4 and 5.
 
 **Status:** ready-for-agent
 
-- [ ] Written test-first: acceptance case 9 "The top-bar count follows the number of Trainings, with Polish plural
+- [x] Written test-first: acceptance case 9 "The top-bar count follows the number of Trainings, with Polish plural
       forms (1 / 2 / 5)"
-- [ ] A `<plurals>` resource with the Polish forms, chosen with `pluralStringResource` in the composable (State holds
+- [x] A `<plurals>` resource with the Polish forms, chosen with `pluralStringResource` in the composable (State holds
       no strings)
-- [ ] Label in titleSmall, `primary` colour, padding 16dp top / 32dp start; hidden when the list is empty
-- [ ] List previews and snapshots updated; reference images committed
-- [ ] `./gradlew check` and the managed-device test task are green
+- [x] Label in titleSmall, `primary` colour, padding 16dp top / 32dp start; hidden when the list is empty
+- [x] List previews and snapshots updated; reference images committed
+- [x] `./gradlew check` and the managed-device test task are green

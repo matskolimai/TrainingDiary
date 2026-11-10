@@ -5,6 +5,12 @@
     <string name="training_list_empty_title">Brak treningów</string>
     <string name="training_list_empty_body">Dodaj pierwszy trening przyciskiem +</string>
     <string name="training_list_cd_more">Więcej opcji</string>
+    <plurals name="training_list_count">
+        <item quantity="one">%d trening</item>
+        <item quantity="few">%d treningi</item>
+        <item quantity="many">%d treningów</item>
+        <item quantity="other">%d treningu</item>
+    </plurals>
 
     <string name="training_editor_title_add">Nowy trening</string>
     <string name="training_editor_name_label">Nazwa</string>

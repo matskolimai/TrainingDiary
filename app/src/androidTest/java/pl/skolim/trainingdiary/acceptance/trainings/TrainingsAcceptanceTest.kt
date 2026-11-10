@@ -70,6 +70,18 @@ class TrainingsAcceptanceTest {
             assertNoTrainings()
         }
 
+    @Test
+    fun `the training list counts its trainings with polish plural forms`() =
+        trainings {
+            assertNoTrainingCount()
+            givenTrainings("Push day")
+            assertTrainingCount(1)
+            givenTrainings("Nogi")
+            assertTrainingCount(2)
+            givenTrainings("Plecy", "Klatka", "Barki")
+            assertTrainingCount(5)
+        }
+
     private fun trainings(steps: TrainingsDsl.() -> Unit) =
         compose.use {
             TrainingsDsl(TrainingsUiDriver(compose = this, resources = compose.activity.resources)).steps()
