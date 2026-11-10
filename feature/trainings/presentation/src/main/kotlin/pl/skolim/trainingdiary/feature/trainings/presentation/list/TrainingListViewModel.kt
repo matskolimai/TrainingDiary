@@ -33,16 +33,20 @@ class TrainingListViewModel(
     fun onAction(action: TrainingListAction) {
         when (action) {
             is TrainingListAction.OnOptionsClick -> optionsSheetTrainingId.value = action.trainingId
-            TrainingListAction.OnOptionsDismiss -> optionsSheetTrainingId.value = null
-            is TrainingListAction.OnEditClick -> optionsSheetTrainingId.value = null
+            TrainingListAction.OnOptionsDismiss -> dismissOptionsSheet()
+            is TrainingListAction.OnEditClick -> dismissOptionsSheet()
             is TrainingListAction.OnDeleteClick -> delete(action.trainingId)
             TrainingListAction.OnUndoClick -> undo()
             TrainingListAction.OnAddClick -> Unit
         }
     }
 
-    private fun delete(trainingId: Long) {
+    private fun dismissOptionsSheet() {
         optionsSheetTrainingId.value = null
+    }
+
+    private fun delete(trainingId: Long) {
+        dismissOptionsSheet()
         viewModelScope.launch {
             val training = repository.getTraining(trainingId) ?: return@launch
             repository.deleteTraining(trainingId)
