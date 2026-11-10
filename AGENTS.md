@@ -15,6 +15,11 @@ Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-
 
 Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
 
+### Mutation testing
+
+When a ticket changed production Kotlin, call the Skill `android-mutation-testing` once the gate is green and before
+`code-review`.
+
 ### Markdown formatting
 
 When creating or editing `.md` files, keep each line at most 120 characters; wrap longer lines.
