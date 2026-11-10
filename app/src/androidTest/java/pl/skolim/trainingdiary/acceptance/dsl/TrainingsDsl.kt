@@ -21,7 +21,13 @@ class TrainingsDsl(
 
     fun assertNameReadyToType() = driver.assertNameFieldFocused()
 
+    fun openEditTrainingScreen(name: String) = driver.openEditorForEditing(name)
+
+    fun assertEditTrainingScreenShows(name: String) = driver.assertEditorForEditing(name)
+
     fun enterName(name: String) = driver.typeName(name)
+
+    fun replaceName(name: String) = driver.replaceName(name)
 
     fun save() = driver.tapSave()
 

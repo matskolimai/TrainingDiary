@@ -16,4 +16,7 @@ class TrainingListScreenshotTest {
 
     @Test
     fun withTrainings() = paparazzi.snapshot { TrainingListPreviewWithTrainings() }
+
+    @Test
+    fun optionsSheet() = paparazzi.snapshot { TrainingListPreviewOptionsSheet() }
 }

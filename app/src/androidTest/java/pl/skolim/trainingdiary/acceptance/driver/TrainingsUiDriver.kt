@@ -5,6 +5,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -15,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.AnnotatedString
 import com.google.common.truth.Truth.assertThat
 import de.mannodermaus.junit5.compose.ComposeContext
@@ -38,8 +40,7 @@ class TrainingsUiDriver(
 
     // Names may repeat (duplicates are allowed), so rows are matched by position, not by unique text.
     fun assertListedInOrder(names: List<String>) {
-        val moreOptions = hasContentDescription(resources.getString(R.string.training_list_cd_more))
-        compose.waitUntilNodeCount(moreOptions, names.size)
+        compose.waitUntilNodeCount(moreOptions(), names.size)
         val listed =
             names
                 .distinct()
@@ -70,6 +71,17 @@ class TrainingsUiDriver(
         compose.onNode(nameField() and hasNoInput()).assertIsDisplayed()
     }
 
+    fun openEditorForEditing(name: String) {
+        compose.onNode(moreOptions() and hasAnySibling(hasText(name))).performClick()
+        compose.onNode(hasClickAction() and hasText(resources.getString(R.string.training_list_edit))).performClick()
+        compose.waitUntilExactlyOneExists(nameField())
+    }
+
+    fun assertEditorForEditing(name: String) {
+        compose.onNodeWithText(resources.getString(R.string.training_editor_title_edit)).assertIsDisplayed()
+        compose.onNode(nameField() and hasInput(name)).assertIsDisplayed()
+    }
+
     fun assertNameFieldFocused() {
         // The field is focused by an effect after the first frame, so wait for it rather than assert at once.
         compose.waitUntilExactlyOneExists(nameField() and isFocused())
@@ -77,6 +89,10 @@ class TrainingsUiDriver(
 
     fun typeName(name: String) {
         compose.onNode(nameField()).performTextInput(name)
+    }
+
+    fun replaceName(name: String) {
+        compose.onNode(nameField()).performTextReplacement(name)
     }
 
     fun tapSave() {
@@ -98,12 +114,17 @@ class TrainingsUiDriver(
     private fun countLabel(count: Int): String =
         resources.getQuantityString(R.plurals.training_list_count, count, count)
 
+    private fun moreOptions(): SemanticsMatcher =
+        hasContentDescription(resources.getString(R.string.training_list_cd_more))
+
     private fun nameField(): SemanticsMatcher =
         hasSetTextAction() and hasText(resources.getString(R.string.training_editor_name_label))
 
     private fun saveButton(): SemanticsMatcher =
         hasClickAction() and hasText(resources.getString(R.string.training_editor_save))
 
-    private fun hasNoInput(): SemanticsMatcher =
-        SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString(""))
+    private fun hasNoInput(): SemanticsMatcher = hasInput("")
+
+    private fun hasInput(text: String): SemanticsMatcher =
+        SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString(text))
 }

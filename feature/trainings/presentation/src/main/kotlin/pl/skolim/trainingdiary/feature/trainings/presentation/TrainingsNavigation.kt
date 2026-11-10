@@ -19,7 +19,10 @@ data class TrainingEditorKey(
 
 fun EntryProviderScope<NavKey>.trainingsEntries(backStack: NavBackStack<NavKey>) {
     entry<TrainingListKey> {
-        TrainingListRoot(onAddTraining = { backStack.push(TrainingEditorKey()) })
+        TrainingListRoot(
+            onAddTraining = { backStack.push(TrainingEditorKey()) },
+            onEditTraining = { trainingId -> backStack.push(TrainingEditorKey(trainingId)) },
+        )
     }
     entry<TrainingEditorKey> { key ->
         TrainingEditorRoot(key = key, onBack = { backStack.pop(key) })

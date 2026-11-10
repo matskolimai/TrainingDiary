@@ -82,6 +82,24 @@ class TrainingsAcceptanceTest {
             assertTrainingCount(5)
         }
 
+    @Test
+    fun `opening the edit training screen shows the name of the training`() =
+        trainings {
+            givenTrainings("Push day", "Nogi")
+            openEditTrainingScreen("Nogi")
+            assertEditTrainingScreenShows("Nogi")
+        }
+
+    @Test
+    fun `saving the edit training screen renames the training in its place`() =
+        trainings {
+            givenTrainings("Push day", "Nogi", "Plecy")
+            openEditTrainingScreen("Nogi")
+            replaceName("Nogi i pośladki")
+            save()
+            assertTrainingsListed("Push day", "Nogi i pośladki", "Plecy")
+        }
+
     private fun trainings(steps: TrainingsDsl.() -> Unit) =
         compose.use {
             TrainingsDsl(TrainingsUiDriver(compose = this, resources = compose.activity.resources)).steps()

@@ -16,11 +16,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import pl.skolim.trainingdiary.core.designsystem.AppBottomSheet
 import pl.skolim.trainingdiary.core.designsystem.AppEmptyState
 import pl.skolim.trainingdiary.core.designsystem.AppFab
 import pl.skolim.trainingdiary.core.designsystem.AppIcons
 import pl.skolim.trainingdiary.core.designsystem.AppPreview
 import pl.skolim.trainingdiary.core.designsystem.AppScaffold
+import pl.skolim.trainingdiary.core.designsystem.AppSheetItem
 import pl.skolim.trainingdiary.core.designsystem.AppTopBar
 import pl.skolim.trainingdiary.core.designsystem.Sizes
 import pl.skolim.trainingdiary.core.designsystem.Spacing
@@ -30,6 +32,7 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.R
 @Composable
 internal fun TrainingListRoot(
     onAddTraining: () -> Unit,
+    onEditTraining: (Long) -> Unit,
     viewModel: TrainingListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -38,6 +41,13 @@ internal fun TrainingListRoot(
         onAction = { action ->
             when (action) {
                 TrainingListAction.OnAddClick -> onAddTraining()
+
+                is TrainingListAction.OnEditClick -> onEditTraining(action.trainingId)
+
+                is TrainingListAction.OnOptionsClick,
+                TrainingListAction.OnOptionsDismiss,
+                is TrainingListAction.OnDeleteClick,
+                -> Unit
             }
             viewModel.onAction(action)
         },
@@ -63,8 +73,30 @@ internal fun TrainingListScreen(
         when {
             state.isLoading -> Unit
             state.trainings.isEmpty() -> EmptyState(modifier = modifier)
-            else -> TrainingList(trainings = state.trainings, modifier = modifier)
+            else -> TrainingList(trainings = state.trainings, onAction = onAction, modifier = modifier)
         }
+    }
+    state.optionsSheetTrainingId?.let { trainingId ->
+        OptionsSheet(trainingId = trainingId, onAction = onAction)
+    }
+}
+
+@Composable
+private fun OptionsSheet(
+    trainingId: Long,
+    onAction: (TrainingListAction) -> Unit,
+) {
+    AppBottomSheet(onDismiss = { onAction(TrainingListAction.OnOptionsDismiss) }) {
+        AppSheetItem(
+            icon = AppIcons.Edit,
+            text = stringResource(R.string.training_list_edit),
+            onClick = { onAction(TrainingListAction.OnEditClick(trainingId)) },
+        )
+        AppSheetItem(
+            icon = AppIcons.Delete,
+            text = stringResource(R.string.training_list_delete),
+            onClick = { onAction(TrainingListAction.OnDeleteClick(trainingId)) },
+        )
     }
 }
 
@@ -81,6 +113,7 @@ private fun EmptyState(modifier: Modifier = Modifier) {
 @Composable
 private fun TrainingList(
     trainings: List<Training>,
+    onAction: (TrainingListAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -104,7 +137,10 @@ private fun TrainingList(
             )
         }
         items(items = trainings, key = { it.id }) { training ->
-            TrainingRow(name = training.name, onOptionsClick = {})
+            TrainingRow(
+                name = training.name,
+                onOptionsClick = { onAction(TrainingListAction.OnOptionsClick(training.id)) },
+            )
         }
     }
 }
@@ -130,17 +166,26 @@ internal fun TrainingListPreviewEmpty() {
 internal fun TrainingListPreviewWithTrainings() {
     AppPreview {
         TrainingListScreen(
-            state =
-                TrainingListState(
-                    trainings =
-                        listOf(
-                            Training(id = 1, name = "Push day"),
-                            Training(id = 2, name = "Nogi"),
-                            Training(id = 3, name = "Plecy i biceps, długa nazwa zawijana do kolejnej linii"),
-                        ),
-                    isLoading = false,
-                ),
+            state = TrainingListState(trainings = previewTrainings, isLoading = false),
             onAction = {},
         )
     }
 }
+
+@Preview
+@Composable
+internal fun TrainingListPreviewOptionsSheet() {
+    AppPreview {
+        TrainingListScreen(
+            state = TrainingListState(trainings = previewTrainings, isLoading = false, optionsSheetTrainingId = 2),
+            onAction = {},
+        )
+    }
+}
+
+private val previewTrainings =
+    listOf(
+        Training(id = 1, name = "Push day"),
+        Training(id = 2, name = "Nogi"),
+        Training(id = 3, name = "Plecy i biceps, długa nazwa zawijana do kolejnej linii"),
+    )

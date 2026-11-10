@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.skolim.trainingdiary.feature.trainings.domain.Training
 import pl.skolim.trainingdiary.feature.trainings.domain.TrainingRepository
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 
@@ -17,8 +20,18 @@ class TrainingEditorViewModel(
     key: TrainingEditorKey,
     private val repository: TrainingRepository,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(TrainingEditorState(isEditMode = key.trainingId != null))
-    val state: StateFlow<TrainingEditorState> = _state.asStateFlow()
+    private val trainingId = key.trainingId
+
+    private val _state =
+        MutableStateFlow(TrainingEditorState(isEditMode = trainingId != null, isLoading = trainingId != null))
+
+    // onStart runs again when collection restarts after the timeout; the guard keeps it from overwriting typed input.
+    private var hasLoaded = false
+
+    val state: StateFlow<TrainingEditorState> =
+        _state
+            .onStart { load() }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), _state.value)
 
     private val _events = Channel<TrainingEditorEvent>()
     val events: Flow<TrainingEditorEvent> = _events.receiveAsFlow()
@@ -31,14 +44,31 @@ class TrainingEditorViewModel(
         }
     }
 
+    private suspend fun load() {
+        if (hasLoaded || trainingId == null) return
+        hasLoaded = true
+        val training = repository.getTraining(trainingId)
+        if (training == null) {
+            _events.send(TrainingEditorEvent.TrainingMissing)
+        } else {
+            _state.update { it.copy(name = training.name, isLoading = false) }
+        }
+    }
+
     // isSaving stays set after saving: the editor closes, and a second tap must not save again.
     private fun save() {
         val state = _state.value
         if (!state.canSave) return
         _state.update { it.copy(isSaving = true) }
         viewModelScope.launch {
-            repository.addTraining(state.name)
+            if (trainingId == null) {
+                repository.addTraining(state.name)
+            } else {
+                repository.updateTraining(Training(id = trainingId, name = state.name))
+            }
             _events.send(TrainingEditorEvent.TrainingSaved)
         }
     }
 }
+
+private const val STOP_TIMEOUT_MILLIS = 5_000L

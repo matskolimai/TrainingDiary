@@ -38,7 +38,7 @@ internal fun TrainingEditorRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            TrainingEditorEvent.TrainingSaved -> onBack()
+            TrainingEditorEvent.TrainingSaved, TrainingEditorEvent.TrainingMissing -> onBack()
         }
     }
     TrainingEditorScreen(
@@ -58,10 +58,11 @@ internal fun TrainingEditorScreen(
     state: TrainingEditorState,
     onAction: (TrainingEditorAction) -> Unit,
 ) {
+    val titleRes = if (state.isEditMode) R.string.training_editor_title_edit else R.string.training_editor_title_add
     AppScaffold(
         topBar = {
             AppTopBarWithBack(
-                title = stringResource(R.string.training_editor_title_add),
+                title = stringResource(titleRes),
                 onBackClick = { onAction(TrainingEditorAction.OnBackClick) },
             )
         },
@@ -128,5 +129,21 @@ internal fun TrainingEditorPreviewAddEmpty() {
 internal fun TrainingEditorPreviewAddFilled() {
     AppPreview {
         TrainingEditorScreen(state = TrainingEditorState(name = "Push day"), onAction = {})
+    }
+}
+
+@Preview
+@Composable
+internal fun TrainingEditorPreviewEditLoading() {
+    AppPreview {
+        TrainingEditorScreen(state = TrainingEditorState(isEditMode = true, isLoading = true), onAction = {})
+    }
+}
+
+@Preview
+@Composable
+internal fun TrainingEditorPreviewEditLoaded() {
+    AppPreview {
+        TrainingEditorScreen(state = TrainingEditorState(name = "Nogi", isEditMode = true), onAction = {})
     }
 }
