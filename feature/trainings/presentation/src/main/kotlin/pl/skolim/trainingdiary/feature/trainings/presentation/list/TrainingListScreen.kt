@@ -6,17 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -153,21 +150,12 @@ private fun TrainingList(
         contentPadding =
             PaddingValues(
                 start = Spacing.large,
-                top = Spacing.large,
+                top = Spacing.small,
                 end = Spacing.large,
                 bottom = Sizes.fabClearance,
             ),
         verticalArrangement = Arrangement.spacedBy(Spacing.medium),
     ) {
-        item {
-            Text(
-                text = pluralStringResource(R.plurals.training_list_count, trainings.size, trainings.size),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
-                // The list's own 16dp start padding plus this makes the label's 32dp.
-                modifier = Modifier.padding(start = Spacing.large),
-            )
-        }
         items(items = trainings, key = { it.id }) { training ->
             TrainingRow(
                 name = training.name,

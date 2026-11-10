@@ -71,18 +71,6 @@ class TrainingsAcceptanceTest {
         }
 
     @Test
-    fun `the training list counts its trainings with polish plural forms`() =
-        trainings {
-            assertNoTrainingCount()
-            givenTrainings("Push day")
-            assertTrainingCount(1)
-            givenTrainings("Nogi")
-            assertTrainingCount(2)
-            givenTrainings("Plecy", "Klatka", "Barki")
-            assertTrainingCount(5)
-        }
-
-    @Test
     fun `opening the edit training screen shows the name of the training`() =
         trainings {
             givenTrainings("Push day", "Nogi")

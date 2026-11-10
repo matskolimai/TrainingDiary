@@ -11,10 +11,6 @@ class TrainingsDsl(
 
     fun assertNoTrainings() = driver.assertEmptyList()
 
-    fun assertTrainingCount(count: Int) = driver.assertCount(count)
-
-    fun assertNoTrainingCount() = driver.assertNoCount()
-
     fun openNewTrainingScreen() = driver.openEditorForAdding()
 
     fun assertNewTrainingScreenIsEmpty() = driver.assertEmptyEditorForAdding()

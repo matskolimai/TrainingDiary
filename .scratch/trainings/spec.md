@@ -19,8 +19,8 @@ without rework.
 
 A first feature for managing **Trainings**, built on a deliberately chosen foundation:
 
-- A **Training list** screen („Treningi”) showing my Trainings in the order I created them, with a Polish plural
-  count, a centred empty state when there are none, and a FAB to add one.
+- A **Training list** screen („Treningi”) showing my Trainings in the order I created them, a centred empty state
+  when there are none, and a FAB to add one.
 - Each row shows the Training's name and a ⋮ button that opens a bottom sheet with **Edytuj** and **Usuń**.
 - A **Training editor** screen used both to add („Nowy trening”) and edit („Edytuj trening”) a Training: one name
   field and a full-width „Zapisz” button pinned above the keyboard, disabled while the trimmed name is empty.
@@ -40,9 +40,8 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 2. As the user, I want Trainings listed in the order I created them, oldest first, so that the list is stable and
    predictable.
 3. As the user, I want the screen titled „Treningi” in a centred top bar, so that I know where I am.
-4. As the user, I want a count such as „1 trening”, „2 treningi”, „5 treningów” above the list, so that I see how many
-   Trainings I have in correct Polish.
-5. As the user, I want the count hidden when I have no Trainings, so that the empty screen stays clean.
+4. (Dropped after review: no Training count above the list.)
+5. (Dropped after review: no Training count above the list.)
 6. As the user, I want each Training as a separate rounded row, so that rows are easy to tell apart.
 7. As the user, I want long names to wrap onto several lines instead of being cut off, so that I can always read the
    full name.
@@ -307,8 +306,8 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 
 ### Visual details (from the prototypes)
 
-- **List**: centred top bar „Treningi” (titleLarge). Count label titleSmall in `primary`, padding 16dp top / 32dp
-  start, hidden when empty. List horizontal padding 16dp, 12dp between rows, bottom padding leaving room for the FAB.
+- **List**: centred top bar „Treningi” (titleLarge). List horizontal padding 16dp, 12dp between rows, bottom padding
+  leaving room for the FAB.
   Row: `surfaceContainer`, 16dp corners, min height 64dp, padding 16dp start / 4dp end; name bodyLarge `onSurface`,
   wrapping; trailing 48dp `more_vert` in `onSurface` („Więcej opcji”). FAB: standard 56dp, 16dp corners,
   `primaryContainer`, `add` („Dodaj trening”), 16dp margin, stays in place when a snackbar shows (standard M3).
@@ -324,8 +323,7 @@ The app is dark-theme only, all user-visible text is Polish, and all code is Eng
 ### Strings
 
 - Polish in the default `values/` of the module that uses it. Names `<screen>_<element>`, `<screen>_cd_<thing>`;
-  design-system strings prefixed `design_system_`. `<plurals>` with Polish forms (trening / treningi / treningów);
-  typographic quotes and „…” written literally.
+  design-system strings prefixed `design_system_`. Typographic quotes and „…” written literally.
 
 ## Testing Decisions
 
@@ -372,7 +370,7 @@ Plus one JVM check of the DI graph (Koin `verify`), and unit tests only for pure
   6. Delete removes it and offers undo.
   7. Undo restores it in its original position.
   8. Only the latest delete can be undone.
-  9. The top-bar count follows the number of Trainings, with Polish plural forms (1 / 2 / 5).
+  9. (Dropped after review: no Training count.)
   10. Back from the editor without saving changes nothing.
   11. Starting to add opens an empty editor titled „Nowy trening”.
   12. Starting to edit opens the editor titled „Edytuj trening” with the name filled in.
@@ -429,7 +427,7 @@ Plus one JVM check of the DI graph (Koin `verify`), and unit tests only for pure
   the trivial snapshot; (7) database + repository; (8) Koin wiring + navigation shell (`AppNavDisplay`, keys, empty
   entries, guards); (9) behaviour slices.
 - **Behaviour slices**, test-first with their acceptance cases: S1 Empty list (1, replaces the smoke test); S2 Open
-  editor for adding (11, 10); S3 Add a Training, with `isValidTrainingName` (2, 3, 4); S4 Top-bar count (9); S5 Edit
+  editor for adding (11, 10); S3 Add a Training, with `isValidTrainingName` (2, 3, 4); S4 Top-bar count (dropped after review); S5 Edit
   via ⋮ → sheet → Edytuj (12, 5); S6 Delete via Usuń (6); S7 Undo (7, 8).
 - **Components**: one small ticket per `App*` component (component + preview + snapshot) right before its first user;
   components that always travel together may share one. Behaviour slices add only presentation previews and snapshots

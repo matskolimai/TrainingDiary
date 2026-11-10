@@ -52,16 +52,6 @@ class TrainingsUiDriver(
         assertThat(listed).containsExactlyElementsIn(names).inOrder()
     }
 
-    fun assertCount(count: Int) {
-        compose.waitUntilExactlyOneExists(hasText(countLabel(count)))
-    }
-
-    // The count is hidden on the empty list: once the empty state shows, the label for zero Trainings must not.
-    fun assertNoCount() {
-        assertEmptyList()
-        compose.onNodeWithText(countLabel(0)).assertDoesNotExist()
-    }
-
     fun openEditorForAdding() {
         compose.onNodeWithContentDescription(resources.getString(R.string.training_list_cd_add)).performClick()
         compose.waitUntilExactlyOneExists(nameField())
@@ -132,9 +122,6 @@ class TrainingsUiDriver(
         compose.onNode(moreOptions() and hasAnySibling(hasText(name))).performClick()
         compose.onNode(hasClickAction() and hasText(resources.getString(option))).performClick()
     }
-
-    private fun countLabel(count: Int): String =
-        resources.getQuantityString(R.plurals.training_list_count, count, count)
 
     private fun moreOptions(): SemanticsMatcher =
         hasContentDescription(resources.getString(R.string.training_list_cd_more))

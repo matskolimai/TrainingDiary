@@ -9,12 +9,6 @@
     <string name="training_list_delete">Usuń</string>
     <string name="training_list_deleted">Usunięto „%1$s”</string>
     <string name="training_list_undo">Cofnij</string>
-    <plurals name="training_list_count">
-        <item quantity="one">%d trening</item>
-        <item quantity="few">%d treningi</item>
-        <item quantity="many">%d treningów</item>
-        <item quantity="other">%d treningu</item>
-    </plurals>
 
     <string name="training_editor_title_add">Nowy trening</string>
     <string name="training_editor_title_edit">Edytuj trening</string>
