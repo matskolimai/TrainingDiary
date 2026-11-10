@@ -34,4 +34,8 @@ class TrainingsDsl(
     fun assertSaveUnavailable() = driver.assertCannotSave()
 
     fun leaveWithoutSaving() = driver.leaveEditor()
+
+    fun delete(name: String) = driver.deleteTraining(name)
+
+    fun assertUndoOffered(name: String) = driver.assertUndoDeleteOffered(name)
 }

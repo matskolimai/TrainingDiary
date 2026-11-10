@@ -100,6 +100,15 @@ class TrainingsAcceptanceTest {
             assertTrainingsListed("Push day", "Nogi i pośladki", "Plecy")
         }
 
+    @Test
+    fun `deleting a training removes it from the list and offers to undo`() =
+        trainings {
+            givenTrainings("Push day", "Nogi", "Plecy")
+            delete("Nogi")
+            assertTrainingsListed("Push day", "Plecy")
+            assertUndoOffered("Nogi")
+        }
+
     private fun trainings(steps: TrainingsDsl.() -> Unit) =
         compose.use {
             TrainingsDsl(TrainingsUiDriver(compose = this, resources = compose.activity.resources)).steps()

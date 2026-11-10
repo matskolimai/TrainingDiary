@@ -7,6 +7,8 @@
     <string name="training_list_cd_more">Więcej opcji</string>
     <string name="training_list_edit">Edytuj</string>
     <string name="training_list_delete">Usuń</string>
+    <string name="training_list_deleted">Usunięto „%1$s”</string>
+    <string name="training_list_undo">Cofnij</string>
     <plurals name="training_list_count">
         <item quantity="one">%d trening</item>
         <item quantity="few">%d treningi</item>

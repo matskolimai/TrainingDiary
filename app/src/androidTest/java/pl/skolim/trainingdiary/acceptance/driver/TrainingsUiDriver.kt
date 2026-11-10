@@ -1,6 +1,7 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
 import android.content.res.Resources
+import androidx.annotation.StringRes
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
@@ -72,9 +73,17 @@ class TrainingsUiDriver(
     }
 
     fun openEditorForEditing(name: String) {
-        compose.onNode(moreOptions() and hasAnySibling(hasText(name))).performClick()
-        compose.onNode(hasClickAction() and hasText(resources.getString(R.string.training_list_edit))).performClick()
+        chooseOption(name, R.string.training_list_edit)
         compose.waitUntilExactlyOneExists(nameField())
+    }
+
+    fun deleteTraining(name: String) {
+        chooseOption(name, R.string.training_list_delete)
+    }
+
+    fun assertUndoDeleteOffered(name: String) {
+        compose.waitUntilExactlyOneExists(hasText(resources.getString(R.string.training_list_deleted, name)))
+        compose.onNode(undoAction()).assertIsDisplayed()
     }
 
     fun assertEditorForEditing(name: String) {
@@ -111,11 +120,22 @@ class TrainingsUiDriver(
         compose.waitUntilDoesNotExist(nameField())
     }
 
+    private fun chooseOption(
+        name: String,
+        @StringRes option: Int,
+    ) {
+        compose.onNode(moreOptions() and hasAnySibling(hasText(name))).performClick()
+        compose.onNode(hasClickAction() and hasText(resources.getString(option))).performClick()
+    }
+
     private fun countLabel(count: Int): String =
         resources.getQuantityString(R.plurals.training_list_count, count, count)
 
     private fun moreOptions(): SemanticsMatcher =
         hasContentDescription(resources.getString(R.string.training_list_cd_more))
+
+    private fun undoAction(): SemanticsMatcher =
+        hasClickAction() and hasText(resources.getString(R.string.training_list_undo))
 
     private fun nameField(): SemanticsMatcher =
         hasSetTextAction() and hasText(resources.getString(R.string.training_editor_name_label))

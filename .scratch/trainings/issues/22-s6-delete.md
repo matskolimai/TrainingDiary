@@ -8,10 +8,10 @@ stories 37, 38 and 41.
 
 **Status:** ready-for-agent
 
-- [ ] Written test-first: acceptance case 6 "Delete removes it and offers undo"
-- [ ] The ViewModel deletes the Training, keeps it, and emits `TrainingDeleted(name)`
-- [ ] The list Root owns `SnackbarHostState`, passed through `AppScaffold`, and dismisses the current snackbar before
+- [x] Written test-first: acceptance case 6 "Delete removes it and offers undo"
+- [x] The ViewModel deletes the Training, keeps it, and emits `TrainingDeleted(name)`
+- [x] The list Root owns `SnackbarHostState`, passed through `AppScaffold`, and dismisses the current snackbar before
       showing a new one
-- [ ] The FAB stays in place when the snackbar shows (standard M3 `Scaffold`)
-- [ ] Polish strings for the message and „Cofnij”
-- [ ] `./gradlew check` and the managed-device test task are green
+- [x] The FAB stays in place when the snackbar shows (standard M3 `Scaffold`)
+- [x] Polish strings for the message and „Cofnij”
+- [x] `./gradlew check` and the managed-device test task are green

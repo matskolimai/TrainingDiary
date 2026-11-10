@@ -7,14 +7,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import pl.skolim.trainingdiary.core.designsystem.AppBottomSheet
 import pl.skolim.trainingdiary.core.designsystem.AppEmptyState
@@ -26,6 +31,7 @@ import pl.skolim.trainingdiary.core.designsystem.AppSheetItem
 import pl.skolim.trainingdiary.core.designsystem.AppTopBar
 import pl.skolim.trainingdiary.core.designsystem.Sizes
 import pl.skolim.trainingdiary.core.designsystem.Spacing
+import pl.skolim.trainingdiary.core.presentation.ObserveAsEvents
 import pl.skolim.trainingdiary.feature.trainings.domain.Training
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 
@@ -36,8 +42,28 @@ internal fun TrainingListRoot(
     viewModel: TrainingListViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val resources = LocalResources.current
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is TrainingListEvent.TrainingDeleted -> {
+                scope.launch {
+                    // showSnackbar queues, so a newer delete replaces the shown snackbar instead of waiting behind it.
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(
+                        message = resources.getString(R.string.training_list_deleted, event.name),
+                        actionLabel = resources.getString(R.string.training_list_undo),
+                    )
+                }
+            }
+        }
+    }
+
     TrainingListScreen(
         state = state,
+        snackbarHostState = snackbarHostState,
         onAction = { action ->
             when (action) {
                 TrainingListAction.OnAddClick -> onAddTraining()
@@ -58,9 +84,11 @@ internal fun TrainingListRoot(
 internal fun TrainingListScreen(
     state: TrainingListState,
     onAction: (TrainingListAction) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     AppScaffold(
         topBar = { AppTopBar(title = stringResource(R.string.training_list_title)) },
+        snackbarHostState = snackbarHostState,
         fab = {
             AppFab(
                 icon = AppIcons.Add,
