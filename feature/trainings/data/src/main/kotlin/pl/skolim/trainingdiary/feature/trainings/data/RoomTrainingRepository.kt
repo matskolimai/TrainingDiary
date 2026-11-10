@@ -6,6 +6,7 @@ import pl.skolim.trainingdiary.core.database.TrainingDao
 import pl.skolim.trainingdiary.core.database.TrainingEntity
 import pl.skolim.trainingdiary.feature.trainings.domain.Training
 import pl.skolim.trainingdiary.feature.trainings.domain.TrainingRepository
+import pl.skolim.trainingdiary.feature.trainings.domain.isValidTrainingName
 
 internal class RoomTrainingRepository(
     private val dao: TrainingDao,
@@ -32,5 +33,5 @@ internal class RoomTrainingRepository(
     }
 }
 
-// Temporary safety net until ticket 18 adds isValidTrainingName to the domain.
-private fun String.toValidTrainingName(): String = trim().also { require(it.isNotBlank()) { "Blank training name" } }
+private fun String.toValidTrainingName(): String =
+    trim().also { require(isValidTrainingName(it)) { "Blank training name" } }

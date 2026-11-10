@@ -25,6 +25,7 @@ import pl.skolim.trainingdiary.core.designsystem.AppScaffold
 import pl.skolim.trainingdiary.core.designsystem.AppTextField
 import pl.skolim.trainingdiary.core.designsystem.AppTopBarWithBack
 import pl.skolim.trainingdiary.core.designsystem.Spacing
+import pl.skolim.trainingdiary.core.presentation.ObserveAsEvents
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 
@@ -35,12 +36,17 @@ internal fun TrainingEditorRoot(
     viewModel: TrainingEditorViewModel = koinViewModel { parametersOf(key) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            TrainingEditorEvent.TrainingSaved -> onBack()
+        }
+    }
     TrainingEditorScreen(
         state = state,
         onAction = { action ->
             when (action) {
                 TrainingEditorAction.OnBackClick -> onBack()
-                is TrainingEditorAction.OnNameChange -> Unit
+                is TrainingEditorAction.OnNameChange, TrainingEditorAction.OnSaveClick -> Unit
             }
             viewModel.onAction(action)
         },
@@ -73,17 +79,17 @@ internal fun TrainingEditorScreen(
                 NameField(
                     name = state.name,
                     onNameChange = { onAction(TrainingEditorAction.OnNameChange(it)) },
+                    onDone = { onAction(TrainingEditorAction.OnSaveClick) },
                     autofocus = !state.isEditMode,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            // Saving arrives in ticket 18.
             AppButton(
                 text = stringResource(R.string.training_editor_save),
-                onClick = {},
+                onClick = { onAction(TrainingEditorAction.OnSaveClick) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = false,
+                enabled = state.canSave,
             )
         }
     }
@@ -95,6 +101,7 @@ internal fun TrainingEditorScreen(
 private fun NameField(
     name: String,
     onNameChange: (String) -> Unit,
+    onDone: () -> Unit,
     autofocus: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -106,7 +113,7 @@ private fun NameField(
         value = name,
         onValueChange = onNameChange,
         label = stringResource(R.string.training_editor_name_label),
-        onDone = {},
+        onDone = onDone,
         modifier = modifier.focusRequester(focusRequester),
     )
 }

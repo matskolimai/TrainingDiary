@@ -5,5 +5,7 @@ sealed interface TrainingEditorAction {
         val name: String,
     ) : TrainingEditorAction
 
+    data object OnSaveClick : TrainingEditorAction
+
     data object OnBackClick : TrainingEditorAction
 }

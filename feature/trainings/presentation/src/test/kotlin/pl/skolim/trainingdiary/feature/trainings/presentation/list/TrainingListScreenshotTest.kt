@@ -13,4 +13,7 @@ class TrainingListScreenshotTest {
 
     @Test
     fun empty() = paparazzi.snapshot { TrainingListPreviewEmpty() }
+
+    @Test
+    fun withTrainings() = paparazzi.snapshot { TrainingListPreviewWithTrainings() }
 }

@@ -1,7 +1,11 @@
 package pl.skolim.trainingdiary.feature.trainings.presentation.list
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -15,6 +19,9 @@ import pl.skolim.trainingdiary.core.designsystem.AppIcons
 import pl.skolim.trainingdiary.core.designsystem.AppPreview
 import pl.skolim.trainingdiary.core.designsystem.AppScaffold
 import pl.skolim.trainingdiary.core.designsystem.AppTopBar
+import pl.skolim.trainingdiary.core.designsystem.Sizes
+import pl.skolim.trainingdiary.core.designsystem.Spacing
+import pl.skolim.trainingdiary.feature.trainings.domain.Training
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 
 @Composable
@@ -49,13 +56,43 @@ internal fun TrainingListScreen(
             )
         },
     ) { contentPadding ->
-        if (!state.isLoading && state.trainings.isEmpty()) {
-            AppEmptyState(
-                icon = AppIcons.FitnessCenter,
-                title = stringResource(R.string.training_list_empty_title),
-                body = stringResource(R.string.training_list_empty_body),
-                modifier = Modifier.fillMaxSize().padding(contentPadding),
-            )
+        val modifier = Modifier.fillMaxSize().padding(contentPadding)
+        when {
+            state.isLoading -> Unit
+            state.trainings.isEmpty() -> EmptyState(modifier = modifier)
+            else -> TrainingList(trainings = state.trainings, modifier = modifier)
+        }
+    }
+}
+
+@Composable
+private fun EmptyState(modifier: Modifier = Modifier) {
+    AppEmptyState(
+        icon = AppIcons.FitnessCenter,
+        title = stringResource(R.string.training_list_empty_title),
+        body = stringResource(R.string.training_list_empty_body),
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun TrainingList(
+    trainings: List<Training>,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding =
+            PaddingValues(
+                start = Spacing.large,
+                top = Spacing.small,
+                end = Spacing.large,
+                bottom = Sizes.fabClearance,
+            ),
+        verticalArrangement = Arrangement.spacedBy(Spacing.medium),
+    ) {
+        items(items = trainings, key = { it.id }) { training ->
+            TrainingRow(name = training.name, onOptionsClick = {})
         }
     }
 }
@@ -73,5 +110,25 @@ internal fun TrainingListPreviewLoading() {
 internal fun TrainingListPreviewEmpty() {
     AppPreview {
         TrainingListScreen(state = TrainingListState(trainings = emptyList(), isLoading = false), onAction = {})
+    }
+}
+
+@Preview
+@Composable
+internal fun TrainingListPreviewWithTrainings() {
+    AppPreview {
+        TrainingListScreen(
+            state =
+                TrainingListState(
+                    trainings =
+                        listOf(
+                            Training(id = 1, name = "Push day"),
+                            Training(id = 2, name = "Nogi"),
+                            Training(id = 3, name = "Plecy i biceps, długa nazwa zawijana do kolejnej linii"),
+                        ),
+                    isLoading = false,
+                ),
+            onAction = {},
+        )
     }
 }

@@ -40,6 +40,45 @@ class TrainingsAcceptanceTest {
             assertNoTrainings()
         }
 
+    @Test
+    fun `saving the new training screen lists the training at the end`() =
+        trainings {
+            givenTrainings("Push day")
+            openNewTrainingScreen()
+            enterName("Nogi")
+            save()
+            assertTrainingsListed("Push day", "Nogi")
+        }
+
+    @Test
+    fun `saving the new training screen from the keyboard lists the training`() =
+        trainings {
+            openNewTrainingScreen()
+            enterName("Nogi")
+            saveFromKeyboard()
+            assertTrainingsListed("Nogi")
+        }
+
+    @Test
+    fun `saving the new training screen trims the name`() =
+        trainings {
+            openNewTrainingScreen()
+            enterName("  Push day  ")
+            save()
+            assertTrainingsListed("Push day")
+        }
+
+    @Test
+    fun `the new training screen cannot be saved with a blank name`() =
+        trainings {
+            openNewTrainingScreen()
+            assertSaveUnavailable()
+            enterName("   ")
+            assertSaveUnavailable()
+            leaveWithoutSaving()
+            assertNoTrainings()
+        }
+
     private fun trainings(steps: TrainingsDsl.() -> Unit) =
         compose.use {
             TrainingsDsl(TrainingsUiDriver(compose = this, resources = compose.activity.resources)).steps()

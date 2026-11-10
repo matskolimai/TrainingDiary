@@ -4,6 +4,7 @@
     <string name="training_list_cd_add">Dodaj trening</string>
     <string name="training_list_empty_title">Brak treningów</string>
     <string name="training_list_empty_body">Dodaj pierwszy trening przyciskiem +</string>
+    <string name="training_list_cd_more">Więcej opcji</string>
 
     <string name="training_editor_title_add">Nowy trening</string>
     <string name="training_editor_name_label">Nazwa</string>

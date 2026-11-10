@@ -11,6 +11,7 @@ dependencies {
     implementation(projects.feature.trainings.domain)
     implementation(projects.core.presentation)
     implementation(projects.core.designSystem)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.koin.androidx.compose)
 }
