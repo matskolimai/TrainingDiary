@@ -5,3 +5,9 @@ naming:
 style:
   UnusedPrivateFunction:
     ignoreAnnotated: ['Preview']
+  ForbiddenImport:
+    active: true
+    forbiddenImports:
+      - value: 'androidx.compose.ui.unit.dp'
+        reason: 'Take sizes from Spacing or Sizes in :core:design-system.'
+    excludes: ['**/Spacing.kt', '**/Sizes.kt', '**/test/**', '**/androidTest/**']

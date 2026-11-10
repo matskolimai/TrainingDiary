@@ -18,3 +18,8 @@ Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/ag
 ### Markdown formatting
 
 When creating or editing `.md` files, keep each line at most 120 characters; wrap longer lines.
+
+### Additions
+
+An **addition** is user-visible behaviour the user didn't ask for in their own words. Prototypes, specs and tickets
+list additions under their own heading for the user to keep or drop; only kept additions carry forward.
