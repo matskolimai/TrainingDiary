@@ -1,0 +1,71 @@
+package pl.skolim.trainingdiary.acceptance.trainings
+
+import org.junit.jupiter.api.Test
+import pl.skolim.trainingdiary.acceptance.AcceptanceTest
+
+class TrainingEditorAcceptanceTest : AcceptanceTest() {
+    @Test
+    fun `opening the new training screen shows an empty name ready to type`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.assertEmptyNewTraining()
+            trainingEditor.assertNameReadyToType()
+        }
+
+    @Test
+    fun `leaving the new training screen without saving changes nothing`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.enterName("Push day")
+            trainingEditor.leaveWithoutSaving()
+            trainingList.assertEmpty()
+        }
+
+    @Test
+    fun `saving the new training screen lists the training at the end`() =
+        app {
+            given.trainings("Push day")
+            trainingList.openNewTraining()
+            trainingEditor.enterName("Nogi")
+            trainingEditor.save()
+            trainingList.assertListed("Push day", "Nogi")
+        }
+
+    @Test
+    fun `saving the new training screen trims the name`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.enterName("  Push day  ")
+            trainingEditor.save()
+            trainingList.assertListed("Push day")
+        }
+
+    @Test
+    fun `the new training screen cannot be saved with a blank name`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.assertSaveUnavailable()
+            trainingEditor.enterName("   ")
+            trainingEditor.assertSaveUnavailable()
+            trainingEditor.leaveWithoutSaving()
+            trainingList.assertEmpty()
+        }
+
+    @Test
+    fun `opening the edit training screen shows the name of the training`() =
+        app {
+            given.trainings("Push day", "Nogi")
+            trainingList.openForEditing("Nogi")
+            trainingEditor.assertEditing("Nogi")
+        }
+
+    @Test
+    fun `saving the edit training screen renames the training in its place`() =
+        app {
+            given.trainings("Push day", "Nogi", "Plecy")
+            trainingList.openForEditing("Nogi")
+            trainingEditor.replaceName("Nogi i pośladki")
+            trainingEditor.save()
+            trainingList.assertListed("Push day", "Nogi i pośladki", "Plecy")
+        }
+}
