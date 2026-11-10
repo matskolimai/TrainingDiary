@@ -25,32 +25,16 @@ import pl.skolim.trainingdiary.core.designsystem.AppScaffold
 import pl.skolim.trainingdiary.core.designsystem.AppTextField
 import pl.skolim.trainingdiary.core.designsystem.AppTopBarWithBack
 import pl.skolim.trainingdiary.core.designsystem.Spacing
-import pl.skolim.trainingdiary.core.presentation.ObserveAsEvents
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 
 @Composable
 internal fun TrainingEditorRoot(
     key: TrainingEditorKey,
-    onBack: () -> Unit,
     viewModel: TrainingEditorViewModel = koinViewModel { parametersOf(key) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    ObserveAsEvents(viewModel.events) { event ->
-        when (event) {
-            TrainingEditorEvent.TrainingSaved, TrainingEditorEvent.TrainingMissing -> onBack()
-        }
-    }
-    TrainingEditorScreen(
-        state = state,
-        onAction = { action ->
-            when (action) {
-                TrainingEditorAction.OnBackClick -> onBack()
-                is TrainingEditorAction.OnNameChange, TrainingEditorAction.OnSaveClick -> Unit
-            }
-            viewModel.onAction(action)
-        },
-    )
+    TrainingEditorScreen(state = state, onAction = viewModel::onAction)
 }
 
 @Composable

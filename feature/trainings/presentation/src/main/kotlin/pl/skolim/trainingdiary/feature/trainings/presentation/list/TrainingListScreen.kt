@@ -34,11 +34,7 @@ import pl.skolim.trainingdiary.feature.trainings.domain.Training
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 
 @Composable
-internal fun TrainingListRoot(
-    onAddTraining: () -> Unit,
-    onEditTraining: (Long) -> Unit,
-    viewModel: TrainingListViewModel = koinViewModel(),
-) {
+internal fun TrainingListRoot(viewModel: TrainingListViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -64,20 +60,7 @@ internal fun TrainingListRoot(
     TrainingListScreen(
         state = state,
         snackbarHostState = snackbarHostState,
-        onAction = { action ->
-            when (action) {
-                TrainingListAction.OnAddClick -> onAddTraining()
-
-                is TrainingListAction.OnEditClick -> onEditTraining(action.trainingId)
-
-                is TrainingListAction.OnOptionsClick,
-                TrainingListAction.OnOptionsDismiss,
-                is TrainingListAction.OnDeleteClick,
-                TrainingListAction.OnUndoClick,
-                -> Unit
-            }
-            viewModel.onAction(action)
-        },
+        onAction = viewModel::onAction,
     )
 }
 

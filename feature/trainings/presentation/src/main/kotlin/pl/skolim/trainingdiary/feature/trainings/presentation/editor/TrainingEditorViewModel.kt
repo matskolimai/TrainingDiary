@@ -2,13 +2,10 @@ package pl.skolim.trainingdiary.feature.trainings.presentation.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,8 +14,9 @@ import pl.skolim.trainingdiary.feature.trainings.domain.TrainingRepository
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 
 class TrainingEditorViewModel(
-    key: TrainingEditorKey,
+    private val key: TrainingEditorKey,
     private val repository: TrainingRepository,
+    private val navigator: TrainingEditorNavigator,
 ) : ViewModel() {
     private val trainingId = key.trainingId
 
@@ -33,14 +31,11 @@ class TrainingEditorViewModel(
             .onStart { load() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), _state.value)
 
-    private val _events = Channel<TrainingEditorEvent>()
-    val events: Flow<TrainingEditorEvent> = _events.receiveAsFlow()
-
     fun onAction(action: TrainingEditorAction) {
         when (action) {
             is TrainingEditorAction.OnNameChange -> _state.update { it.copy(name = action.name) }
             TrainingEditorAction.OnSaveClick -> save()
-            TrainingEditorAction.OnBackClick -> Unit
+            TrainingEditorAction.OnBackClick -> navigator.back(key)
         }
     }
 
@@ -49,7 +44,7 @@ class TrainingEditorViewModel(
         hasLoaded = true
         val training = repository.getTraining(trainingId)
         if (training == null) {
-            _events.send(TrainingEditorEvent.TrainingMissing)
+            navigator.back(key)
         } else {
             _state.update { it.copy(name = training.name, isLoading = false) }
         }
@@ -66,7 +61,7 @@ class TrainingEditorViewModel(
             } else {
                 repository.updateTraining(Training(id = trainingId, name = state.name))
             }
-            _events.send(TrainingEditorEvent.TrainingSaved)
+            navigator.back(key)
         }
     }
 }

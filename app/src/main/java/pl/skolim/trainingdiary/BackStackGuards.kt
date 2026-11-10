@@ -1,4 +1,4 @@
-package pl.skolim.trainingdiary.core.presentation
+package pl.skolim.trainingdiary
 
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey

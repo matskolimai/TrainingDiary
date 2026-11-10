@@ -16,6 +16,7 @@ import pl.skolim.trainingdiary.feature.trainings.domain.TrainingRepository
 
 class TrainingListViewModel(
     private val repository: TrainingRepository,
+    private val navigator: TrainingListNavigator,
 ) : ViewModel() {
     private val optionsSheetTrainingId = MutableStateFlow<Long?>(null)
 
@@ -34,15 +35,20 @@ class TrainingListViewModel(
         when (action) {
             is TrainingListAction.OnOptionsClick -> optionsSheetTrainingId.value = action.trainingId
             TrainingListAction.OnOptionsDismiss -> dismissOptionsSheet()
-            is TrainingListAction.OnEditClick -> dismissOptionsSheet()
+            is TrainingListAction.OnEditClick -> edit(action.trainingId)
             is TrainingListAction.OnDeleteClick -> delete(action.trainingId)
             TrainingListAction.OnUndoClick -> undo()
-            TrainingListAction.OnAddClick -> Unit
+            TrainingListAction.OnAddClick -> navigator.openEditor()
         }
     }
 
     private fun dismissOptionsSheet() {
         optionsSheetTrainingId.value = null
+    }
+
+    private fun edit(trainingId: Long) {
+        dismissOptionsSheet()
+        navigator.openEditor(trainingId)
     }
 
     private fun delete(trainingId: Long) {

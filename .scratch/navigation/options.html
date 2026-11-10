@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ViewModel navigation: three options</title>
+<style>
+  :root { --bg:#fafafa; --fg:#1c1c1e; --card:#fff; --line:#e2e2e6; --mute:#6b6b74; --code:#f3f3f6;
+          --a:#2563eb; --b:#059669; --c:#b45309; --bad:#b91c1c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141416; --fg:#ececf0; --card:#1d1d21; --line:#33333a; --mute:#9a9aa5; --code:#26262c;
+            --a:#7aa5ff; --b:#4fd1a5; --c:#f0b060; --bad:#ff8080; }
+  }
+  body { background:var(--bg); color:var(--fg); font:15px/1.5 system-ui,sans-serif; margin:0; padding:32px; }
+  main { max-width:1100px; margin:0 auto; }
+  h1 { margin:0 0 4px; font-size:26px; } h2 { margin:0 0 6px; font-size:20px; } h3 { margin:16px 0 6px; font-size:14px;
+       text-transform:uppercase; letter-spacing:.05em; color:var(--mute); }
+  p { margin:6px 0; } .mute { color:var(--mute); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 24px; margin:20px 0; }
+  .card.a { border-top:4px solid var(--a); } .card.b { border-top:4px solid var(--b); }
+  .card.c { border-top:4px solid var(--c); } .card.now { border-top:4px solid var(--bad); }
+  pre { background:var(--code); border-radius:8px; padding:12px 14px; overflow-x:auto; margin:6px 0;
+        font:13px/1.45 ui-monospace,Consolas,monospace; }
+  code { font:13px ui-monospace,Consolas,monospace; background:var(--code); padding:1px 5px; border-radius:4px; }
+  .flow { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:10px 0; }
+  .flow span { border:1px solid var(--line); border-radius:999px; padding:3px 12px; font-size:13px; white-space:nowrap; }
+  .flow i { color:var(--mute); font-style:normal; }
+  .flow .hot { border-color:currentColor; font-weight:600; }
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:16px; } @media (max-width:800px){ .cols{grid-template-columns:1fr;} }
+  ul { margin:4px 0; padding-left:20px; } .plus li::marker { content:"+  "; color:var(--b); }
+  .minus li::marker { content:"–  "; color:var(--bad); }
+  table { border-collapse:collapse; width:100%; } th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th { font-size:13px; color:var(--mute); font-weight:600; }
+  .tag { font-size:12px; border-radius:6px; padding:2px 8px; background:var(--code); margin-left:8px; vertical-align:middle; }
+  .x { color:var(--bad); font-weight:600; }
+</style>
+</head>
+<body>
+<main>
+<h1>Letting the ViewModel navigate</h1>
+<p class="mute">Three ways to do it, shown on the Training list → Training editor flow.</p>
+
+<div class="card now">
+  <h2>Today: the problem</h2>
+  <div class="flow">
+    <span>tap Edit</span><i>→</i><span>Action</span><i>→</i>
+    <span class="hot x">Root handles it (navigates)</span><i>+</i><span class="hot x">ViewModel handles it (closes sheet)</span>
+  </div>
+  <div class="cols">
+    <div><h3>Root</h3>
+<pre>onAction = { action ->
+    when (action) {
+        OnAddClick -> onAddTraining()
+        is OnEditClick -> onEditTraining(action.trainingId)
+        else -> Unit
+    }
+    viewModel.onAction(action)
+}</pre></div>
+    <div><h3>ViewModel</h3>
+<pre>when (action) {
+    is OnEditClick -> dismissOptionsSheet()  // half of the story
+    OnAddClick -> Unit                       // does nothing
+    ...
+}</pre></div>
+  </div>
+  <p>One tap, two handlers. To know what Edit does you read two files, and the ViewModel has branches that do nothing.</p>
+</div>
+
+<div class="card a">
+  <h2>Option A: Navigator <span class="tag">least code</span></h2>
+  <p>One small <code>Navigator</code> class, shared by the whole app. ViewModels get it injected and call
+     <code>push</code> / <code>pop</code>. <code>AppNavDisplay</code> listens and moves the back stack.</p>
+  <div class="flow" style="color:var(--a)">
+    <span>tap Edit</span><i>→</i><span>Action</span><i>→</i><span class="hot">ViewModel</span><i>→</i>
+    <span class="hot">Navigator</span><i>→</i><span>AppNavDisplay moves the back stack</span>
+  </div>
+  <div class="cols">
+    <div><h3>ViewModel: the whole story in one place</h3>
+<pre>class TrainingListViewModel(
+    private val repository: TrainingRepository,
+    private val navigator: Navigator,
+) : ViewModel() {
+
+    fun onAction(action: TrainingListAction) {
+        when (action) {
+            OnAddClick -> navigator.push(TrainingEditorKey())
+            is OnEditClick -> {
+                dismissOptionsSheet()
+                navigator.push(TrainingEditorKey(action.trainingId))
+            }
+            ...
+        }
+    }
+}
+
+// editor
+OnBackClick -> navigator.pop(key)
+// after save, or Training missing:
+navigator.pop(key)   // TrainingSaved / TrainingMissing Events disappear</pre></div>
+    <div><h3>Root and entries: nothing left to wire</h3>
+<pre>@Composable
+internal fun TrainingListRoot(viewModel: TrainingListViewModel = koinViewModel()) {
+    ...
+    TrainingListScreen(state = state, onAction = viewModel::onAction)
+}
+
+fun EntryProviderScope&lt;NavKey&gt;.trainingsEntries() {
+    entry&lt;TrainingListKey&gt; { TrainingListRoot() }
+    entry&lt;TrainingEditorKey&gt; { key -> TrainingEditorRoot(key) }
+}</pre>
+    <h3>Written once per app (~20 lines)</h3>
+<pre>// :core:presentation
+class Navigator {
+    private val _commands = Channel&lt;NavCommand&gt;(Channel.BUFFERED)
+    val commands = _commands.receiveAsFlow()
+    fun push(key: NavKey) { _commands.trySend(NavCommand.Push(key)) }
+    fun pop(key: NavKey) { _commands.trySend(NavCommand.Pop(key)) }
+}
+
+// :app, inside AppNavDisplay
+ObserveAsEvents(navigator.commands) { command ->
+    when (command) {
+        is NavCommand.Push -> backStack.push(command.key)
+        is NavCommand.Pop -> backStack.pop(command.key)
+    }
+}</pre></div>
+  </div>
+  <div class="cols">
+    <ul class="plus">
+      <li>A new navigation is one line in the ViewModel. No callback, no Event, no entry wiring.</li>
+      <li>Roots have no navigation parameters; <code>onAction = viewModel::onAction</code> everywhere.</li>
+      <li>Existing push / pop guards and state restoration stay as they are.</li>
+      <li>Same <code>Navigator</code> file copies into any app.</li>
+    </ul>
+    <ul class="minus">
+      <li>The ViewModel must be able to see the key it opens. Fine inside a feature; opening another feature's screen
+          needs an extra rule (see Option C, or shared keys).</li>
+      <li>One app-wide object every ViewModel can reach.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card b">
+  <h2>Option B: navigation as Events <span class="tag">no new concept</span></h2>
+  <p>The ViewModel handles every Action alone and, when it wants to navigate, sends an Event. The Root turns that Event
+     into the callback it already has. It is the pattern the editor uses today for <code>TrainingSaved</code>, applied
+     to all navigation.</p>
+  <div class="flow" style="color:var(--b)">
+    <span>tap Edit</span><i>→</i><span>Action</span><i>→</i><span class="hot">ViewModel</span><i>→</i>
+    <span class="hot">Event</span><i>→</i><span>Root</span><i>→</i><span>callback</span><i>→</i><span>entries move the back stack</span>
+  </div>
+  <div class="cols">
+    <div><h3>ViewModel</h3>
+<pre>when (action) {
+    OnAddClick -> send(TrainingListEvent.OpenEditor(null))
+    is OnEditClick -> {
+        dismissOptionsSheet()
+        send(TrainingListEvent.OpenEditor(action.trainingId))
+    }
+    ...
+}</pre></div>
+    <div><h3>Root and entries</h3>
+<pre>ObserveAsEvents(viewModel.events) { event ->
+    when (event) {
+        is OpenEditor -> onOpenEditor(event.trainingId)
+        is TrainingDeleted -> ...
+    }
+}
+TrainingListScreen(state = state, onAction = viewModel::onAction)
+
+// entries: unchanged
+TrainingListRoot(onOpenEditor = { id -> backStack.push(TrainingEditorKey(id)) })</pre></div>
+  </div>
+  <div class="cols">
+    <ul class="plus">
+      <li>Nothing new to learn or copy between apps: only Events and callbacks.</li>
+      <li>ViewModels know nothing about keys or the back stack; features stay fully isolated.</li>
+      <li>Opening another feature's screen works the same way as today.</li>
+    </ul>
+    <ul class="minus">
+      <li>Most code per navigation: an Event, a Root branch, a callback parameter, an entry lambda (4 places).</li>
+      <li>The Root still handles navigation, just from Events instead of Actions.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card c">
+  <h2>Option C: a navigator interface per feature <span class="tag">most structure</span></h2>
+  <p>Each feature declares what navigation it needs as an interface. ViewModels call it. <code>:app</code> implements
+     it (using Option A's Navigator underneath).</p>
+  <div class="flow" style="color:var(--c)">
+    <span>tap Edit</span><i>→</i><span>Action</span><i>→</i><span class="hot">ViewModel</span><i>→</i>
+    <span class="hot">TrainingsNavigator (interface)</span><i>→</i><span>implementation in :app</span><i>→</i><span>back stack</span>
+  </div>
+  <div class="cols">
+    <div><h3>Feature</h3>
+<pre>interface TrainingsNavigator {
+    fun openEditor(trainingId: Long? = null)
+    fun closeEditor(key: TrainingEditorKey)
+}
+
+// ViewModel
+OnAddClick -> navigator.openEditor()
+is OnEditClick -> {
+    dismissOptionsSheet()
+    navigator.openEditor(action.trainingId)
+}</pre></div>
+    <div><h3>:app</h3>
+<pre>class AppTrainingsNavigator(
+    private val navigator: Navigator,
+) : TrainingsNavigator {
+    override fun openEditor(trainingId: Long?) =
+        navigator.push(TrainingEditorKey(trainingId))
+    override fun closeEditor(key: TrainingEditorKey) =
+        navigator.pop(key)
+}
+// + a Koin binding</pre></div>
+  </div>
+  <div class="cols">
+    <ul class="plus">
+      <li>ViewModel code reads as intent (<code>openEditor</code>) and never touches keys.</li>
+      <li>Cross-feature navigation needs no extra rule: <code>:app</code> sees every key.</li>
+      <li>Roots are as empty as in Option A.</li>
+    </ul>
+    <ul class="minus">
+      <li>An interface, an implementation and a binding per feature, on top of Option A's Navigator.</li>
+      <li>A new navigation touches 3 places instead of 1.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Side by side</h2>
+  <table>
+    <tr><th></th><th style="color:var(--a)">A: Navigator</th><th style="color:var(--b)">B: Events</th><th style="color:var(--c)">C: Interface per feature</th></tr>
+    <tr><td>Places touched to add one navigation</td><td><b>1</b></td><td>4</td><td>3</td></tr>
+    <tr><td>Action handled in one place</td><td>yes</td><td>yes</td><td>yes</td></tr>
+    <tr><td>Empty <code>-&gt; Unit</code> branches gone</td><td>yes</td><td>yes</td><td>yes</td></tr>
+    <tr><td>Root has navigation callbacks</td><td>no</td><td>yes</td><td>no</td></tr>
+    <tr><td>Shared code to copy into a new app</td><td>~20 lines</td><td>none</td><td>~20 lines + per-feature files</td></tr>
+    <tr><td>ViewModel knows nav keys</td><td>yes</td><td>no</td><td>no</td></tr>
+    <tr><td>Opening another feature's screen</td><td>needs a rule</td><td>works as today</td><td>works</td></tr>
+  </table>
+  <p style="margin-top:14px"><b>Recommendation: A inside a feature, C's interface only where one feature opens another
+     feature's screen.</b> Everyday navigation costs one line; the extra structure appears only at feature borders,
+     which this app does not have yet.</p>
+</div>
+</main>
+</body>
+</html>

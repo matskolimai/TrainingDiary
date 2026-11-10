@@ -6,9 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import org.koin.android.ext.android.inject
 import pl.skolim.trainingdiary.core.designsystem.AppTheme
 
 class MainActivity : ComponentActivity() {
+    private val navigator: AppNavigator by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
@@ -17,7 +20,7 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             AppTheme {
-                AppNavDisplay()
+                AppNavDisplay(navigator)
             }
         }
     }
