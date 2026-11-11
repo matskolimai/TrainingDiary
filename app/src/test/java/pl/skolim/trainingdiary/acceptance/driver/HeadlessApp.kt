@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import org.koin.core.Koin
 import org.koin.core.parameter.parametersOf
@@ -21,6 +22,7 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListE
 import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListViewModel
 import pl.skolim.trainingdiary.pop
 import pl.skolim.trainingdiary.push
+import kotlin.time.Duration
 
 /** Replaces the Activity and AppNavDisplay; navigation, ViewModels and everything below them are the app's own. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -31,6 +33,7 @@ class HeadlessApp(
     private val backStack = NavBackStack<NavKey>(TrainingListKey)
     private val entries = mutableListOf(createEntry(TrainingListKey))
     private var collection: Job? = null
+    private var isInForeground = true
 
     var lastTrainingListEvent: TrainingListEvent? = null
         private set
@@ -62,6 +65,17 @@ class HeadlessApp(
 
     fun settle() = scope.runCurrent()
 
+    fun leaveFor(duration: Duration) {
+        isInForeground = false
+        collection?.cancel()
+        collection = null
+        settle()
+        scope.advanceTimeBy(duration)
+        isInForeground = true
+        scope.backgroundScope.launch { collectTop() }
+        settle()
+    }
+
     private fun createEntry(key: NavKey): Entry =
         Entry(
             when (key) {
@@ -73,6 +87,7 @@ class HeadlessApp(
 
     private suspend fun collectTop() {
         collection?.cancelAndJoin()
+        if (!isInForeground) return
         collection =
             scope.backgroundScope.launch {
                 when (val viewModel = entries.last().viewModel) {

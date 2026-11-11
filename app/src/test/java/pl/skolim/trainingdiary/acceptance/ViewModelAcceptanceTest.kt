@@ -12,6 +12,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.dsl.onClose
+import pl.skolim.trainingdiary.acceptance.driver.AppViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.HeadlessApp
 import pl.skolim.trainingdiary.acceptance.driver.TrainingEditorViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.TrainingListViewModelDriver
@@ -43,6 +44,7 @@ abstract class ViewModelAcceptanceTest : AcceptanceCases {
                 HeadlessApp(koin, this).use { app ->
                     app.settle()
                     AppDsl(
+                        appDriver = AppViewModelDriver(app),
                         trainingListDriver = TrainingListViewModelDriver(app),
                         trainingEditorDriver = TrainingEditorViewModelDriver(app),
                     ).steps()

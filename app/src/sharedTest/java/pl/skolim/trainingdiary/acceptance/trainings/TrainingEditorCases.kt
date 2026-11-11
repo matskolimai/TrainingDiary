@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import pl.skolim.trainingdiary.acceptance.AcceptanceCases
 import pl.skolim.trainingdiary.acceptance.Channel
 import pl.skolim.trainingdiary.acceptance.OnlyOn
+import kotlin.time.Duration.Companion.seconds
 
 interface TrainingEditorCases : AcceptanceCases {
     // Focus is set by the Screen, so only the device channel can see it.
@@ -61,6 +62,17 @@ interface TrainingEditorCases : AcceptanceCases {
             given.trainings("Push day", "Nogi")
             trainingList.openForEditing("Nogi")
             trainingEditor.assertEditing("Nogi")
+        }
+
+    @OnlyOn(Channel.VIEW_MODEL)
+    @Test
+    fun `leaving the app for a while keeps the name being typed`() =
+        app {
+            given.trainings("Nogi")
+            trainingList.openForEditing("Nogi")
+            trainingEditor.replaceName("Leg day")
+            leaveAppFor(10.seconds)
+            trainingEditor.assertEditing("Leg day")
         }
 
     @Test
