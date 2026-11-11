@@ -45,3 +45,19 @@ feasible.
 - Does the mutation-testing skill run mutants against the ViewModel channel, the device channel, or both?
 
 ## Comments
+
+### 2026-11-10: grilling, round 1-2, and the prototype
+
+Decided in the grilling session:
+
+- Real repository over in-memory Room on the JVM, not a fake.
+- Every case runs on both channels by default; a case only one channel can stage is tagged for that channel.
+- M4 goes: the missing-Training branch becomes `checkNotNull(repository.getTraining(trainingId))`.
+- Test vocabulary (channel, driver, case) goes in the `android-acceptance-testing` skill, not `GLOSSARY.md`.
+- Mutation testing runs mutants on the ViewModel channel first, and only survivors on device; mutants in Screen
+  or Root composables go straight to device.
+- New steps: `trainingEditor.saveTwiceQuickly()` (M1, M3) and `leaveAppFor(10.seconds)` (M2), both JVM-only.
+
+Prototype of option (c), a headless app over the real Koin graph: branch `prototype/viewmodel-channel`, commit
+`4a67e9e`. JVM: 12 passed, 1 skipped, about 1 s. Device: 11 passed, 2 skipped. The JVM channel kills M1, M2, M3
+and the control mutant. Room runs on the JVM with the bundled driver, with no Robolectric and no `Context`.
