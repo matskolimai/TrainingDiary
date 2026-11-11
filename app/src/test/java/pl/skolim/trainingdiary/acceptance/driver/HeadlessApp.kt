@@ -1,0 +1,103 @@
+package pl.skolim.trainingdiary.acceptance.driver
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelStore
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
+import org.koin.core.Koin
+import org.koin.core.parameter.parametersOf
+import pl.skolim.trainingdiary.AppNavigator
+import pl.skolim.trainingdiary.NavRequest
+import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
+import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingListKey
+import pl.skolim.trainingdiary.feature.trainings.presentation.editor.TrainingEditorViewModel
+import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListEvent
+import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListViewModel
+import pl.skolim.trainingdiary.pop
+import pl.skolim.trainingdiary.push
+
+/** Replaces the Activity and AppNavDisplay; navigation, ViewModels and everything below them are the app's own. */
+@OptIn(ExperimentalCoroutinesApi::class)
+class HeadlessApp(
+    private val koin: Koin,
+    private val scope: TestScope,
+) : AutoCloseable {
+    private val backStack = NavBackStack<NavKey>(TrainingListKey)
+    private val entries = mutableListOf(createEntry(TrainingListKey))
+    private var collection: Job? = null
+
+    var lastTrainingListEvent: TrainingListEvent? = null
+        private set
+
+    val topKey: NavKey get() = backStack.last()
+
+    val trainingList: TrainingListViewModel get() = entries.last().viewModel as TrainingListViewModel
+    val trainingEditor: TrainingEditorViewModel get() = entries.last().viewModel as TrainingEditorViewModel
+
+    private val navigation =
+        scope.backgroundScope.launch {
+            collectTop()
+            koin.get<AppNavigator>().requests.collect { request ->
+                val previousSize = backStack.size
+                when (request) {
+                    is NavRequest.Push -> {
+                        backStack.push(request.key)
+                        if (backStack.size > previousSize) entries.add(createEntry(request.key))
+                    }
+
+                    is NavRequest.Pop -> {
+                        backStack.pop(request.key)
+                        if (backStack.size < previousSize) entries.removeLast().store.clear()
+                    }
+                }
+                if (backStack.size != previousSize) collectTop()
+            }
+        }
+
+    fun settle() = scope.runCurrent()
+
+    private fun createEntry(key: NavKey): Entry =
+        Entry(
+            when (key) {
+                TrainingListKey -> koin.get<TrainingListViewModel>()
+                is TrainingEditorKey -> koin.get<TrainingEditorViewModel> { parametersOf(key) }
+                else -> error("No ViewModel registered for $key")
+            },
+        )
+
+    private suspend fun collectTop() {
+        collection?.cancelAndJoin()
+        collection =
+            scope.backgroundScope.launch {
+                when (val viewModel = entries.last().viewModel) {
+                    is TrainingListViewModel -> {
+                        launch { viewModel.state.collect {} }
+                        launch { viewModel.events.collect { lastTrainingListEvent = it } }
+                    }
+
+                    is TrainingEditorViewModel -> {
+                        viewModel.state.collect {}
+                    }
+                }
+            }
+    }
+
+    override fun close() {
+        navigation.cancel()
+        collection?.cancel()
+        entries.forEach { it.store.clear() }
+        settle()
+    }
+
+    private class Entry(
+        val viewModel: ViewModel,
+    ) {
+        val store = ViewModelStore().apply { put("screen", viewModel) }
+    }
+}

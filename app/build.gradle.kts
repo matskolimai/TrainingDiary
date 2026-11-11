@@ -44,6 +44,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     testImplementation(libs.koin.test)
+    testImplementation(libs.androidx.room3.runtime)
+    testImplementation(libs.androidx.sqlite.bundled.jvm)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     // The in-memory database the acceptance tests swap in.
     androidTestImplementation(libs.androidx.room3.runtime)
