@@ -42,12 +42,8 @@ class TrainingEditorViewModel(
     private suspend fun load() {
         if (hasLoaded || trainingId == null) return
         hasLoaded = true
-        val training = repository.getTraining(trainingId)
-        if (training == null) {
-            navigator.back(key)
-        } else {
-            _state.update { it.copy(name = training.name, isLoading = false) }
-        }
+        val training = checkNotNull(repository.getTraining(trainingId))
+        _state.update { it.copy(name = training.name, isLoading = false) }
     }
 
     // isSaving stays set after saving: the editor closes, and a second tap must not save again.
