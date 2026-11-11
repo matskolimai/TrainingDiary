@@ -17,6 +17,8 @@ class TrainingEditorDsl(
 
     fun save() = driver.tapSave()
 
+    fun saveTwiceQuickly() = driver.tapSaveTwiceQuickly()
+
     fun assertSaveUnavailable() = driver.assertCannotSave()
 
     fun leaveWithoutSaving() = driver.leave()

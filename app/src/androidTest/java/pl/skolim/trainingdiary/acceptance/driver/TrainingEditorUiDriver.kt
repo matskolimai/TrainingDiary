@@ -16,6 +16,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.AnnotatedString
 import de.mannodermaus.junit5.compose.ComposeContext
+import pl.skolim.trainingdiary.acceptance.Channel
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 import pl.skolim.trainingdiary.core.designsystem.R as DesignSystemR
 
@@ -56,6 +57,8 @@ class TrainingEditorUiDriver(
         compose.onNode(saveButton()).performClick()
         compose.waitUntilDoesNotExist(nameField())
     }
+
+    override fun tapSaveTwiceQuickly(): Unit = throw CannotStageException("tapSaveTwiceQuickly", Channel.DEVICE)
 
     override fun assertCannotSave() {
         compose.waitUntilExactlyOneExists(nameField())
