@@ -21,6 +21,8 @@ abstract class AcceptanceTest : AcceptanceCases {
     @RegisterExtension
     val compose: AndroidComposeExtension<MainActivity> = createAndroidComposeExtension<MainActivity>()
 
+    override val channel = Channel.DEVICE
+
     override fun app(steps: AppDsl.() -> Unit) =
         compose.use {
             val resources = compose.activity.resources

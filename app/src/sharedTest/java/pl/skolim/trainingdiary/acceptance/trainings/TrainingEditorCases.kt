@@ -2,8 +2,12 @@ package pl.skolim.trainingdiary.acceptance.trainings
 
 import org.junit.jupiter.api.Test
 import pl.skolim.trainingdiary.acceptance.AcceptanceCases
+import pl.skolim.trainingdiary.acceptance.Channel
+import pl.skolim.trainingdiary.acceptance.OnlyOn
 
 interface TrainingEditorCases : AcceptanceCases {
+    // Focus is set by the Screen, so only the device channel can see it.
+    @OnlyOn(Channel.DEVICE)
     @Test
     fun `opening the new training screen shows an empty name ready to type`() =
         app {
