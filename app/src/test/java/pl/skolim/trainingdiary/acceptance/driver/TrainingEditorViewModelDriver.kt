@@ -18,6 +18,14 @@ class TrainingEditorViewModelDriver(
         assertThat(app.topKey is TrainingEditorKey).isFalse()
     }
 
+    override fun tapSaveTwiceQuickly() {
+        val viewModel = app.trainingEditor
+        viewModel.onAction(TrainingEditorAction.OnSaveClick)
+        viewModel.onAction(TrainingEditorAction.OnSaveClick)
+        app.settle()
+        assertThat(app.topKey is TrainingEditorKey).isFalse()
+    }
+
     override fun assertEmptyForAdding() {
         val state = app.trainingEditor.state.value
         assertThat(state.isEditMode).isFalse()

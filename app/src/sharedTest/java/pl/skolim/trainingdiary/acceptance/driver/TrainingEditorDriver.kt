@@ -14,6 +14,8 @@ interface TrainingEditorDriver {
 
     fun tapSave()
 
+    fun tapSaveTwiceQuickly()
+
     fun assertCannotSave()
 
     fun leave()

@@ -36,6 +36,16 @@ interface TrainingEditorCases : AcceptanceCases {
             trainingList.assertListed("Push day", "Nogi")
         }
 
+    @OnlyOn(Channel.VIEW_MODEL)
+    @Test
+    fun `saving the new training screen twice quickly adds the training once`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.enterName("Push day")
+            trainingEditor.saveTwiceQuickly()
+            trainingList.assertListed("Push day")
+        }
+
     @Test
     fun `saving the new training screen trims the name`() =
         app {
