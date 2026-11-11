@@ -1,9 +1,9 @@
 package pl.skolim.trainingdiary.acceptance.dsl
 
-import pl.skolim.trainingdiary.acceptance.driver.TrainingListUiDriver
+import pl.skolim.trainingdiary.acceptance.driver.TrainingListDriver
 
 class TrainingListDsl(
-    private val driver: TrainingListUiDriver,
+    private val driver: TrainingListDriver,
 ) {
     fun assertListed(vararg names: String) = driver.assertListedInOrder(names.toList())
 

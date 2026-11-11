@@ -18,14 +18,14 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.R
 class TrainingListUiDriver(
     private val compose: ComposeContext,
     private val resources: Resources,
-) {
-    fun assertEmptyList() {
+) : TrainingListDriver {
+    override fun assertEmptyList() {
         compose.waitUntilExactlyOneExists(hasText(resources.getString(R.string.training_list_empty_title)))
         compose.onNodeWithText(resources.getString(R.string.training_list_empty_body)).assertIsDisplayed()
     }
 
     // Names may repeat (duplicates are allowed), so rows are matched by position, not by unique text.
-    fun assertListedInOrder(names: List<String>) {
+    override fun assertListedInOrder(names: List<String>) {
         compose.waitUntilNodeCount(moreOptions(), names.size)
         val listed =
             names
@@ -37,27 +37,27 @@ class TrainingListUiDriver(
         assertThat(listed).containsExactlyElementsIn(names).inOrder()
     }
 
-    fun openNewTraining() {
+    override fun openNewTraining() {
         compose.waitUntilExactlyOneExists(addAction())
         compose.onNode(addAction()).performClick()
         compose.waitUntilDoesNotExist(addAction())
     }
 
-    fun openTrainingForEditing(name: String) {
+    override fun openTrainingForEditing(name: String) {
         chooseOption(name, R.string.training_list_edit)
         compose.waitUntilDoesNotExist(addAction())
     }
 
-    fun deleteTraining(name: String) {
+    override fun deleteTraining(name: String) {
         chooseOption(name, R.string.training_list_delete)
     }
 
-    fun assertUndoDeleteOffered(name: String) {
+    override fun assertUndoDeleteOffered(name: String) {
         compose.waitUntilExactlyOneExists(hasText(resources.getString(R.string.training_list_deleted, name)))
         compose.onNode(undoAction()).assertIsDisplayed()
     }
 
-    fun undoDelete() {
+    override fun undoDelete() {
         compose.waitUntilExactlyOneExists(undoAction())
         compose.onNode(undoAction()).performClick()
     }

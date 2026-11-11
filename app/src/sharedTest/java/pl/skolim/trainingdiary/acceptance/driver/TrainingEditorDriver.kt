@@ -1,0 +1,20 @@
+package pl.skolim.trainingdiary.acceptance.driver
+
+/** The Training editor's steps, implemented once per channel. */
+interface TrainingEditorDriver {
+    fun assertEmptyForAdding()
+
+    fun assertShowingForEditing(name: String)
+
+    fun assertNameFieldFocused()
+
+    fun typeName(name: String)
+
+    fun replaceName(name: String)
+
+    fun tapSave()
+
+    fun assertCannotSave()
+
+    fun leave()
+}

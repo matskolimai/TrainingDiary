@@ -24,45 +24,45 @@ import pl.skolim.trainingdiary.core.designsystem.R as DesignSystemR
 class TrainingEditorUiDriver(
     private val compose: ComposeContext,
     private val resources: Resources,
-) {
-    fun assertEmptyForAdding() {
+) : TrainingEditorDriver {
+    override fun assertEmptyForAdding() {
         compose.waitUntilExactlyOneExists(nameField())
         compose.onNodeWithText(resources.getString(R.string.training_editor_title_add)).assertIsDisplayed()
         compose.onNode(nameField() and hasNoInput()).assertIsDisplayed()
     }
 
-    fun assertShowingForEditing(name: String) {
+    override fun assertShowingForEditing(name: String) {
         compose.waitUntilExactlyOneExists(nameField())
         compose.onNodeWithText(resources.getString(R.string.training_editor_title_edit)).assertIsDisplayed()
         compose.onNode(nameField() and hasInput(name)).assertIsDisplayed()
     }
 
-    fun assertNameFieldFocused() {
+    override fun assertNameFieldFocused() {
         // The field is focused by an effect after the first frame, so wait for it rather than assert at once.
         compose.waitUntilExactlyOneExists(nameField() and isFocused())
     }
 
-    fun typeName(name: String) {
+    override fun typeName(name: String) {
         compose.waitUntilExactlyOneExists(nameField())
         compose.onNode(nameField()).performTextInput(name)
     }
 
-    fun replaceName(name: String) {
+    override fun replaceName(name: String) {
         compose.waitUntilExactlyOneExists(nameField())
         compose.onNode(nameField()).performTextReplacement(name)
     }
 
-    fun tapSave() {
+    override fun tapSave() {
         compose.onNode(saveButton()).performClick()
         compose.waitUntilDoesNotExist(nameField())
     }
 
-    fun assertCannotSave() {
+    override fun assertCannotSave() {
         compose.waitUntilExactlyOneExists(nameField())
         compose.onNode(saveButton()).assertIsNotEnabled()
     }
 
-    fun leave() {
+    override fun leave() {
         compose
             .onNodeWithContentDescription(resources.getString(DesignSystemR.string.design_system_cd_back))
             .performClick()

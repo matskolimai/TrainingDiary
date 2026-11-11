@@ -1,6 +1,17 @@
 naming:
   FunctionNaming:
     ignoreAnnotated: ['Composable']
+    # Detekt's default test paths, plus :app's sharedTest, which holds the acceptance cases both test source sets run.
+    excludes:
+      - '**/test/**'
+      - '**/androidTest/**'
+      - '**/sharedTest/**'
+      - '**/commonTest/**'
+      - '**/jvmTest/**'
+      - '**/androidUnitTest/**'
+      - '**/androidInstrumentedTest/**'
+      - '**/jsTest/**'
+      - '**/iosTest/**'
 
 style:
   UnusedPrivateFunction:

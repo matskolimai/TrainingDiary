@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.RegisterExtension
 import pl.skolim.trainingdiary.MainActivity
 import pl.skolim.trainingdiary.acceptance.driver.InMemoryAppExtension
+import pl.skolim.trainingdiary.acceptance.driver.TrainingEditorUiDriver
+import pl.skolim.trainingdiary.acceptance.driver.TrainingListUiDriver
 import pl.skolim.trainingdiary.acceptance.dsl.AppDsl
 
 // `@ExtendWith` is inherited and class-level extensions run before field extensions, so Koin starts before the
@@ -14,13 +16,17 @@ import pl.skolim.trainingdiary.acceptance.dsl.AppDsl
 @OptIn(ExperimentalTestApi::class)
 @ExtendWith(InMemoryAppExtension::class)
 @Suppress("AbstractClassCanBeConcreteClass") // Abstract so it is only ever extended, never run on its own.
-abstract class AcceptanceTest {
+abstract class AcceptanceTest : AcceptanceCases {
     @JvmField
     @RegisterExtension
     val compose: AndroidComposeExtension<MainActivity> = createAndroidComposeExtension<MainActivity>()
 
-    protected fun app(steps: AppDsl.() -> Unit) =
+    override fun app(steps: AppDsl.() -> Unit) =
         compose.use {
-            AppDsl(compose = this, resources = compose.activity.resources).steps()
+            val resources = compose.activity.resources
+            AppDsl(
+                trainingListDriver = TrainingListUiDriver(compose = this, resources = resources),
+                trainingEditorDriver = TrainingEditorUiDriver(compose = this, resources = resources),
+            ).steps()
         }
 }

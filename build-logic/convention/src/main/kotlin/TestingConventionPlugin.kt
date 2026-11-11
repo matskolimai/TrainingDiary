@@ -18,7 +18,8 @@ import pl.skolim.trainingdiary.buildlogic.pluginId
  *
  * On the application module it also sets up the acceptance tests: JUnit 6 on device (mannodermaus adds its runner,
  * core and Compose artifacts once it sees `junit-jupiter-api` and a Compose dependency in `androidTest`) and a
- * headless Gradle Managed Device, run with `./gradlew pixel9DebugAndroidTest`.
+ * headless Gradle Managed Device, run with `./gradlew pixel9DebugAndroidTest`. The acceptance cases, DSL and driver
+ * interfaces live in `src/sharedTest`, compiled into both test source sets so each channel runs the same cases.
  */
 class TestingConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -51,6 +52,9 @@ private fun Project.configureAcceptanceTests() {
             device = "Pixel 9"
             sdkVersion = 37
             systemImageSource = "aosp-atd"
+        }
+        listOf("test", "androidTest").forEach { sourceSet ->
+            sourceSets.getByName(sourceSet).kotlin.directories.add("src/sharedTest/java")
         }
     }
     dependencies {

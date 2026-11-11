@@ -1,9 +1,9 @@
 package pl.skolim.trainingdiary.acceptance.dsl
 
-import pl.skolim.trainingdiary.acceptance.driver.TrainingEditorUiDriver
+import pl.skolim.trainingdiary.acceptance.driver.TrainingEditorDriver
 
 class TrainingEditorDsl(
-    private val driver: TrainingEditorUiDriver,
+    private val driver: TrainingEditorDriver,
 ) {
     fun assertEmptyNewTraining() = driver.assertEmptyForAdding()
 
