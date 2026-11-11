@@ -1,6 +1,7 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
 import com.google.common.truth.Truth.assertThat
+import pl.skolim.trainingdiary.acceptance.Channel
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.editor.TrainingEditorAction
 
@@ -9,25 +10,44 @@ class TrainingEditorViewModelDriver(
 ) : TrainingEditorDriver {
     override fun typeName(name: String) {
         val viewModel = app.trainingEditor
-        viewModel.onAction(TrainingEditorAction.OnNameChange(viewModel.state.value.name + name))
-        app.settle()
+        act(TrainingEditorAction.OnNameChange(viewModel.state.value.name + name))
     }
 
     override fun tapSave() {
-        app.trainingEditor.onAction(TrainingEditorAction.OnSaveClick)
-        app.settle()
+        act(TrainingEditorAction.OnSaveClick)
         assertThat(app.topKey is TrainingEditorKey).isFalse()
     }
 
-    override fun assertEmptyForAdding(): Unit = TODO("ticket 05")
+    override fun assertEmptyForAdding() {
+        val state = app.trainingEditor.state.value
+        assertThat(state.isEditMode).isFalse()
+        assertThat(state.isLoading).isFalse()
+        assertThat(state.name).isEmpty()
+    }
 
-    override fun assertShowingForEditing(name: String): Unit = TODO("ticket 05")
+    override fun assertShowingForEditing(name: String) {
+        val state = app.trainingEditor.state.value
+        assertThat(state.isEditMode).isTrue()
+        assertThat(state.isLoading).isFalse()
+        assertThat(state.name).isEqualTo(name)
+    }
 
-    override fun assertNameFieldFocused(): Unit = TODO("ticket 05")
+    override fun assertNameFieldFocused(): Unit =
+        throw CannotStageException("assertNameFieldFocused", Channel.VIEW_MODEL)
 
-    override fun replaceName(name: String): Unit = TODO("ticket 05")
+    override fun replaceName(name: String) = act(TrainingEditorAction.OnNameChange(name))
 
-    override fun assertCannotSave(): Unit = TODO("ticket 05")
+    override fun assertCannotSave() {
+        assertThat(app.trainingEditor.state.value.canSave).isFalse()
+    }
 
-    override fun leave(): Unit = TODO("ticket 05")
+    override fun leave() {
+        act(TrainingEditorAction.OnBackClick)
+        assertThat(app.topKey is TrainingEditorKey).isFalse()
+    }
+
+    private fun act(action: TrainingEditorAction) {
+        app.trainingEditor.onAction(action)
+        app.settle()
+    }
 }
