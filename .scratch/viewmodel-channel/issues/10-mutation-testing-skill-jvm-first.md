@@ -18,7 +18,8 @@ cases can catch. See `../spec.md` (Skills).
 
 - The skill is versioned separately in `C:/Users/matsk/.claude/skills`. Its changes are isolated on branch
   `ticket/10-mutation-jvm-first` in `C:/Users/matsk/.codex/worktrees/d9c9/skills`, alongside this repo's worktree.
-  The installed skills checkout has unrelated edits, which remain untouched. Both master branches await approval.
+  The installed skills checkout has unrelated edits, which remain untouched. The user approved both merges;
+  TrainingDiary merged the ticket in `7d1170c`, and the skills repository merged the skill in `c890413`.
 - Skills commit: `4cc614ff86132b72aae1108dcec68d8596c7c9cb` (Try ViewModel acceptance cases before device mutation
   tests). This repo's commit records completion; the skill and runner are committed in their own repository.
 - The runner's `run` command takes JVM and device task/class pairs. It tries the ViewModel classes with repeated
@@ -39,6 +40,9 @@ cases can catch. See `../spec.md` (Skills).
   one skipped. No production Kotlin change remains.
 - Code review: independent Standards and Spec reviews report no findings. Standards checked repo conventions,
   writing-for-agents and the smell baseline; Spec checked every ticket criterion against the skill and runner.
+- Post-merge validation: `./gradlew check :app:pixel9DebugAndroidTest --no-daemon --console=plain` passes, with
+  unchanged tests up to date. The installed runner's 14 CLI scenarios pass. The spec is marked done after checking
+  all implementation tickets, the shared cases and drivers, the headless app, and both skills.
 
 ## Additions
 

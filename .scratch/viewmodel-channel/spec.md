@@ -1,6 +1,6 @@
 # Spec: Acceptance cases on a ViewModel channel
 
-Status: ready-for-agent
+Status: done
 
 Source: the grilling session of 2026-11-10 on `issues/01-discover-viewmodel-channel.md`, the prototype on branch
 `prototype/viewmodel-channel` (commit `4a67e9e`), and `docs/adr/0001-acceptance-cases-on-two-channels.md`. The
@@ -259,3 +259,15 @@ case is shown to kill its mutant by applying the mutant by hand and seeing the c
   compile task to rerun fixed it. Expect a stale incremental build after moving the files.
 - The device channel's run time does not change: it runs the same 11 cases as before; the two new cases are
   skipped there.
+
+## Completion
+
+- Implementation tickets 02-10 are complete and merged to `master`. Discovery in ticket 01 produced this spec,
+  the prototype and ADR-0001; its questions are resolved by the implementation decisions above.
+- Both skills are updated on the user's skills repository's `master`: acceptance testing in `894550d`, and
+  JVM-first mutation testing in `4cc614f`, merged by `c890413` after approval.
+- Post-merge `./gradlew check :app:pixel9DebugAndroidTest --no-daemon --console=plain` passes, reusing unchanged
+  test results. Acceptance reports show 12 passed and one skipped on the JVM, and 11 passed and two skipped on
+  the device. The new cases' M1/M3 and M2 mutation proofs are recorded in tickets 06 and 07 respectively.
+- The installed mutation runner's 14 CLI scenarios pass after merging. Ticket 10 records the real control mutant
+  killed on the ViewModel channel, restoration checks and independent Standards/Spec reviews.

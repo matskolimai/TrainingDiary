@@ -4,7 +4,7 @@
 test (a second driver under the existing DSL), so scenarios the UI cannot stage get tested. This is a seed for a
 `/grill-with-docs` session that produces `spec.md` and tickets; it is not ready to implement.
 
-**Status:** needs-triage
+**Status:** done
 
 ## Why
 
@@ -61,3 +61,9 @@ Decided in the grilling session:
 Prototype of option (c), a headless app over the real Koin graph: branch `prototype/viewmodel-channel`, commit
 `4a67e9e`. JVM: 12 passed, 1 skipped, about 1 s. Device: 11 passed, 2 skipped. The JVM channel kills M1, M2, M3
 and the control mutant. Room runs on the JVM with the bundled driver, with no Robolectric and no `Context`.
+
+### Discovery completed
+
+The questions above are resolved in [the spec](../spec.md) and
+[ADR-0001](../../../docs/adr/0001-acceptance-cases-on-two-channels.md). Implementation tickets 02-10 are
+complete and merged to `master`; both external skills are updated on their repository's `master` too.
