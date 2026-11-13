@@ -28,6 +28,8 @@ dependencies {
     implementation(projects.feature.trainings.domain)
     implementation(projects.feature.trainings.data)
     implementation(projects.feature.trainings.presentation)
+    implementation(projects.feature.exercises.data)
+    implementation(projects.feature.exercises.presentation)
     implementation(projects.core.presentation)
     implementation(projects.core.designSystem)
     implementation(projects.core.database)

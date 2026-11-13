@@ -11,10 +11,10 @@ Koin; and an empty `:feature:exercises:presentation` wired into `:app`. No `:fea
 
 **Status:** ready-for-agent
 
-- [ ] `:core:domain`, `:feature:exercises:data` and `:feature:exercises:presentation` exist, use the convention
+- [x] `:core:domain`, `:feature:exercises:data` and `:feature:exercises:presentation` exist, use the convention
       plugins and follow the `android-module-structure` dependency rules (no feature depends on another feature).
-- [ ] The catalogue holds exactly the categories and Exercises of `../catalogue.md`, in that display order, with
+- [x] The catalogue holds exactly the categories and Exercises of `../catalogue.md`, in that display order, with
       `Long` ids 1, 2, … for categories and for Exercises, and Polish names as plain strings.
-- [ ] `isTimed` is true only for Plank and Deska boczna.
-- [ ] `ExerciseCatalogue` is bound in a Koin module included in the app's modules; `KoinModulesTest` passes.
-- [ ] `./gradlew check` passes and the app launches unchanged.
+- [x] `isTimed` is true only for Plank and Deska boczna.
+- [x] `ExerciseCatalogue` is bound in a Koin module included in the app's modules; `KoinModulesTest` passes.
+- [x] `./gradlew check` passes and the app launches unchanged.

@@ -4,6 +4,7 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import pl.skolim.trainingdiary.core.database.coreDatabaseModule
+import pl.skolim.trainingdiary.feature.exercises.data.exercisesDataModule
 import pl.skolim.trainingdiary.feature.trainings.data.trainingsDataModule
 import pl.skolim.trainingdiary.feature.trainings.presentation.editor.TrainingEditorNavigator
 import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListNavigator
@@ -23,4 +24,5 @@ val appModules =
         coreDatabaseModule,
         trainingsDataModule,
         trainingsPresentationModule,
+        exercisesDataModule,
     )
