@@ -13,4 +13,5 @@
 
 ## Mutation testing
 
-No production Kotlin changed outside `:core:design-system`, which the focused and unfocused snapshots cover.
+Skill run; its diff leaves out `:core:design-system` (screenshot-covered), so no production Kotlin
+remained to mutate. The focused and unfocused snapshots cover the pill.
