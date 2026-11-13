@@ -9,8 +9,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
- * Asks whether to discard unsaved changes. „Odrzuć” calls [onDiscard]; „Anuluj”, a tap outside and back call
- * [onDismiss].
+ * Asks whether to discard unsaved changes. The discard button calls [onDiscard]; the cancel button, a tap outside
+ * and back call [onDismiss].
  */
 @Composable
 fun AppDiscardDialog(
