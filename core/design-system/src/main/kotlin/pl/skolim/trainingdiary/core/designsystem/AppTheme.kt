@@ -15,12 +15,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 
 private val AppColorScheme = darkColorScheme()
-private val AppTypography = Typography()
+
+// Every text size in the app comes from these styles; Material 3 defaults except where overridden.
+private val AppTypography =
+    Typography().run {
+        copy(labelMedium = labelMedium.copy(fontSize = 13.sp))
+    }
+
 private val AppShapes = Shapes()
 
-/** The app's only theme: dark, with Material 3 default colours, typography and shapes. */
+/** The app's only theme: dark, with Material 3 default colours and shapes and [AppTypography]. */
 @Composable
 fun AppTheme(content: @Composable () -> Unit) {
     MaterialTheme(
