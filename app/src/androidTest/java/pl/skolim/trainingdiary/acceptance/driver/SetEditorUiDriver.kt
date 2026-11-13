@@ -34,6 +34,12 @@ class SetEditorUiDriver(
         compose.onNode(setCard(number = sets.size + 1)).assertDoesNotExist()
     }
 
+    override fun tapAddToTraining() {
+        compose.waitUntilExactlyOneExists(addToTrainingButton())
+        compose.onNode(addToTrainingButton()).performClick()
+        compose.waitUntilDoesNotExist(addToTrainingButton())
+    }
+
     // The Exercise picker under this screen has the same title and its own back arrow, so leaving waits for this
     // screen's back arrow, told apart by its node, to go.
     override fun leave() {
@@ -48,6 +54,9 @@ class SetEditorUiDriver(
     private fun setCard(number: Int): SemanticsMatcher = hasText(number.toString()) and hasAnyChild(hasClickAction())
 
     private fun pill(text: String): SemanticsMatcher = hasClickAction() and hasText(text)
+
+    private fun addToTrainingButton(): SemanticsMatcher =
+        hasClickAction() and hasText(resources.getString(R.string.set_editor_add_to_training))
 
     private fun title(): SemanticsMatcher =
         hasText(resources.getString(R.string.set_editor_title)) and !hasClickAction()

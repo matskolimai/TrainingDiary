@@ -15,6 +15,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.AnnotatedString
+import com.google.common.truth.Truth.assertThat
 import de.mannodermaus.junit5.compose.ComposeContext
 import pl.skolim.trainingdiary.acceptance.Channel
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
@@ -41,6 +42,21 @@ class TrainingEditorUiDriver(
     override fun assertNameFieldFocused() {
         // The field is focused by an effect after the first frame, so wait for it rather than assert at once.
         compose.waitUntilExactlyOneExists(nameField() and isFocused())
+    }
+
+    // A card merges its name and summary. Cards of every expected kind are read and ordered by position, so a
+    // missing, extra or misplaced copy of an expected Training exercise fails.
+    override fun assertExercisesInOrder(exercises: List<PlannedTrainingExercise>) {
+        compose.waitUntilExactlyOneExists(nameField())
+        val kinds = exercises.distinct()
+
+        fun cards() =
+            kinds.flatMap { exercise ->
+                compose.onAllNodes(card(exercise)).fetchSemanticsNodes().map { node -> node to exercise }
+            }
+        compose.waitUntil { cards().size == exercises.size }
+        val listed = cards().sortedBy { (node, _) -> node.boundsInRoot.top }.map { (_, exercise) -> exercise }
+        assertThat(listed).containsExactlyElementsIn(exercises).inOrder()
     }
 
     override fun typeName(name: String) {
@@ -86,6 +102,12 @@ class TrainingEditorUiDriver(
 
     private fun saveButton(): SemanticsMatcher =
         hasClickAction() and hasText(resources.getString(R.string.training_editor_save))
+
+    private fun card(exercise: PlannedTrainingExercise): SemanticsMatcher {
+        val sets = resources.getQuantityString(R.plurals.training_editor_sets, exercise.sets, exercise.sets)
+        val summary = resources.getString(R.string.training_editor_exercise_summary, exercise.category, sets)
+        return hasText(exercise.name) and hasText(summary)
+    }
 
     private fun hasNoInput(): SemanticsMatcher = hasInput("")
 

@@ -8,6 +8,8 @@ interface TrainingEditorDriver {
 
     fun assertNameFieldFocused()
 
+    fun assertExercisesInOrder(exercises: List<PlannedTrainingExercise>)
+
     fun typeName(name: String)
 
     fun replaceName(name: String)
@@ -22,3 +24,10 @@ interface TrainingEditorDriver {
 
     fun leave()
 }
+
+/** One Training exercise as its card reads: the Exercise name, its category and the number of Sets. */
+data class PlannedTrainingExercise(
+    val name: String,
+    val category: String,
+    val sets: Int,
+)

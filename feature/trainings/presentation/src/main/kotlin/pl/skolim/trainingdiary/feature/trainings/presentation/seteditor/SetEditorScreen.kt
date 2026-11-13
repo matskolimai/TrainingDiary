@@ -1,9 +1,11 @@
 package pl.skolim.trainingdiary.feature.trainings.presentation.seteditor
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -16,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import pl.skolim.trainingdiary.core.designsystem.AppButton
 import pl.skolim.trainingdiary.core.designsystem.AppListRow
 import pl.skolim.trainingdiary.core.designsystem.AppNumberCircle
 import pl.skolim.trainingdiary.core.designsystem.AppPreview
@@ -49,20 +52,27 @@ internal fun SetEditorScreen(
             )
         },
     ) { contentPadding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(contentPadding),
-            contentPadding =
-                PaddingValues(
-                    start = Spacing.large,
-                    top = Spacing.small,
-                    end = Spacing.large,
-                    bottom = Spacing.extraLarge,
-                ),
-            verticalArrangement = Arrangement.spacedBy(Spacing.medium),
-        ) {
-            itemsIndexed(items = state.sets) { index, set ->
-                SetCard(number = index + 1, set = set)
+        Column(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                contentPadding =
+                    PaddingValues(
+                        start = Spacing.large,
+                        top = Spacing.small,
+                        end = Spacing.large,
+                        bottom = Spacing.extraLarge,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(Spacing.medium),
+            ) {
+                itemsIndexed(items = state.sets) { index, set ->
+                    SetCard(number = index + 1, set = set)
+                }
             }
+            AppButton(
+                text = stringResource(R.string.set_editor_add_to_training),
+                onClick = { onAction(SetEditorAction.OnAddToTrainingClick) },
+                modifier = Modifier.fillMaxWidth().padding(Spacing.large),
+            )
         }
     }
 }

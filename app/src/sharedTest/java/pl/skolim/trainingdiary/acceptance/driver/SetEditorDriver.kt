@@ -4,6 +4,8 @@ package pl.skolim.trainingdiary.acceptance.driver
 interface SetEditorDriver {
     fun assertSetsInOrder(sets: List<PlannedSet>)
 
+    fun tapAddToTraining()
+
     fun leave()
 }
 

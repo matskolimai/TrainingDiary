@@ -9,15 +9,31 @@ editor, past both pickers, and the new Training exercise appears at the end of t
 
 **Status:** ready-for-agent
 
-- [ ] `TrainingExercise(exercise, sets)` in the trainings domain; `sealed interface SetEditorResult : NavResult` with
+- [x] `TrainingExercise(exercise, sets)` in the trainings domain; `sealed interface SetEditorResult : NavResult` with
       `Added(trainingExercise)` (`Replaced` comes with ticket 19).
-- [ ] `SetEditorNavigator.backToTrainingEditor(result)`, implemented in `:app` with
+- [x] `SetEditorNavigator.backToTrainingEditor(result)`, implemented in `:app` with
       `AppNavigator.popTo(TrainingEditorKey::class, result)`.
-- [ ] `TrainingEditorNavigator.setEditorResults` = `appNavigator.results.filterIsInstance<SetEditorResult>()`,
+- [x] `TrainingEditorNavigator.setEditorResults` = `appNavigator.results.filterIsInstance<SetEditorResult>()`,
       collected in the Training editor's ViewModel `init`; the list lives in its State.
-- [ ] Cards reuse `AppListRow` (no ⋮ yet); list 24dp below the field, 12dp gap; „Dodaj ćwiczenie” 16dp below the
+- [x] Cards reuse `AppListRow` (no ⋮ yet); list 24dp below the field, 12dp gap; „Dodaj ćwiczenie” 16dp below the
       last card and scrolls with the list.
-- [ ] Cases, test-first, on both channels: „Dodaj do treningu” returns to the Training editor showing the name and
+- [x] Cases, test-first, on both channels: „Dodaj do treningu” returns to the Training editor showing the name and
       „category · 3 serie”; the same Exercise twice shows two cards in added order.
-- [ ] Training editor preview with Training exercises snapshotted.
-- [ ] `./gradlew check` and the device suite pass; mutation testing done, covering ticket 08's `popTo` lines too.
+- [x] Training editor preview with Training exercises snapshotted.
+- [x] `./gradlew check` and the device suite pass; mutation testing done, covering ticket 08's `popTo` lines too.
+
+## Mutation testing
+
+Covers this ticket's lines and ticket 08's `popTo` (`AppNavigator.popTo`, `NavBackStack.popTo`).
+
+| # | Mutant | Outcome | Channel | Settlement |
+|---|--------|---------|---------|------------|
+| 1 | `AppNavigator.popTo` queues the pop before the result | SURVIVED | device | Accepted, equivalent (note 1) |
+| 2 | `AppNavigator.popTo` drops the result | KILLED | ViewModel | |
+| 3 | `NavBackStack.popTo` removes one entry too few | KILLED | ViewModel | |
+| 4 | Training editor prepends the added Training exercise | KILLED | ViewModel | New case order (note 2) |
+| 5 | Set editor returns the Training exercise with no Sets | KILLED | ViewModel | |
+
+1. Equivalent: the pop never clears the receiving ViewModel, which stays on the stack and collects for its whole
+   life, so the result arrives in either order.
+2. It first SURVIVED: the duplicate case added A, B, A, which reads the same reversed. The case now adds A, A, B.
