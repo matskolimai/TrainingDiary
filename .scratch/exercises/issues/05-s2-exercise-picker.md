@@ -6,7 +6,7 @@ min height 56dp). Back returns to the Exercise category picker. Tapping an Exerc
 
 **Blocked by:** 04 (S1 Exercise category picker).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `ExercisePickerKey(categoryId)`, pushed within the exercises feature; `KoinModulesTest` gets an
       `injectedParameters` entry for it.

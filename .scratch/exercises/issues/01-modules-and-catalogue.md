@@ -9,7 +9,7 @@ Koin; and an empty `:feature:exercises:presentation` wired into `:app`. No `:fea
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `:core:domain`, `:feature:exercises:data` and `:feature:exercises:presentation` exist, use the convention
       plugins and follow the `android-module-structure` dependency rules (no feature depends on another feature).

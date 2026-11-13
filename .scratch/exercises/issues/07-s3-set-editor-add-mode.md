@@ -7,7 +7,7 @@ See `../spec.md` (Set editor visuals).
 
 **Blocked by:** 05 (S2 Exercise picker), 06 (AppValuePill).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] Set editor in `:feature:trainings:presentation`; `ExerciseSet(reps, weightGrams)` in the trainings domain.
 - [x] `ExercisePickerNavigator.onExercisePicked(exerciseId)`; `:app` pushes `SetEditorKey(exerciseId)` (add mode,

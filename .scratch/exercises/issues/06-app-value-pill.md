@@ -5,7 +5,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `AppValuePill(text, focused, onClick)` in `:core:design-system`.
 - [x] Previews for focused and unfocused, snapshotted.

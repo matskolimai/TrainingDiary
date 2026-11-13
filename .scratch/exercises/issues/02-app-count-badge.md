@@ -5,7 +5,7 @@ high, fully rounded, `surfaceContainerHighest`, 13sp medium, `onSurfaceVariant`.
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `AppCountBadge` in `:core:design-system`, following `android-compose-components`.
 - [x] One preview, snapshotted with Paparazzi; reference image recorded and committed.

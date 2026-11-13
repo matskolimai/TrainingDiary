@@ -7,7 +7,7 @@ its input intact. Tapping a category does nothing yet. See `../spec.md` (Navigat
 
 **Blocked by:** 01 (Modules and catalogue), 02 (AppCountBadge).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] „Dodaj ćwiczenie” is always enabled, also in add mode before a name is typed; it sits 24dp below the field.
 - [x] `TrainingEditorNavigator.openExercisePicker()`; `:app` pushes `ExerciseCategoryPickerKey`.

@@ -5,7 +5,7 @@ ticket; ticket 18 adds it. See `../spec.md` (Design system).
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `AppRepeatIconButton(icon, contentDescription, enabled, onClick)` in `:core:design-system`; `remove` and `add`
       icons in `AppIcons` if missing.

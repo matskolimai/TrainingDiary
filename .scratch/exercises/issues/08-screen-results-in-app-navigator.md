@@ -12,7 +12,7 @@ From ADR 0002 / wayfinding ticket 07:
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `NavResult`, `results` and `popTo` exist as above; `push` and `pop` are unchanged.
 - [x] `AppNavDisplay` applies `PopTo` through the existing back-stack guards.
