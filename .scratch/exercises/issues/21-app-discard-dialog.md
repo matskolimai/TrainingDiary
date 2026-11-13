@@ -5,9 +5,13 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `AppDiscardDialog(onDiscard, onDismiss)` in `:core:design-system`, strings in its resources; „Anuluj”, a tap
+- [x] `AppDiscardDialog(onDiscard, onDismiss)` in `:core:design-system`, strings in its resources; „Anuluj”, a tap
       outside and back call `onDismiss`.
-- [ ] Preview snapshotted.
-- [ ] `./gradlew check` passes.
+- [x] Preview snapshotted.
+- [x] `./gradlew check` passes.
+
+## Mutation testing
+
+No production Kotlin changed outside `:core:design-system` (covered by its screenshot test).
