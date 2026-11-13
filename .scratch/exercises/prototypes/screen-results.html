@@ -1,0 +1,641 @@
+<!doctype html>
+<!--
+  PROTOTYPE — throwaway. Answers: "How would each way of returning the Set editor's Training exercise to the
+  Training editor look in code?" Ticket: issues/wayfinding/07-screen-results.md. Sketch code: not compiled, library
+  signatures approximate (see research/nav3-results.md). Tabs: Shared / A / B / C / Compare (or ← / →).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screen results — code walkthrough</title>
+<style>
+  :root { --bg:#141218; --card:#1D1B20; --card2:#2B2930; --fg:#E6E0E9; --dim:#CAC4D0; --pri:#D0BCFF;
+          --new:#7BD88F; --chg:#FFB86C; --del:#FF6B6B; --line:#49454F; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui, sans-serif; }
+  header { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 24px;
+           z-index:1; }
+  h1 { margin:0 0 8px; font-size:18px; }
+  nav button { background:var(--card2); color:var(--fg); border:1px solid var(--line); border-radius:18px;
+               padding:6px 14px; margin-right:6px; cursor:pointer; font-size:14px; }
+  nav button.on { background:var(--pri); color:#381E72; border-color:var(--pri); font-weight:600; }
+  main { max-width:1000px; margin:0 auto; padding:16px 24px 80px; }
+  section { display:none; } section.on { display:block; }
+  .intro { color:var(--dim); margin:8px 0 20px; }
+  .step { background:var(--card); border:1px solid var(--line); border-radius:12px; margin:16px 0; overflow:hidden; }
+  .step h3 { margin:0; padding:10px 14px; font-size:15px; background:var(--card2); display:flex; gap:10px;
+             align-items:center; flex-wrap:wrap; }
+  .num { background:var(--pri); color:#381E72; border-radius:50%; width:24px; height:24px; display:inline-flex;
+         align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+  .file { font-family:ui-monospace, Consolas, monospace; font-size:13px; color:var(--dim); font-weight:400; }
+  .tag { font-size:11px; padding:1px 8px; border-radius:10px; font-weight:700; }
+  .tag.new { background:var(--new); color:#0b2e14; } .tag.chg { background:var(--chg); color:#3a2000; }
+  .tag.test { background:#8BE9FD; color:#002b33; }
+  pre { margin:0; padding:12px 14px; overflow-x:auto; font:13px/1.45 ui-monospace, Consolas, monospace; }
+  .note { padding:8px 14px 12px; color:var(--dim); border-top:1px dashed var(--line); font-size:14px; }
+  .note b { color:var(--fg); }
+  .bad { color:var(--del); } .good { color:var(--new); }
+  table { border-collapse:collapse; width:100%; margin-top:12px; font-size:14px; }
+  th, td { border:1px solid var(--line); padding:8px 10px; vertical-align:top; text-align:left; }
+  th { background:var(--card2); }
+  .kw { color:#FF79C6; } .cm { color:#7f7a88; font-style:italic; } .st { color:#F1FA8C; }
+  .hl { background:rgba(208,188,255,.13); display:inline-block; width:100%; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Returning the Set editor's Training exercise to the Training editor</h1>
+  <nav id="tabs"></nav>
+</header>
+<main>
+
+<!-- ================================================================ SHARED -->
+<section data-tab="Shared">
+  <p class="intro">Code that all three options need. The options differ only in how a
+    <code>TrainingExerciseResult</code> gets from the Set editor's ViewModel to the Training editor's ViewModel.
+    Lines marked ▶ are where options plug in.</p>
+
+  <div class="step"><h3><span class="num">1</span> The result type
+    <span class="file">feature/trainings/presentation/…/setEditor/TrainingExerciseResult.kt</span>
+    <span class="tag new">NEW</span></h3>
+<pre data-code>
+sealed interface TrainingExerciseResult {
+    data class Added(val trainingExercise: TrainingExercise) : TrainingExerciseResult
+    data class Replaced(val index: Int, val trainingExercise: TrainingExercise) : TrainingExerciseResult
+}
+</pre>
+    <div class="note">Add mode sends <b>Added</b>; edit mode sends <b>Replaced</b> with the index from
+      <code>SetEditorKey</code>. Unsaved Training exercises have no id yet, so the index identifies one.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">2</span> Key and navigator
+    <span class="file">feature/trainings/presentation/…/SetEditorKey.kt, SetEditorNavigator.kt</span>
+    <span class="tag new">NEW</span></h3>
+<pre data-code>
+@Serializable
+data class SetEditorKey(
+    val exerciseId: Long,
+    val index: Int? = null,               // null = add mode
+    val sets: List&lt;ExerciseSet&gt;? = null,  // the Training exercise's Sets in edit mode
+) : NavKey
+
+interface SetEditorNavigator {
+    fun back(key: SetEditorKey)           // edit mode: „Gotowe”, or back
+    fun backToTrainingEditor()            // add mode: „Dodaj do treningu” → popTo(TrainingEditorKey)
+}
+</pre>
+  </div>
+
+  <div class="step"><h3><span class="num">3</span> The Training editor applies a result to its unsaved changes
+    <span class="file">feature/trainings/presentation/…/editor/TrainingEditorState.kt</span>
+    <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+data class TrainingEditorState(
+    val name: String = "",
+    val trainingExercises: List&lt;TrainingExercise&gt; = emptyList(),
+    ...
+) {
+    fun apply(result: TrainingExerciseResult): TrainingEditorState =
+        when (result) {
+            is TrainingExerciseResult.Added -&gt; copy(trainingExercises = trainingExercises + result.trainingExercise)
+            is TrainingExerciseResult.Replaced -&gt;
+                copy(trainingExercises = trainingExercises.toMutableList().also {
+                    it[result.index] = result.trainingExercise
+                })
+        }
+}
+</pre>
+  </div>
+
+  <div class="step"><h3><span class="num">4</span> The Set editor's „Dodaj do treningu” / „Gotowe”
+    <span class="file">feature/trainings/presentation/…/setEditor/SetEditorViewModel.kt</span>
+    <span class="tag new">NEW</span></h3>
+<pre data-code>
+private fun confirm() {
+    val trainingExercise = TrainingExercise(exercise = exercise, sets = _state.value.sets)
+    val result = key.index
+        ?.let { TrainingExerciseResult.Replaced(it, trainingExercise) }
+        ?: TrainingExerciseResult.Added(trainingExercise)
+<span class="hl">    ▶ deliver(result)                     // A, B and C differ here</span>
+    if (key.index == null) navigator.backToTrainingEditor() else navigator.back(key)
+}
+</pre>
+  </div>
+
+  <div class="step"><h3><span class="num">5</span> Test app: the Set editor's entry
+    <span class="file">app/src/test/…/acceptance/driver/HeadlessApp.kt</span>
+    <span class="tag test">TEST</span></h3>
+<pre data-code>
+private fun createEntry(key: NavKey): Entry =
+    Entry(
+        when (key) {
+            TrainingListKey -&gt; koin.get&lt;TrainingListViewModel&gt;()
+            is TrainingEditorKey -&gt; koin.get&lt;TrainingEditorViewModel&gt; { parametersOf(key) }
+            is SetEditorKey -&gt; koin.get&lt;SetEditorViewModel&gt; { parametersOf(key) }   // + the pickers
+            else -&gt; error("No ViewModel registered for $key")
+        },
+    )
+</pre>
+    <div class="note">The test app runs ViewModels with no composables. Every option needs this line. What else it
+      needs is what separates the options.</div>
+  </div>
+</section>
+
+<!-- ================================================================ A -->
+<section data-tab="A · library bus">
+  <p class="intro"><b>A: Navigation 3's <code>ResultEventBus</code>, used in the Roots.</b> The ViewModel can't
+    reach the bus, which is a CompositionLocal, so the result goes ViewModel → event → Root → bus → Root →
+    Action → ViewModel.</p>
+
+  <div class="step"><h3><span class="num">1</span> Provide the bus
+    <span class="file">app/…/AppNavDisplay.kt</span> <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+NavDisplay(
+    backStack = backStack,
+    onBack = { backStack.removeLastOrNull() },
+    entryDecorators = listOf(
+        rememberSaveableStateHolderNavEntryDecorator(),
+        rememberViewModelStoreNavEntryDecorator(),
+<span class="hl">        rememberResultEventBusNavEntryDecorator(),   // provides LocalResultEventBus to every entry</span>
+    ),
+    entryProvider = entryProvider { trainingsEntries(); exercisesEntries() },
+)
+</pre>
+    <div class="note">The bus is <code>remember</code>ed, not saved: if the Activity is recreated (e.g. on rotation)
+      between send and receive, <span class="bad">the result is lost</span>.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">2</span> The Set editor's ViewModel emits an event
+    <span class="file">…/setEditor/SetEditorViewModel.kt, SetEditorEvent.kt</span>
+    <span class="tag new">NEW</span></h3>
+<pre data-code>
+sealed interface SetEditorEvent {
+    data class SendResult(val result: TrainingExerciseResult) : SetEditorEvent
+}
+
+private val _events = Channel&lt;SetEditorEvent&gt;()
+val events = _events.receiveAsFlow()
+
+private fun confirm() {
+    ...
+<span class="hl">    viewModelScope.launch { _events.send(SetEditorEvent.SendResult(result)) }</span>
+    if (key.index == null) navigator.backToTrainingEditor() else navigator.back(key)
+}
+</pre>
+    <div class="note">Sending and popping now race: the event goes to the Root, the pop request goes through
+      <code>AppNavigator</code>. If the pop wins, the Set editor's Root leaves composition before it reads the event,
+      and <span class="bad">the result is never sent</span>. To be safe the Root would have to send <i>and</i> pop,
+      which breaks “ViewModels navigate through screen navigators”.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">3</span> The Set editor's Root sends to the bus
+    <span class="file">…/setEditor/SetEditorScreen.kt</span> <span class="tag new">NEW</span></h3>
+<pre data-code>
+@Composable
+fun SetEditorRoot(key: SetEditorKey, viewModel: SetEditorViewModel = koinViewModel { parametersOf(key) }) {
+    val resultBus = LocalResultEventBus.current
+    ObserveAsEvents(viewModel.events) { event -&gt;
+        when (event) {
+            is SetEditorEvent.SendResult -&gt; resultBus.sendResult&lt;TrainingExerciseResult&gt;(result = event.result)
+        }
+    }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    SetEditorScreen(state = state, onAction = viewModel::onAction)
+}
+</pre>
+  </div>
+
+  <div class="step"><h3><span class="num">4</span> The Training editor's Root receives it and forwards an Action
+    <span class="file">…/editor/TrainingEditorScreen.kt, TrainingEditorAction.kt</span>
+    <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+@Composable
+fun TrainingEditorRoot(key: TrainingEditorKey, viewModel: TrainingEditorViewModel = koinViewModel { parametersOf(key) }) {
+<span class="hl">    ResultEffect&lt;TrainingExerciseResult&gt; { result -&gt;
+        viewModel.onAction(TrainingEditorAction.OnTrainingExerciseResult(result))
+    }</span>
+    ...
+}
+
+// TrainingEditorAction
+data class OnTrainingExerciseResult(val result: TrainingExerciseResult) : TrainingEditorAction
+
+// TrainingEditorViewModel.onAction
+is TrainingEditorAction.OnTrainingExerciseResult -&gt; _state.update { it.apply(action.result) }
+</pre>
+    <div class="note">The result waits in the bus's buffer until the Training editor's Root is composed again, then
+      <code>ResultEffect</code> delivers it once.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">5</span> Test app has to copy the Roots' wiring
+    <span class="file">app/src/test/…/acceptance/driver/HeadlessApp.kt</span>
+    <span class="tag test">TEST</span></h3>
+<pre data-code>
+// HeadlessApp replaces AppNavDisplay and every Root, so it must copy steps 3 and 4 by hand:
+private val pendingResults = mutableListOf&lt;TrainingExerciseResult&gt;()
+
+private suspend fun collectTop() {
+    ...
+    when (val viewModel = entries.last().viewModel) {
+        is SetEditorViewModel -&gt; {
+            launch { viewModel.state.collect {} }
+            launch { viewModel.events.collect { if (it is SetEditorEvent.SendResult) pendingResults += it.result } }
+        }
+        is TrainingEditorViewModel -&gt; {
+            pendingResults.forEach { viewModel.onAction(TrainingEditorAction.OnTrainingExerciseResult(it)) }
+            pendingResults.clear()
+            viewModel.state.collect {}
+        }
+        ...
+    }
+}
+</pre>
+    <div class="note"><span class="bad">The ViewModel channel tests this copy, not the app's code.</span> If someone
+      deletes the <code>ResultEffect</code> in step 4, every ViewModel-channel case still passes; only the device
+      channel catches it.</div>
+  </div>
+</section>
+
+<!-- ================================================================ B -->
+<section data-tab="B · result channel">
+  <p class="intro"><b>B: a result channel between ViewModels.</b> A Koin <code>single</code> that the Set editor's
+    ViewModel sends to and the Training editor's ViewModel collects from. No composables involved.</p>
+
+  <div class="step"><h3><span class="num">1</span> The channel
+    <span class="file">feature/trainings/presentation/…/setEditor/TrainingExerciseResults.kt</span>
+    <span class="tag new">NEW</span></h3>
+<pre data-code>
+// Carries the Set editor's Training exercise to the Training editor below it. A singleton, so a result outlives a
+// configuration change; the unlimited buffer holds it until the Training editor collects.
+class TrainingExerciseResults {
+    private val channel = Channel&lt;TrainingExerciseResult&gt;(Channel.UNLIMITED)
+    val results: Flow&lt;TrainingExerciseResult&gt; = channel.receiveAsFlow()
+
+    fun send(result: TrainingExerciseResult) {
+        channel.trySend(result)
+    }
+}
+</pre>
+    <div class="note">Same shape as <code>AppNavigator</code>, which already queues requests on a
+      <code>Channel</code>. A channel hands each result to exactly one collector, so a result
+      <span class="good">can't be delivered twice</span>.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">2</span> Koin
+    <span class="file">feature/trainings/presentation/…/TrainingsPresentationModule.kt</span>
+    <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+val trainingsPresentationModule =
+    module {
+<span class="hl">        singleOf(::TrainingExerciseResults)</span>
+        viewModelOf(::TrainingListViewModel)
+        viewModelOf(::TrainingEditorViewModel)
+        viewModelOf(::SetEditorViewModel)
+    }
+</pre>
+  </div>
+
+  <div class="step"><h3><span class="num">3</span> The Set editor sends, then navigates
+    <span class="file">…/setEditor/SetEditorViewModel.kt</span> <span class="tag new">NEW</span></h3>
+<pre data-code>
+class SetEditorViewModel(
+    private val key: SetEditorKey,
+    private val catalogue: ExerciseCatalogue,
+<span class="hl">    private val results: TrainingExerciseResults,</span>
+    private val navigator: SetEditorNavigator,
+) : ViewModel() {
+    ...
+    private fun confirm() {
+        ...
+<span class="hl">        results.send(result)</span>
+        if (key.index == null) navigator.backToTrainingEditor() else navigator.back(key)
+    }
+}
+</pre>
+    <div class="note">Synchronous send, then pop: <span class="good">no race</span>. The result is in the channel
+      before the pop is even requested.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">4</span> The Training editor collects for as long as it lives
+    <span class="file">…/editor/TrainingEditorViewModel.kt</span> <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+class TrainingEditorViewModel(
+    private val key: TrainingEditorKey,
+    private val repository: TrainingRepository,
+<span class="hl">    private val results: TrainingExerciseResults,</span>
+    private val navigator: TrainingEditorNavigator,
+) : ViewModel() {
+    ...
+<span class="hl">    init {
+        viewModelScope.launch {
+            results.results.collect { result -&gt; _state.update { it.apply(result) } }
+        }
+    }</span>
+    ...
+}
+</pre>
+    <div class="note">It collects in <code>viewModelScope</code>, not in <code>state</code>'s
+      <code>WhileSubscribed</code>, so it receives the result <b>while still under the Set editor</b>. When the
+      Training editor comes back on screen the new Training exercise is already in its state. No new Action.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">5</span> Test app
+    <span class="file">app/src/test/…/acceptance/driver/HeadlessApp.kt</span>
+    <span class="tag test">TEST</span></h3>
+<pre data-code>
+// Nothing beyond Shared step 5: the real Koin graph gives both ViewModels the same TrainingExerciseResults.
+</pre>
+    <div class="note"><span class="good">The ViewModel channel tests the app's own code.</span> Deleting the
+      <code>init</code> collector fails ViewModel-channel cases.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">6</span> Edge cases, checked
+    <span class="file">—</span></h3>
+<pre data-code>
+Back from the Set editor (no confirm)   → nothing sent; nothing to discard.
+Training editor closed with a result
+still buffered                           → impossible: the Set editor only exists above a Training editor, and
+                                           that editor collects right away.
+Two Training editors at once             → impossible today (one at a time). If that ever changes, put the
+                                           TrainingEditorKey in the result and filter on it.
+Process death                            → unsaved changes are lost anyway (ticket 04).
+</pre>
+  </div>
+</section>
+
+<!-- ================================================================ B2 -->
+<section data-tab="B′ · via navigator">
+  <p class="intro"><b>B′: like B, but results travel through the navigators.</b> Going back with a result is one
+    call; the receiver observes results from its navigator. Each Screen that returns a result has its own sealed
+    result type implementing one <code>NavResult</code> interface. No <code>KClass</code>, no map.</p>
+
+  <div class="step"><h3><span class="num">1</span> One marker interface for every result
+    <span class="file">core/presentation/…/NavResult.kt</span> <span class="tag new">NEW</span></h3>
+<pre data-code>
+// What a Screen hands back to the Screen it returns to. Each returning Screen declares its own sealed result.
+interface NavResult
+</pre>
+    <div class="note">Not <code>sealed</code>: Kotlin requires every subclass of a sealed type in the same module
+      and package, and each feature's results live in that feature. A sealed <code>NavResult</code> would have to
+      sit in one module that knows every feature's result types. The sealing happens one level down, per Screen.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">2</span> The Set editor's result, named after the Screen that returns it
+    <span class="file">feature/trainings/presentation/…/setEditor/SetEditorResult.kt</span>
+    <span class="tag new">NEW</span></h3>
+<pre data-code>
+sealed interface SetEditorResult : NavResult {
+    data class Added(val trainingExercise: TrainingExercise) : SetEditorResult
+    data class Replaced(val index: Int, val trainingExercise: TrainingExercise) : SetEditorResult
+}
+</pre>
+    <div class="note">Replaces <code>TrainingExerciseResult</code> from the Shared tab.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">3</span> AppNavigator carries results next to requests
+    <span class="file">app/…/AppNavigator.kt</span> <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+class AppNavigator {
+    private val _requests = Channel&lt;NavRequest&gt;(Channel.UNLIMITED)
+    val requests: Flow&lt;NavRequest&gt; = _requests.receiveAsFlow()
+
+<span class="hl">    // Every receiver sees every result and keeps its own type. A result reaches only ViewModels collecting at
+    // that moment; the Screen it returns to is below on the stack, so its ViewModel is alive and collecting.
+    private val _results = MutableSharedFlow&lt;NavResult&gt;(extraBufferCapacity = 1)
+    val results: Flow&lt;NavResult&gt; = _results</span>
+
+    fun push(key: NavKey) { _requests.trySend(NavRequest.Push(key)) }
+    fun pop(key: NavKey) { _requests.trySend(NavRequest.Pop(key)) }
+
+<span class="hl">    fun popTo(keyType: KClass&lt;out NavKey&gt;, result: NavResult? = null) {
+        result?.let { _results.tryEmit(it) }              // emitted before the pop is requested
+        _requests.trySend(NavRequest.PopTo(keyType))
+    }</span>
+}
+</pre>
+    <div class="note">One stream for all results, so nothing grows per result type. A broadcast
+      (<code>SharedFlow</code>) rather than a <code>Channel</code>: a channel hands each item to one collector, so with
+      two receivers the wrong one could take and drop the other's result. (<code>KClass</code> remains only for the
+      popTo target, which the architecture ticket already needs.)</div>
+  </div>
+
+  <div class="step"><h3><span class="num">4</span> The feature's navigator interfaces
+    <span class="file">feature/trainings/presentation/…/SetEditorNavigator.kt, TrainingEditorNavigator.kt</span>
+    <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+interface SetEditorNavigator {
+    fun back(key: SetEditorKey)                                 // back without a result
+<span class="hl">    fun backToTrainingEditor(result: SetEditorResult)           // „Dodaj do treningu” and „Gotowe”</span>
+}
+
+interface TrainingEditorNavigator {
+    fun back(key: TrainingEditorKey)
+    fun openExerciseCategoryPicker()
+    fun openSetEditor(key: SetEditorKey)
+<span class="hl">    val setEditorResults: Flow&lt;SetEditorResult&gt;</span>
+}
+</pre>
+  </div>
+
+  <div class="step"><h3><span class="num">5</span> :app implements them
+    <span class="file">app/…/TrainingsNavigators.kt</span> <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+class AppSetEditorNavigator(private val navigator: AppNavigator) : SetEditorNavigator {
+    override fun back(key: SetEditorKey) = navigator.pop(key)
+    override fun backToTrainingEditor(result: SetEditorResult) = navigator.popTo(TrainingEditorKey::class, result)
+}
+
+class AppTrainingEditorNavigator(private val navigator: AppNavigator) : TrainingEditorNavigator {
+    override fun back(key: TrainingEditorKey) = navigator.pop(key)
+    ...
+<span class="hl">    override val setEditorResults = navigator.results.filterIsInstance&lt;SetEditorResult&gt;()</span>
+}
+</pre>
+    <div class="note"><code>filterIsInstance&lt;SetEditorResult&gt;()</code> matches <code>Added</code> and
+      <code>Replaced</code> alike, so the sender never names a type.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">6</span> The two ViewModels
+    <span class="file">…/setEditor/SetEditorViewModel.kt, …/editor/TrainingEditorViewModel.kt</span>
+    <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+// SetEditorViewModel: one call
+private fun confirm() {
+    val trainingExercise = TrainingExercise(exercise = exercise, sets = _state.value.sets)
+<span class="hl">    navigator.backToTrainingEditor(
+        key.index?.let { SetEditorResult.Replaced(it, trainingExercise) } ?: SetEditorResult.Added(trainingExercise),
+    )</span>
+}
+
+// TrainingEditorViewModel: observes its navigator for its whole life
+init {
+    viewModelScope.launch {
+<span class="hl">        navigator.setEditorResults.collect { result -&gt; _state.update { it.apply(result) } }</span>
+    }
+}
+</pre>
+    <div class="note">Constructors stay as they are: both ViewModels already get their navigator.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">7</span> Test app
+    <span class="file">app/src/test/…/acceptance/driver/HeadlessApp.kt</span>
+    <span class="tag test">TEST</span></h3>
+<pre data-code>
+// Only the NavRequest.PopTo branch, which popTo needs anyway. AppNavigator is the real one, so the ViewModel
+// channel tests the real result path.
+</pre>
+  </div>
+</section>
+
+<!-- ================================================================ C -->
+<section data-tab="C · shared ViewModel">
+  <p class="intro"><b>C: the Set editor uses the Training editor's ViewModel</b>, scoped to the Training editor's
+    entry with the recipe's custom decorator. No result is sent at all: the Set editor writes into the Training
+    editor's state.</p>
+
+  <div class="step"><h3><span class="num">1</span> A custom decorator, copied from the recipe
+    <span class="file">app/…/SharedViewModelStoreNavEntryDecorator.kt</span> <span class="tag new">NEW</span></h3>
+<pre data-code>
+// ~50 lines adapted from nav3-recipes/sharedviewmodel. Reads a parent contentKey from the entry's metadata and
+// provides that parent entry's ViewModelStoreOwner to the child.
+class SharedViewModelStoreNavEntryDecorator&lt;T : Any&gt;(...) : NavEntryDecorator&lt;T&gt;(
+    decorate = { entry -&gt;
+        val parentKey = entry.metadata[PARENT_KEY]
+        if (parentKey != null) {
+            val parentOwner = viewModelStoreProvider.viewModelStoreOwnerFor(parentKey)
+            CompositionLocalProvider(LocalSharedViewModelStoreOwner provides parentOwner) { entry.Content() }
+        } else entry.Content()
+    },
+    onPop = { ... },
+) {
+    companion object {
+        fun parent(contentKey: Any) = mapOf(PARENT_KEY to contentKey)
+    }
+}
+</pre>
+    <div class="note">Not a library API: you own it. It has to keep the parent's store alive while the child is on
+      the stack and clear it correctly on pop.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">2</span> The Set editor's key has to name its parent
+    <span class="file">…/SetEditorKey.kt, TrainingsNavigation.kt, ExercisePickerViewModel</span>
+    <span class="tag chg">CHANGED</span></h3>
+<pre data-code>
+data class SetEditorKey(
+<span class="hl">    val editorKey: TrainingEditorKey,      // which entry's ViewModel to borrow</span>
+    val exerciseId: Long,
+    val index: Int? = null,
+    val sets: List&lt;ExerciseSet&gt;? = null,
+) : NavKey
+
+entry&lt;SetEditorKey&gt;(
+<span class="hl">    metadata = SharedViewModelStoreNavEntryDecorator.parent(key.editorKey.toString()),</span>
+) { key -&gt; SetEditorRoot(key) }
+</pre>
+    <div class="note"><span class="bad">The editor's key now travels through both pickers</span> in
+      <code>feature:exercises</code> (category picker → Exercise picker → Set editor), so they must carry a
+      Trainings key or an opaque “return to” value.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">3</span> The Set editor's Root holds two ViewModels
+    <span class="file">…/setEditor/SetEditorScreen.kt</span> <span class="tag new">NEW</span></h3>
+<pre data-code>
+@Composable
+fun SetEditorRoot(key: SetEditorKey) {
+    val viewModel: SetEditorViewModel = koinViewModel { parametersOf(key) }
+<span class="hl">    val trainingEditor: TrainingEditorViewModel = koinViewModel(
+        viewModelStoreOwner = LocalSharedViewModelStoreOwner.current,
+        parameters = { parametersOf(key.editorKey) },
+    )</span>
+    ObserveAsEvents(viewModel.events) { event -&gt;
+        when (event) {
+            is SetEditorEvent.Confirmed -&gt;
+                trainingEditor.onAction(TrainingEditorAction.OnTrainingExerciseResult(event.result))
+        }
+    }
+    ...
+}
+</pre>
+    <div class="note">Same event-then-pop race as option A, plus the glue sits in a Root again. The alternative is
+      to move the Set editor's state into <code>TrainingEditorViewModel</code> and drop
+      <code>SetEditorViewModel</code>, which makes one ViewModel serve two screens.</div>
+  </div>
+
+  <div class="step"><h3><span class="num">4</span> Test app has to copy the scoping
+    <span class="file">app/src/test/…/acceptance/driver/HeadlessApp.kt</span>
+    <span class="tag test">TEST</span></h3>
+<pre data-code>
+is SetEditorViewModel -&gt; launch {
+    viewModel.events.collect { event -&gt;
+        val editor = entries.first { it.viewModel is TrainingEditorViewModel }.viewModel as TrainingEditorViewModel
+        if (event is SetEditorEvent.Confirmed) editor.onAction(TrainingEditorAction.OnTrainingExerciseResult(event.result))
+    }
+}
+</pre>
+    <div class="note"><span class="bad">Same problem as A:</span> the ViewModel channel tests a copy of the Root's
+      wiring.</div>
+  </div>
+</section>
+
+<!-- ================================================================ COMPARE -->
+<section data-tab="Compare">
+  <p class="intro">What each option adds on top of the shared code.</p>
+  <table>
+    <tr><th></th><th>A · library bus</th><th>B · result channel</th><th>C · shared ViewModel</th></tr>
+    <tr><td>New files</td><td>SetEditorEvent</td><td>TrainingExerciseResults (8 lines)</td>
+        <td>decorator (~50 lines), SetEditorEvent</td></tr>
+    <tr><td>Changed</td><td>AppNavDisplay, both Roots, TrainingEditorAction, HeadlessApp (copies the Roots)</td>
+        <td>Koin module, two ViewModel constructors + one <code>init</code></td>
+        <td>AppNavDisplay, SetEditorKey + both pickers' keys, entry metadata, Set editor Root, HeadlessApp</td></tr>
+    <tr><td>Who touches the result</td><td>ViewModel → Root → bus → Root → ViewModel</td>
+        <td>ViewModel → ViewModel</td><td>ViewModel → Root → other ViewModel</td></tr>
+    <tr><td>Send vs pop</td><td class="bad">race (event vs nav request)</td><td class="good">send, then pop</td>
+        <td class="bad">race</td></tr>
+    <tr><td>Rotation mid-flight</td><td class="bad">lost</td><td class="good">survives</td>
+        <td class="good">survives</td></tr>
+    <tr><td>ViewModel channel tests</td><td class="bad">a copy of the glue</td><td class="good">the real code</td>
+        <td class="bad">a copy of the glue</td></tr>
+    <tr><td>Navigators rule</td><td>kept only if the race is accepted</td><td class="good">kept</td>
+        <td>kept</td></tr>
+    <tr><td>Official</td><td class="good">library API</td><td>plain Kotlin, same pattern as AppNavigator</td>
+        <td>recipe</td></tr>
+    <tr><td>Next result-returning Screen</td><td>reuse the bus, new glue in two Roots</td>
+        <td>one more small channel class (or make it generic then)</td><td>another parent link</td></tr>
+  </table>
+</section>
+
+</main>
+<script>
+  const sections = [...document.querySelectorAll('section')];
+  const nav = document.getElementById('tabs');
+  let current = 0;
+  function show(i) {
+    current = (i + sections.length) % sections.length;
+    sections.forEach((s, j) => s.classList.toggle('on', j === current));
+    [...nav.children].forEach((b, j) => b.classList.toggle('on', j === current));
+    history.replaceState(null, '', '#' + current);
+    window.scrollTo(0, 0);
+  }
+  sections.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.textContent = s.dataset.tab;
+    b.onclick = () => show(i);
+    nav.appendChild(b);
+  });
+  // light highlighting of comments and strings (skips lines already wrapped in .hl)
+  document.querySelectorAll('pre[data-code]').forEach(pre => {
+    pre.innerHTML = pre.innerHTML.replace(/^\n/, '')
+      .replace(/(\/\/[^\n<]*)/g, '<span class="cm">$1</span>')
+      .replace(/(„[^”]*”)/g, '<span class="st">$1</span>')
+      .replace(/\b(class|data|sealed|interface|fun|val|private|object|when|is|if|else|null|init|companion)\b(?![^<]*>)/g,
+               '<span class="kw">$1</span>');
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') show(current + 1);
+    if (e.key === 'ArrowLeft') show(current - 1);
+  });
+  show(parseInt(location.hash.slice(1)) || 0);
+</script>
+</body>
+</html>

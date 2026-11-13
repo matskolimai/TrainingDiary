@@ -51,6 +51,13 @@ new questions; the user then chooses `/to-tickets` + `/implement` or implement-s
 - [Training exercise and Set rules](issues/wayfinding/04-training-exercise-and-set-rules.md): nothing stored until
   „Zapisz” (name + Training exercises at once); discard dialog on back when values changed; duplicates allowed,
   added order; 1–10 Sets, 0–300 kg, 1–999 reps, new = 3 × 0 kg × 12; timed Exercises show „s”.
+- [Architecture for Exercises and Training exercises](issues/wayfinding/05-architecture.md): catalogue behind an
+  `ExerciseCatalogue` in new `:core:domain`, implemented in `feature:exercises:data`; Set editor in `feature:trainings`;
+  `Long` ids, `weightGrams`; three Room tables with cascade, transactional save, DB stays v1 (wipe once); `popTo`;
+  `AppDiscardDialog` + four new components; process death loses unsaved input. Result passing split out.
+- [Returning a result from one Screen to another](issues/wayfinding/07-screen-results.md): through the
+  navigators; `SetEditorResult : NavResult`, one `backToTrainingEditor(result)` → `AppNavigator.popTo(key, result)`,
+  Training editor collects `setEditorResults` (a `SharedFlow` filtered by type); ADR 0002.
 
 ## Not yet specified
 
