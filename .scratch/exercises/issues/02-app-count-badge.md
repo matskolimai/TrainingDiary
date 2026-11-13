@@ -7,6 +7,11 @@ high, fully rounded, `surfaceContainerHighest`, 13sp medium, `onSurfaceVariant`.
 
 **Status:** ready-for-agent
 
-- [ ] `AppCountBadge` in `:core:design-system`, following `android-compose-components`.
-- [ ] One preview, snapshotted with Paparazzi; reference image recorded and committed.
-- [ ] `./gradlew check` passes.
+- [x] `AppCountBadge` in `:core:design-system`, following `android-compose-components`.
+- [x] One preview, snapshotted with Paparazzi; reference image recorded and committed.
+- [x] `./gradlew check` passes.
+
+## Mutation testing
+
+The only production Kotlin is in `:core:design-system`, which the skill leaves out (screenshot tests cover it); no
+mutants run.
