@@ -6,13 +6,13 @@ exactly as today. See `../spec.md` (Design system).
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** wontfix
 
-- [x] `AppTopBarWithBack` takes an optional subtitle; existing callers are unchanged.
-- [x] A preview with a subtitle is added and snapshotted; the existing snapshot is unchanged.
-- [x] `./gradlew check` passes.
+- [ ] `AppTopBarWithBack` takes an optional subtitle; existing callers are unchanged.
+- [ ] A preview with a subtitle is added and snapshotted; the existing snapshot is unchanged.
+- [ ] `./gradlew check` passes.
 
-## Mutation testing
+## Comments
 
-The only production Kotlin is in `:core:design-system`, which the skill leaves out (screenshot tests cover it); no
-mutants run.
+Implemented in 8aa162e, then reverted: the user doesn't need the information under the title, so the top bar keeps
+only its title. The step lines „Krok N z 3” are dropped from the spec.
