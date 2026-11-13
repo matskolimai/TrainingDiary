@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 
-/** A „− [count] +” control; − and + are each disabled when not enabled, such as at a limit. */
+/** A „− [count] +” control; [decrementEnabled] and [incrementEnabled] turn off − and +, such as at a limit. */
 @Suppress("LongParameterList") // A value, two callbacks and two enabled flags, as M3's own controls take.
 @Composable
 fun AppCountStepper(

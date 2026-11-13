@@ -7,7 +7,11 @@ disableable. See `../spec.md` (Design system).
 
 **Status:** ready-for-agent
 
-- [ ] `AppCountStepper(count, onDecrement, onIncrement, decrementEnabled, incrementEnabled)` in
+- [x] `AppCountStepper(count, onDecrement, onIncrement, decrementEnabled, incrementEnabled)` in
       `:core:design-system`.
-- [ ] Previews for the middle and both limits, snapshotted.
-- [ ] `./gradlew check` passes.
+- [x] Previews for the middle and both limits, snapshotted.
+- [x] `./gradlew check` passes.
+
+## Mutation testing
+
+No production Kotlin changed outside `:core:design-system`, which screenshot tests cover; no mutants run.
