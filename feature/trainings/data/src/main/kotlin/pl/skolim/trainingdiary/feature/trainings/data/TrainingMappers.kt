@@ -20,10 +20,9 @@ internal fun TrainingWithExercises.toTraining(catalogue: ExerciseCatalogue): Tra
 private fun TrainingExerciseWithSets.toTrainingExercise(catalogue: ExerciseCatalogue): TrainingExercise =
     TrainingExercise(
         exercise = checkNotNull(catalogue.exercise(trainingExercise.exerciseId)),
-        sets = sets.sortedBy { it.id }.map { ExerciseSet(reps = it.reps, weightGrams = it.weightGrams) },
+        sets = sets.sortedBy { it.id }.map { it.toExerciseSet() },
     )
 
-// Children get new ids, so id order is the list's order.
 internal fun Training.toTrainingWithExercises(): TrainingWithExercises =
     TrainingWithExercises(
         training = TrainingEntity(id = id, name = name),
@@ -31,13 +30,12 @@ internal fun Training.toTrainingWithExercises(): TrainingWithExercises =
             exercises.map { trainingExercise ->
                 TrainingExerciseWithSets(
                     trainingExercise = TrainingExerciseEntity(exerciseId = trainingExercise.exercise.id),
-                    sets =
-                        trainingExercise.sets.map {
-                            ExerciseSetEntity(
-                                reps = it.reps,
-                                weightGrams = it.weightGrams,
-                            )
-                        },
+                    sets = trainingExercise.sets.map { it.toExerciseSetEntity() },
                 )
             },
     )
+
+private fun ExerciseSetEntity.toExerciseSet(): ExerciseSet = ExerciseSet(reps = reps, weightGrams = weightGrams)
+
+private fun ExerciseSet.toExerciseSetEntity(): ExerciseSetEntity =
+    ExerciseSetEntity(reps = reps, weightGrams = weightGrams)

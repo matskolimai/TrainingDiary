@@ -18,8 +18,8 @@ interface TrainingDao {
     suspend fun getById(id: Long): TrainingWithExercises?
 
     /**
-     * Inserts a Training with its children; children's foreign keys are filled in here. A row with id 0 gets a new
-     * id; a row with an existing id keeps it, which restores a deleted row.
+     * Inserts a Training with its children, filling in the children's foreign keys. A row with id 0 gets a new id; a
+     * row with an existing id keeps it, which is how a deleted Training is restored.
      */
     @Transaction
     suspend fun insert(training: TrainingWithExercises) {
