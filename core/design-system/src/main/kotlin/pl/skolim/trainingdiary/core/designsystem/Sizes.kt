@@ -8,6 +8,7 @@ object Sizes {
     val compactButtonHeight = 40.dp
     val countBadge = 28.dp
     val fab = 56.dp
+    val focusBorderWidth = 2.dp
 
     // Bottom padding that keeps a list's last item clear of the FAB: the FAB, its margin and a gap above it.
     // The margin is Scaffold's own 16dp, which M3 doesn't expose.

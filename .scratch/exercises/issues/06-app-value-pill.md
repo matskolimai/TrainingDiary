@@ -7,6 +7,10 @@
 
 **Status:** ready-for-agent
 
-- [ ] `AppValuePill(text, focused, onClick)` in `:core:design-system`.
-- [ ] Previews for focused and unfocused, snapshotted.
-- [ ] `./gradlew check` passes.
+- [x] `AppValuePill(text, focused, onClick)` in `:core:design-system`.
+- [x] Previews for focused and unfocused, snapshotted.
+- [x] `./gradlew check` passes.
+
+## Mutation testing
+
+No production Kotlin changed outside `:core:design-system`, which the focused and unfocused snapshots cover.
