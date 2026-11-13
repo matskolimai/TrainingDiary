@@ -8,6 +8,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import pl.skolim.trainingdiary.core.presentation.ObserveAsEvents
+import pl.skolim.trainingdiary.feature.exercises.presentation.exercisesEntries
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingListKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.trainingsEntries
 
@@ -35,6 +36,7 @@ fun AppNavDisplay(
         entryProvider =
             entryProvider {
                 trainingsEntries()
+                exercisesEntries()
             },
     )
 }

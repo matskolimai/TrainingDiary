@@ -53,6 +53,12 @@ class TrainingEditorUiDriver(
         compose.onNode(nameField()).performTextReplacement(name)
     }
 
+    override fun tapAddExercise() {
+        compose.waitUntilExactlyOneExists(addExerciseButton())
+        compose.onNode(addExerciseButton()).performClick()
+        compose.waitUntilDoesNotExist(nameField())
+    }
+
     override fun tapSave() {
         compose.onNode(saveButton()).performClick()
         compose.waitUntilDoesNotExist(nameField())
@@ -74,6 +80,9 @@ class TrainingEditorUiDriver(
 
     private fun nameField(): SemanticsMatcher =
         hasSetTextAction() and hasText(resources.getString(R.string.training_editor_name_label))
+
+    private fun addExerciseButton(): SemanticsMatcher =
+        hasClickAction() and hasText(resources.getString(R.string.training_editor_add_exercise))
 
     private fun saveButton(): SemanticsMatcher =
         hasClickAction() and hasText(resources.getString(R.string.training_editor_save))

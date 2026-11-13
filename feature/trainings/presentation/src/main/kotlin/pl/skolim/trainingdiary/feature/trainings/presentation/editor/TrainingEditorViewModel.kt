@@ -34,6 +34,7 @@ class TrainingEditorViewModel(
     fun onAction(action: TrainingEditorAction) {
         when (action) {
             is TrainingEditorAction.OnNameChange -> _state.update { it.copy(name = action.name) }
+            TrainingEditorAction.OnAddExerciseClick -> navigator.openExercisePicker()
             TrainingEditorAction.OnSaveClick -> save()
             TrainingEditorAction.OnBackClick -> navigator.back(key)
         }

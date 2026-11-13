@@ -15,6 +15,8 @@ class TrainingEditorDsl(
 
     fun replaceName(name: String) = driver.replaceName(name)
 
+    fun addExercise() = driver.tapAddExercise()
+
     fun save() = driver.tapSave()
 
     fun saveTwiceQuickly() = driver.tapSaveTwiceQuickly()

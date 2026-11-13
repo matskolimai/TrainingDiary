@@ -10,12 +10,22 @@ details).
 
 **Status:** ready-for-agent
 
-- [ ] „Dodaj ćwiczenie” is always enabled, also in add mode before a name is typed; it sits 24dp below the field.
-- [ ] `TrainingEditorNavigator.openExercisePicker()`; `:app` pushes `ExerciseCategoryPickerKey`.
-- [ ] The picker lives in `:feature:exercises:presentation` and reads `ExerciseCatalogue`; rows reuse `AppListRow`
+- [x] „Dodaj ćwiczenie” is always enabled, also in add mode before a name is typed; it sits 24dp below the field.
+- [x] `TrainingEditorNavigator.openExercisePicker()`; `:app` pushes `ExerciseCategoryPickerKey`.
+- [x] The picker lives in `:feature:exercises:presentation` and reads `ExerciseCatalogue`; rows reuse `AppListRow`
       with `AppCountBadge` trailing.
-- [ ] New DSL steps and drivers for the picker on both channels; `HeadlessApp` knows the new entry.
-- [ ] Cases, test-first, on both channels: „Dodaj ćwiczenie” lists the 7 Exercise categories with their Exercise
+- [x] New DSL steps and drivers for the picker on both channels; `HeadlessApp` knows the new entry.
+- [x] Cases, test-first, on both channels: „Dodaj ćwiczenie” lists the 7 Exercise categories with their Exercise
       counts; back returns to the Training editor.
-- [ ] Screen preview snapshotted.
-- [ ] `./gradlew check` and the device suite pass; mutation testing done.
+- [x] Screen preview snapshotted.
+- [x] `./gradlew check` and the device suite pass; mutation testing done.
+
+## Mutation testing
+
+| Mutant | Outcome | Channel |
+|---|---|---|
+| Training editor: „Dodaj ćwiczenie” action no longer calls `openExercisePicker()` | KILLED | ViewModel |
+| Category picker: back action no longer calls `navigator.back(…)` | KILLED | ViewModel |
+| Category picker: Exercise count is `lastIndex` instead of `size` | KILLED | ViewModel |
+| Category picker: categories listed in reverse order | KILLED | ViewModel |
+| `AppNavDisplay`: `exercisesEntries()` not registered | KILLED | device |

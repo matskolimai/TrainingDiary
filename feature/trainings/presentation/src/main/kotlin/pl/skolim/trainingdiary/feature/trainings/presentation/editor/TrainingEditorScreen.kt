@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -20,6 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.skolim.trainingdiary.core.designsystem.AppButton
+import pl.skolim.trainingdiary.core.designsystem.AppIcons
+import pl.skolim.trainingdiary.core.designsystem.AppOutlinedButton
 import pl.skolim.trainingdiary.core.designsystem.AppPreview
 import pl.skolim.trainingdiary.core.designsystem.AppScaffold
 import pl.skolim.trainingdiary.core.designsystem.AppTextField
@@ -65,6 +68,13 @@ internal fun TrainingEditorScreen(
                     name = state.name,
                     onNameChange = { onAction(TrainingEditorAction.OnNameChange(it)) },
                     autofocus = !state.isEditMode,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.height(Spacing.extraLarge))
+                AppOutlinedButton(
+                    text = stringResource(R.string.training_editor_add_exercise),
+                    icon = AppIcons.Add,
+                    onClick = { onAction(TrainingEditorAction.OnAddExerciseClick) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }

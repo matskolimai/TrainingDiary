@@ -12,6 +12,8 @@ interface TrainingEditorDriver {
 
     fun replaceName(name: String)
 
+    fun tapAddExercise()
+
     fun tapSave()
 
     fun tapSaveTwiceQuickly()

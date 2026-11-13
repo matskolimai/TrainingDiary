@@ -14,6 +14,19 @@ naming:
       - '**/iosTest/**'
 
 style:
+  MagicNumber:
+    # Detekt's default excludes, plus :app's sharedTest, where cases state expected values as literals.
+    excludes:
+      - '**/test/**'
+      - '**/androidTest/**'
+      - '**/sharedTest/**'
+      - '**/commonTest/**'
+      - '**/jvmTest/**'
+      - '**/androidUnitTest/**'
+      - '**/androidInstrumentedTest/**'
+      - '**/jsTest/**'
+      - '**/iosTest/**'
+      - '**/*.kts'
   UnusedPrivateFunction:
     ignoreAnnotated: ['Preview']
   ForbiddenImport:
