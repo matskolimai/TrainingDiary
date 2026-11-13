@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /** Every icon in the app; features use these, never `Icons.*`. */
@@ -17,4 +18,5 @@ object AppIcons {
     val Edit: ImageVector get() = Icons.Outlined.Edit
     val FitnessCenter: ImageVector get() = Icons.Outlined.FitnessCenter
     val MoreVert: ImageVector get() = Icons.Outlined.MoreVert
+    val Remove: ImageVector get() = Icons.Outlined.Remove
 }

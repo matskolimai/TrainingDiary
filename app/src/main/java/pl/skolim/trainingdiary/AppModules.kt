@@ -11,6 +11,7 @@ import pl.skolim.trainingdiary.feature.exercises.presentation.exercisesPresentat
 import pl.skolim.trainingdiary.feature.trainings.data.trainingsDataModule
 import pl.skolim.trainingdiary.feature.trainings.presentation.editor.TrainingEditorNavigator
 import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListNavigator
+import pl.skolim.trainingdiary.feature.trainings.presentation.seteditor.SetEditorNavigator
 import pl.skolim.trainingdiary.feature.trainings.presentation.trainingsPresentationModule
 
 // One App<Screen>Navigator per screen navigator, all sharing the single AppNavigator.
@@ -19,6 +20,7 @@ val appNavigationModule =
         singleOf(::AppNavigator)
         singleOf(::AppTrainingListNavigator) { bind<TrainingListNavigator>() }
         singleOf(::AppTrainingEditorNavigator) { bind<TrainingEditorNavigator>() }
+        singleOf(::AppSetEditorNavigator) { bind<SetEditorNavigator>() }
         singleOf(::AppExerciseCategoryPickerNavigator) { bind<ExerciseCategoryPickerNavigator>() }
         singleOf(::AppExercisePickerNavigator) { bind<ExercisePickerNavigator>() }
     }

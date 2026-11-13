@@ -22,6 +22,7 @@ fun AppNavDisplay(
         when (request) {
             is NavRequest.Push -> backStack.push(request.key)
             is NavRequest.Pop -> backStack.pop(request.key)
+            is NavRequest.PopTo -> backStack.popTo(request.keyType)
         }
     }
     NavDisplay(

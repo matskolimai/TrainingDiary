@@ -61,7 +61,10 @@ internal fun ExercisePickerScreen(
             verticalArrangement = Arrangement.spacedBy(Spacing.medium),
         ) {
             items(items = state.exercises, key = { it.id }) { exercise ->
-                AppListRow(minHeight = Sizes.listRowCompactMinHeight) {
+                AppListRow(
+                    onClick = { onAction(ExercisePickerAction.OnExerciseClick(exercise.id)) },
+                    minHeight = Sizes.listRowCompactMinHeight,
+                ) {
                     Text(text = exercise.name, style = MaterialTheme.typography.bodyLarge)
                 }
             }

@@ -1,6 +1,6 @@
 package pl.skolim.trainingdiary.feature.trainings.domain
 
-// Named ExerciseSet to avoid kotlin.collections.Set; the glossary term is Set.
+/** One Set; named so to stay clear of `kotlin.collections.Set`. */
 data class ExerciseSet(
     val reps: Int,
     val weightGrams: Int,

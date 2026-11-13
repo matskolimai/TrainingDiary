@@ -21,7 +21,7 @@ The Training editor gains a list of **Training exercises** and an outlined „Do
 
 - **Adding** walks three Screens titled „Dodaj ćwiczenie”: the **Exercise category picker** (7
   categories with an Exercise count badge), the **Exercise picker** (a plain list of that category's
-  Exercises) and the **Set editor** („Krok 3 z 3: <Exercise>”). „Dodaj do treningu” returns
+  Exercises) and the **Set editor**. „Dodaj do treningu” returns
   straight to the Training editor with the new Training exercise at the end of the list.
 - The **Set editor** shows a „Serie” count with − / + and one card per Set holding a weight pill („0 kg”) and a reps
   pill („12 powt.”, or „12 s” for timed Exercises). Exactly one pill is focused; − / + at the right of the focused row
@@ -89,8 +89,8 @@ Dark theme only, Polish UI, English code, as in the rest of the app.
 
 ### Set editor, adding
 
-26. As the user, I want picking an Exercise to open the Set editor titled „Dodaj ćwiczenie” with the subtitle
-    „Krok 3 z 3: <Exercise>”, so that I know which Exercise I'm planning.
+26. As the user, I want picking an Exercise to open the Set editor titled „Dodaj ćwiczenie”, so that I know I'm
+    still adding. (The step subtitle „Krok 3 z 3: <Exercise>” was dropped with the other step subtitles.)
 27. As the user, I want a new Training exercise to start with 3 Sets of 0 kg × 12, so that a typical plan needs few
     taps.
 28. As the user, I want the Set editor to open with Set 1's weight focused, so that I can start adjusting right away.
@@ -345,7 +345,7 @@ Exercise category rows, Exercise rows and Training exercise cards reuse `AppList
 ### Strings
 
 - New Polish strings as resources in the module that shows them: „Dodaj ćwiczenie”,
-  „Krok 3 z 3: %s”, „Serie”, „%s kg”, „%d powt.”, „%d s”, „Dodaj do treningu”, „Gotowe”, plurals
+  „Serie”, „%s kg”, „%d powt.”, „%d s”, „Dodaj do treningu”, „Gotowe”, plurals
   seria / serie / serii. Catalogue names are data, not resources.
 
 ## Testing Decisions

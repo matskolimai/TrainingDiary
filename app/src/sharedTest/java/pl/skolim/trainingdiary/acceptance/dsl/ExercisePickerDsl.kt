@@ -8,5 +8,7 @@ class ExercisePickerDsl(
     /** Exercise names in display order. */
     fun assertListed(vararg exercises: String) = driver.assertListedInOrder(exercises.toList())
 
+    fun pick(exercise: String) = driver.tapExercise(exercise)
+
     fun leave() = driver.leave()
 }

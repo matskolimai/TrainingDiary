@@ -19,12 +19,15 @@ import pl.skolim.trainingdiary.feature.exercises.presentation.ExerciseCategoryPi
 import pl.skolim.trainingdiary.feature.exercises.presentation.ExercisePickerKey
 import pl.skolim.trainingdiary.feature.exercises.presentation.categorypicker.ExerciseCategoryPickerViewModel
 import pl.skolim.trainingdiary.feature.exercises.presentation.exercisepicker.ExercisePickerViewModel
+import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingListKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.editor.TrainingEditorViewModel
 import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListEvent
 import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListViewModel
+import pl.skolim.trainingdiary.feature.trainings.presentation.seteditor.SetEditorViewModel
 import pl.skolim.trainingdiary.pop
+import pl.skolim.trainingdiary.popTo
 import pl.skolim.trainingdiary.push
 import kotlin.time.Duration
 
@@ -49,6 +52,7 @@ class HeadlessApp(
     val exerciseCategoryPicker: ExerciseCategoryPickerViewModel
         get() = entries.last().viewModel as ExerciseCategoryPickerViewModel
     val exercisePicker: ExercisePickerViewModel get() = entries.last().viewModel as ExercisePickerViewModel
+    val setEditor: SetEditorViewModel get() = entries.last().viewModel as SetEditorViewModel
 
     private val navigation =
         scope.backgroundScope.launch {
@@ -63,9 +67,13 @@ class HeadlessApp(
 
                     is NavRequest.Pop -> {
                         backStack.pop(request.key)
-                        if (backStack.size < previousSize) entries.removeLast().store.clear()
+                    }
+
+                    is NavRequest.PopTo -> {
+                        backStack.popTo(request.keyType)
                     }
                 }
+                repeat(previousSize - backStack.size) { entries.removeLast().store.clear() }
                 if (backStack.size != previousSize) collectTop()
             }
         }
@@ -90,6 +98,7 @@ class HeadlessApp(
                 is TrainingEditorKey -> koin.get<TrainingEditorViewModel> { parametersOf(key) }
                 ExerciseCategoryPickerKey -> koin.get<ExerciseCategoryPickerViewModel>()
                 is ExercisePickerKey -> koin.get<ExercisePickerViewModel> { parametersOf(key) }
+                is SetEditorKey -> koin.get<SetEditorViewModel> { parametersOf(key) }
                 else -> error("No ViewModel registered for $key")
             },
         )
@@ -114,6 +123,10 @@ class HeadlessApp(
                     }
 
                     is ExercisePickerViewModel -> {
+                        viewModel.state.collect {}
+                    }
+
+                    is SetEditorViewModel -> {
                         viewModel.state.collect {}
                     }
                 }

@@ -20,4 +20,4 @@ editor, past both pickers, and the new Training exercise appears at the end of t
 - [ ] Cases, test-first, on both channels: „Dodaj do treningu” returns to the Training editor showing the name and
       „category · 3 serie”; the same Exercise twice shows two cards in added order.
 - [ ] Training editor preview with Training exercises snapshotted.
-- [ ] `./gradlew check` and the device suite pass; mutation testing done.
+- [ ] `./gradlew check` and the device suite pass; mutation testing done, covering ticket 08's `popTo` lines too.

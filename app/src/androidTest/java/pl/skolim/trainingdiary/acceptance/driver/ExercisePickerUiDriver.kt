@@ -1,6 +1,8 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
 import android.content.res.Resources
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.performClick
@@ -24,6 +26,12 @@ class ExercisePickerUiDriver(
         assertThat(tops).isInStrictOrder()
     }
 
+    override fun tapExercise(name: String) {
+        compose.waitUntilExactlyOneExists(exerciseRow(name))
+        compose.onNode(exerciseRow(name)).performClick()
+        compose.waitUntilDoesNotExist(exerciseRow(name))
+    }
+
     // The Exercise category picker under this screen has the same title and its own back arrow, so leaving waits
     // for this screen's back arrow, told apart by its node, to go.
     override fun leave() {
@@ -33,4 +41,6 @@ class ExercisePickerUiDriver(
         compose.onNode(back).performClick()
         compose.waitUntil { compose.onAllNodes(back).fetchSemanticsNodes().none { it.id == node } }
     }
+
+    private fun exerciseRow(name: String): SemanticsMatcher = hasClickAction() and hasText(name)
 }

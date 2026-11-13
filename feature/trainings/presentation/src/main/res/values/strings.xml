@@ -15,4 +15,8 @@
     <string name="training_editor_name_label">Nazwa</string>
     <string name="training_editor_add_exercise">Dodaj ćwiczenie</string>
     <string name="training_editor_save">Zapisz</string>
+
+    <string name="set_editor_title">Dodaj ćwiczenie</string>
+    <string name="set_editor_weight">%1$s kg</string>
+    <string name="set_editor_reps">%1$d powt.</string>
 </resources>
