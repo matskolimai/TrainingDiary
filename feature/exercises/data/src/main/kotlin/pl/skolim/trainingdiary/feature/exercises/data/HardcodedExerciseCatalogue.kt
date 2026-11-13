@@ -10,7 +10,7 @@ internal class HardcodedExerciseCatalogue : ExerciseCatalogue {
 
     override fun exercises(categoryId: Long): List<Exercise> = EXERCISES.filter { it.category.id == categoryId }
 
-    override fun exercise(id: Long): Exercise = EXERCISES.single { it.id == id }
+    override fun exercise(id: Long): Exercise? = EXERCISES.find { it.id == id }
 }
 
 private val CHEST = ExerciseCategory(1, "Klatka piersiowa")

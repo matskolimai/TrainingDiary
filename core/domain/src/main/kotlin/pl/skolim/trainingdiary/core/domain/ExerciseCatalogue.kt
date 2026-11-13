@@ -6,6 +6,5 @@ interface ExerciseCatalogue {
 
     fun exercises(categoryId: Long): List<Exercise>
 
-    // Fails for an id outside the catalogue.
-    fun exercise(id: Long): Exercise
+    fun exercise(id: Long): Exercise?
 }
