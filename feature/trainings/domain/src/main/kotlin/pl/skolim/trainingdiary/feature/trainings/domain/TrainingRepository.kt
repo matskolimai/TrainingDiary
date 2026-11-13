@@ -7,7 +7,10 @@ interface TrainingRepository {
 
     suspend fun getTraining(id: Long): Training?
 
-    suspend fun addTraining(name: String)
+    suspend fun addTraining(
+        name: String,
+        exercises: List<TrainingExercise>,
+    )
 
     suspend fun updateTraining(training: Training)
 

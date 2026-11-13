@@ -188,7 +188,7 @@ internal fun TrainingListPreviewOptionsSheet() {
 
 private val previewTrainings =
     listOf(
-        Training(id = 1, name = "Push day"),
-        Training(id = 2, name = "Nogi"),
-        Training(id = 3, name = "Plecy i biceps, długa nazwa zawijana do kolejnej linii"),
+        Training(id = 1, name = "Push day", exercises = emptyList()),
+        Training(id = 2, name = "Nogi", exercises = emptyList()),
+        Training(id = 3, name = "Plecy i biceps, długa nazwa zawijana do kolejnej linii", exercises = emptyList()),
     )

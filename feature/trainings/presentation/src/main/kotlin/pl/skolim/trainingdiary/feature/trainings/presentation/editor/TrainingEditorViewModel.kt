@@ -54,9 +54,9 @@ class TrainingEditorViewModel(
         _state.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             if (trainingId == null) {
-                repository.addTraining(state.name)
+                repository.addTraining(state.name, exercises = emptyList())
             } else {
-                repository.updateTraining(Training(id = trainingId, name = state.name))
+                repository.updateTraining(Training(id = trainingId, name = state.name, exercises = emptyList()))
             }
             navigator.back(key)
         }
