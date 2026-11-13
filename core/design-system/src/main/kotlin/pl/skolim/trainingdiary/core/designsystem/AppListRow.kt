@@ -1,12 +1,13 @@
 package pl.skolim.trainingdiary.core.designsystem
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,20 +48,19 @@ fun AppListRow(
                         start = if (leading != null) Spacing.medium else Spacing.large,
                         end = if (trailing != null) Spacing.extraSmall else Spacing.large,
                     ),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.large),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.small),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                leading?.invoke()
-                Box(modifier = Modifier.weight(1f)) {
-                    content()
-                }
+            if (leading != null) {
+                leading()
+                Spacer(modifier = Modifier.width(Spacing.small))
             }
-            trailing?.invoke()
+            Box(modifier = Modifier.weight(1f)) {
+                content()
+            }
+            if (trailing != null) {
+                Spacer(modifier = Modifier.width(Spacing.large))
+                trailing()
+            }
         }
     }
 }
