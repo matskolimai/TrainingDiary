@@ -10,4 +10,7 @@ class AppTopBarWithBackScreenshotTest {
 
     @Test
     fun topBarWithBack() = paparazzi.snapshot { AppTopBarWithBackPreview() }
+
+    @Test
+    fun topBarWithBackAndSubtitle() = paparazzi.snapshot { AppTopBarWithBackSubtitlePreview() }
 }

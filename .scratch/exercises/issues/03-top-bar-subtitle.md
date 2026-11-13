@@ -8,6 +8,11 @@ exactly as today. See `../spec.md` (Design system).
 
 **Status:** ready-for-agent
 
-- [ ] `AppTopBarWithBack` takes an optional subtitle; existing callers are unchanged.
-- [ ] A preview with a subtitle is added and snapshotted; the existing snapshot is unchanged.
-- [ ] `./gradlew check` passes.
+- [x] `AppTopBarWithBack` takes an optional subtitle; existing callers are unchanged.
+- [x] A preview with a subtitle is added and snapshotted; the existing snapshot is unchanged.
+- [x] `./gradlew check` passes.
+
+## Mutation testing
+
+The only production Kotlin is in `:core:design-system`, which the skill leaves out (screenshot tests cover it); no
+mutants run.
