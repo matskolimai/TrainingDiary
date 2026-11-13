@@ -14,7 +14,13 @@ From ADR 0002 / wayfinding ticket 07:
 
 **Status:** ready-for-agent
 
-- [ ] `NavResult`, `results` and `popTo` exist as above; `push` and `pop` are unchanged.
-- [ ] `AppNavDisplay` applies `PopTo` through the existing back-stack guards.
-- [ ] `HeadlessApp` applies `PopTo` the same way.
-- [ ] `./gradlew check` and the device suite pass.
+- [x] `NavResult`, `results` and `popTo` exist as above; `push` and `pop` are unchanged.
+- [x] `AppNavDisplay` applies `PopTo` through the existing back-stack guards.
+- [x] `HeadlessApp` applies `PopTo` the same way.
+- [x] `./gradlew check` and the device suite pass.
+
+## Mutation testing
+
+Not run. No screen navigator calls `popTo` and nothing collects `results` until ticket 09, so every mutant in this
+diff (`AppNavigator.popTo`, `NavRequest.PopTo`, the `popTo` guard, the `PopTo` branch in `AppNavDisplay`) would
+survive for want of a caller. Ticket 09 mutates these lines alongside its own diff, once S4's cases exercise them.
