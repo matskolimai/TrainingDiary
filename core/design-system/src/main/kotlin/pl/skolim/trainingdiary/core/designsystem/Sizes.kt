@@ -7,6 +7,7 @@ object Sizes {
     val buttonHeight = 56.dp
     val compactButtonHeight = 40.dp
     val countBadge = 28.dp
+    val countMinWidth = 24.dp
     val fab = 56.dp
     val focusBorderWidth = 2.dp
 

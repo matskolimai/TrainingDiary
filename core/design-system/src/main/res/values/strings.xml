@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="design_system_cd_back">Wstecz</string>
+    <string name="design_system_cd_decrement">Zmniejsz</string>
+    <string name="design_system_cd_increment">Zwiększ</string>
     <string name="design_system_discard_dialog_title">Odrzucić zmiany?</string>
     <string name="design_system_discard_dialog_cancel">Anuluj</string>
     <string name="design_system_discard_dialog_discard">Odrzuć</string>

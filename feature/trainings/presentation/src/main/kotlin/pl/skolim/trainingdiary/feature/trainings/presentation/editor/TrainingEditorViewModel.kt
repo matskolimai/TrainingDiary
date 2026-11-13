@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import pl.skolim.trainingdiary.feature.trainings.domain.Training
 import pl.skolim.trainingdiary.feature.trainings.domain.TrainingRepository
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
+import pl.skolim.trainingdiary.feature.trainings.presentation.seteditor.SetEditorResult
 
 class TrainingEditorViewModel(
     private val key: TrainingEditorKey,
@@ -30,6 +31,19 @@ class TrainingEditorViewModel(
         _state
             .onStart { load() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), _state.value)
+
+    // Collected for the ViewModel's whole life, so a result lands while the Set editor still covers this Screen.
+    init {
+        viewModelScope.launch {
+            navigator.setEditorResults.collect { result ->
+                when (result) {
+                    is SetEditorResult.Added -> {
+                        _state.update { it.copy(exercises = it.exercises + result.trainingExercise) }
+                    }
+                }
+            }
+        }
+    }
 
     fun onAction(action: TrainingEditorAction) {
         when (action) {
