@@ -58,11 +58,14 @@ new questions; the user then chooses `/to-tickets` + `/implement` or implement-s
 - [Returning a result from one Screen to another](issues/wayfinding/07-screen-results.md): through the
   navigators; `SetEditorResult : NavResult`, one `backToTrainingEditor(result)` → `AppNavigator.popTo(key, result)`,
   Training editor collects `setEditorResults` (a `SharedFlow` filtered by type); ADR 0002.
+- [Spec-to-ticket slicing order](issues/wayfinding/06-slicing-order.md): modules + catalogue, then storage
+  before S5; navigator changes inside S4; slices S1–S12 (pickers → Set editor → add → save → Sets → reps/weight →
+  edit → delete → two discard dialogs → undo); all cases on both channels except hold-to-repeat (device); one
+  ticket per component before its first user; no unit tests.
 
 ## Not yet specified
 
-- Acceptance cases for the new screens and how they split across the device and ViewModel channels; likely settled
-  in the slicing ticket once the rules are known.
+Nothing: the way to the destination is clear.
 
 ## Out of scope
 
