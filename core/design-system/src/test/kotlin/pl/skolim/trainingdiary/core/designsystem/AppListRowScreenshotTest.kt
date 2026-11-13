@@ -16,4 +16,7 @@ class AppListRowScreenshotTest {
 
     @Test
     fun withoutTrailing() = paparazzi.snapshot { AppListRowPreviewWithoutTrailing() }
+
+    @Test
+    fun withLeading() = paparazzi.snapshot { AppListRowPreviewWithLeading() }
 }

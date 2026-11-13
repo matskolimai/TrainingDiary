@@ -17,5 +17,6 @@ object Sizes {
     val listRowCompactMinHeight = 56.dp
     val listRowMinHeight = 64.dp
     val listRowTallMinHeight = 72.dp
+    val numberCircle = 32.dp
     val sheetItemHeight = 56.dp
 }

@@ -16,6 +16,7 @@ import pl.skolim.trainingdiary.acceptance.driver.AppViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.ExerciseCategoryPickerViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.ExercisePickerViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.HeadlessApp
+import pl.skolim.trainingdiary.acceptance.driver.SetEditorViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.TrainingEditorViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.TrainingListViewModelDriver
 import pl.skolim.trainingdiary.acceptance.dsl.AppDsl
@@ -51,6 +52,7 @@ abstract class ViewModelAcceptanceTest : AcceptanceCases {
                         trainingEditorDriver = TrainingEditorViewModelDriver(app),
                         exerciseCategoryPickerDriver = ExerciseCategoryPickerViewModelDriver(app),
                         exercisePickerDriver = ExercisePickerViewModelDriver(app),
+                        setEditorDriver = SetEditorViewModelDriver(app),
                     ).steps()
                 }
             } finally {

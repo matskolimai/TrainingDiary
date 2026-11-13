@@ -17,6 +17,7 @@ class ExercisePickerViewModel(
 
     fun onAction(action: ExercisePickerAction) {
         when (action) {
+            is ExercisePickerAction.OnExerciseClick -> navigator.onExercisePicked(action.exerciseId)
             ExercisePickerAction.OnBackClick -> navigator.back(key)
         }
     }
