@@ -46,6 +46,19 @@ class TrainingEditorViewModelDriver(
         assertThat(state.name).isEqualTo(name)
     }
 
+    override fun assertExercisesInOrder(exercises: List<PlannedTrainingExercise>) {
+        val actual =
+            app.trainingEditor.state.value.exercises
+                .map {
+                    PlannedTrainingExercise(
+                        name = it.exercise.name,
+                        category = it.exercise.category.name,
+                        sets = it.sets.size,
+                    )
+                }
+        assertThat(actual).containsExactlyElementsIn(exercises).inOrder()
+    }
+
     override fun assertNameFieldFocused(): Unit =
         throw CannotStageException("assertNameFieldFocused", Channel.VIEW_MODEL)
 

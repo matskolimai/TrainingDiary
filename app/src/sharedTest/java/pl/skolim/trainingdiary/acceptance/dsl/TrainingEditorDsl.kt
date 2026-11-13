@@ -1,5 +1,6 @@
 package pl.skolim.trainingdiary.acceptance.dsl
 
+import pl.skolim.trainingdiary.acceptance.driver.PlannedTrainingExercise
 import pl.skolim.trainingdiary.acceptance.driver.TrainingEditorDriver
 
 class TrainingEditorDsl(
@@ -10,6 +11,9 @@ class TrainingEditorDsl(
     fun assertNameReadyToType() = driver.assertNameFieldFocused()
 
     fun assertEditing(name: String) = driver.assertShowingForEditing(name)
+
+    /** Exactly these Training exercises, in order. */
+    fun assertExercises(vararg exercises: PlannedTrainingExercise) = driver.assertExercisesInOrder(exercises.toList())
 
     fun enterName(name: String) = driver.typeName(name)
 

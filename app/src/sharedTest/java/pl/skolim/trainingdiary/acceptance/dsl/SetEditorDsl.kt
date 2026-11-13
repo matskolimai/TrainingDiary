@@ -9,5 +9,7 @@ class SetEditorDsl(
     /** Exactly these Sets, in order from Set 1. */
     fun assertSets(vararg sets: PlannedSet) = driver.assertSetsInOrder(sets.toList())
 
+    fun addToTraining() = driver.tapAddToTraining()
+
     fun leave() = driver.leave()
 }
