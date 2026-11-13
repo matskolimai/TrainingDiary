@@ -7,7 +7,7 @@ editor, past both pickers, and the new Training exercise appears at the end of t
 
 **Blocked by:** 07 (S3 Set editor, add mode), 08 (Screen results in AppNavigator).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `TrainingExercise(exercise, sets)` in the trainings domain; `sealed interface SetEditorResult : NavResult` with
       `Added(trainingExercise)` (`Replaced` comes with ticket 19).

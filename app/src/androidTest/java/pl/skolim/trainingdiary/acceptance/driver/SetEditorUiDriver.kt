@@ -50,8 +50,9 @@ class SetEditorUiDriver(
         compose.waitUntil { compose.onAllNodes(back).fetchSemanticsNodes().none { it.id == node } }
     }
 
-    // A Set card merges its number; its pills stay their own tap targets inside it.
-    private fun setCard(number: Int): SemanticsMatcher = hasText(number.toString()) and hasAnyChild(hasClickAction())
+    // A Set card's children are its number circle, holding the number, and its pills.
+    private fun setCard(number: Int): SemanticsMatcher =
+        hasAnyChild(hasAnyChild(hasText(number.toString()))) and hasAnyChild(hasClickAction())
 
     private fun pill(text: String): SemanticsMatcher = hasClickAction() and hasText(text)
 

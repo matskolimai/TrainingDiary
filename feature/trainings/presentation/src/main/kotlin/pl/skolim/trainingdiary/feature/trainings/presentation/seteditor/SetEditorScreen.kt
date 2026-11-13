@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
@@ -77,7 +76,6 @@ internal fun SetEditorScreen(
     }
 }
 
-// Merged so the card reads as its Set number; the pills stay their own tap targets inside it.
 @Composable
 private fun SetCard(
     number: Int,
@@ -85,7 +83,7 @@ private fun SetCard(
     modifier: Modifier = Modifier,
 ) {
     AppListRow(
-        modifier = modifier.semantics(mergeDescendants = true) {},
+        modifier = modifier,
         leading = { AppNumberCircle(number = number) },
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
