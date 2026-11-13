@@ -14,6 +14,7 @@ import org.koin.dsl.module
 import org.koin.dsl.onClose
 import pl.skolim.trainingdiary.acceptance.driver.AppViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.ExerciseCategoryPickerViewModelDriver
+import pl.skolim.trainingdiary.acceptance.driver.ExercisePickerViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.HeadlessApp
 import pl.skolim.trainingdiary.acceptance.driver.TrainingEditorViewModelDriver
 import pl.skolim.trainingdiary.acceptance.driver.TrainingListViewModelDriver
@@ -49,6 +50,7 @@ abstract class ViewModelAcceptanceTest : AcceptanceCases {
                         trainingListDriver = TrainingListViewModelDriver(app),
                         trainingEditorDriver = TrainingEditorViewModelDriver(app),
                         exerciseCategoryPickerDriver = ExerciseCategoryPickerViewModelDriver(app),
+                        exercisePickerDriver = ExercisePickerViewModelDriver(app),
                     ).steps()
                 }
             } finally {

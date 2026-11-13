@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.RegisterExtension
 import pl.skolim.trainingdiary.MainActivity
 import pl.skolim.trainingdiary.acceptance.driver.AppUiDriver
 import pl.skolim.trainingdiary.acceptance.driver.ExerciseCategoryPickerUiDriver
+import pl.skolim.trainingdiary.acceptance.driver.ExercisePickerUiDriver
 import pl.skolim.trainingdiary.acceptance.driver.InMemoryAppExtension
 import pl.skolim.trainingdiary.acceptance.driver.TrainingEditorUiDriver
 import pl.skolim.trainingdiary.acceptance.driver.TrainingListUiDriver
@@ -33,6 +34,7 @@ abstract class AcceptanceTest : AcceptanceCases {
                 trainingListDriver = TrainingListUiDriver(compose = this, resources = resources),
                 trainingEditorDriver = TrainingEditorUiDriver(compose = this, resources = resources),
                 exerciseCategoryPickerDriver = ExerciseCategoryPickerUiDriver(compose = this, resources = resources),
+                exercisePickerDriver = ExercisePickerUiDriver(compose = this, resources = resources),
             ).steps()
         }
 }

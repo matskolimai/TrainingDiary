@@ -16,7 +16,9 @@ import org.koin.core.parameter.parametersOf
 import pl.skolim.trainingdiary.AppNavigator
 import pl.skolim.trainingdiary.NavRequest
 import pl.skolim.trainingdiary.feature.exercises.presentation.ExerciseCategoryPickerKey
+import pl.skolim.trainingdiary.feature.exercises.presentation.ExercisePickerKey
 import pl.skolim.trainingdiary.feature.exercises.presentation.categorypicker.ExerciseCategoryPickerViewModel
+import pl.skolim.trainingdiary.feature.exercises.presentation.exercisepicker.ExercisePickerViewModel
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingListKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.editor.TrainingEditorViewModel
@@ -46,6 +48,7 @@ class HeadlessApp(
     val trainingEditor: TrainingEditorViewModel get() = entries.last().viewModel as TrainingEditorViewModel
     val exerciseCategoryPicker: ExerciseCategoryPickerViewModel
         get() = entries.last().viewModel as ExerciseCategoryPickerViewModel
+    val exercisePicker: ExercisePickerViewModel get() = entries.last().viewModel as ExercisePickerViewModel
 
     private val navigation =
         scope.backgroundScope.launch {
@@ -86,6 +89,7 @@ class HeadlessApp(
                 TrainingListKey -> koin.get<TrainingListViewModel>()
                 is TrainingEditorKey -> koin.get<TrainingEditorViewModel> { parametersOf(key) }
                 ExerciseCategoryPickerKey -> koin.get<ExerciseCategoryPickerViewModel>()
+                is ExercisePickerKey -> koin.get<ExercisePickerViewModel> { parametersOf(key) }
                 else -> error("No ViewModel registered for $key")
             },
         )
@@ -106,6 +110,10 @@ class HeadlessApp(
                     }
 
                     is ExerciseCategoryPickerViewModel -> {
+                        viewModel.state.collect {}
+                    }
+
+                    is ExercisePickerViewModel -> {
                         viewModel.state.collect {}
                     }
                 }

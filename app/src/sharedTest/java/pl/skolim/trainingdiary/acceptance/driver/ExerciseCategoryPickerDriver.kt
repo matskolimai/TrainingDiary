@@ -4,5 +4,7 @@ package pl.skolim.trainingdiary.acceptance.driver
 interface ExerciseCategoryPickerDriver {
     fun assertListedInOrder(categories: List<Pair<String, Int>>)
 
+    fun tapCategory(name: String)
+
     fun leave()
 }

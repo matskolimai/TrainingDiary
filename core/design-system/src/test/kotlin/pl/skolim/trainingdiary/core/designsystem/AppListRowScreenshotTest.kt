@@ -13,4 +13,7 @@ class AppListRowScreenshotTest {
 
     @Test
     fun longText() = paparazzi.snapshot { AppListRowPreviewLongText() }
+
+    @Test
+    fun withoutTrailing() = paparazzi.snapshot { AppListRowPreviewWithoutTrailing() }
 }

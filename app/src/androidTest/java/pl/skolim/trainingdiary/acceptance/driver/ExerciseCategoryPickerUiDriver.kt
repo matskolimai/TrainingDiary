@@ -2,8 +2,6 @@ package pl.skolim.trainingdiary.acceptance.driver
 
 import android.content.res.Resources
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.hasAnyChild
-import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -17,12 +15,12 @@ class ExerciseCategoryPickerUiDriver(
     private val compose: ComposeContext,
     private val resources: Resources,
 ) : ExerciseCategoryPickerDriver {
-    // A row is its category's name next to a badge holding the Exercise count.
+    // A row is one tap target holding its category's name and the badge with the Exercise count.
     override fun assertListedInOrder(categories: List<Pair<String, Int>>) {
         compose.waitUntilExactlyOneExists(title())
         val tops =
             categories.map { (name, count) ->
-                val row = hasText(name) and hasAnySibling(hasAnyChild(hasText(count.toString())))
+                val row = categoryRow(name) and hasText(count.toString())
                 compose.waitUntilExactlyOneExists(row)
                 compose
                     .onNode(row)
@@ -32,6 +30,12 @@ class ExerciseCategoryPickerUiDriver(
         assertThat(tops).isInStrictOrder()
     }
 
+    override fun tapCategory(name: String) {
+        compose.waitUntilExactlyOneExists(categoryRow(name))
+        compose.onNode(categoryRow(name)).performClick()
+        compose.waitUntilDoesNotExist(categoryRow(name))
+    }
+
     override fun leave() {
         compose.waitUntilExactlyOneExists(title())
         compose
@@ -39,6 +43,8 @@ class ExerciseCategoryPickerUiDriver(
             .performClick()
         compose.waitUntilDoesNotExist(title())
     }
+
+    private fun categoryRow(name: String): SemanticsMatcher = hasClickAction() and hasText(name)
 
     // The Training editor's „Dodaj ćwiczenie” button has the same text; the title is the one that isn't clickable.
     private fun title(): SemanticsMatcher =

@@ -20,8 +20,8 @@ want to lose an edit by pressing back by accident.
 The Training editor gains a list of **Training exercises** and an outlined „Dodaj ćwiczenie” button under it.
 
 - **Adding** walks three Screens titled „Dodaj ćwiczenie”: the **Exercise category picker** (7
-  categories with an Exercise count badge), the **Exercise picker** („Krok 2 z 3: <category>”, a plain
-  list of that category's Exercises) and the **Set editor** („Krok 3 z 3: <Exercise>”). „Dodaj do treningu” returns
+  categories with an Exercise count badge), the **Exercise picker** (a plain list of that category's
+  Exercises) and the **Set editor** („Krok 3 z 3: <Exercise>”). „Dodaj do treningu” returns
   straight to the Training editor with the new Training exercise at the end of the list.
 - The **Set editor** shows a „Serie” count with − / + and one card per Set holding a weight pill („0 kg”) and a reps
   pill („12 powt.”, or „12 s” for timed Exercises). Exactly one pill is focused; − / + at the right of the focused row
@@ -74,8 +74,8 @@ Dark theme only, Polish UI, English code, as in the rest of the app.
 17. As the user, I want the picker titled „Dodaj ćwiczenie”, so that I know I'm adding an Exercise. (The step
     subtitle „Krok 1 z 3: kategoria” was dropped: the top bar shows only its title.)
 18. As the user, I want tapping an Exercise category to list its Exercises in catalogue order, so that I can pick one.
-19. As the user, I want the Exercise picker's subtitle to read „Krok 2 z 3: <Exercise category>”, so that I see which
-    category I opened.
+19. ~~As the user, I want the Exercise picker's subtitle to read „Krok 2 z 3: <Exercise category>”, so that I see
+    which category I opened.~~ Dropped with the other step subtitles: the top bar shows only „Dodaj ćwiczenie”.
 20. As the user, I want the whole row to be the tap target in both pickers, so that picking is easy with one thumb.
 21. As the user, I want plain lists without search, so that the pickers stay simple; the catalogue is short.
 22. As the user, I want back on the Exercise picker to return to the Exercise categories, so that I can choose
@@ -345,7 +345,7 @@ Exercise category rows, Exercise rows and Training exercise cards reuse `AppList
 ### Strings
 
 - New Polish strings as resources in the module that shows them: „Dodaj ćwiczenie”,
-  „Krok 2 z 3: %s”, „Krok 3 z 3: %s”, „Serie”, „%s kg”, „%d powt.”, „%d s”, „Dodaj do treningu”, „Gotowe”, plurals
+  „Krok 3 z 3: %s”, „Serie”, „%s kg”, „%d powt.”, „%d s”, „Dodaj do treningu”, „Gotowe”, plurals
   seria / serie / serii. Catalogue names are data, not resources.
 
 ## Testing Decisions

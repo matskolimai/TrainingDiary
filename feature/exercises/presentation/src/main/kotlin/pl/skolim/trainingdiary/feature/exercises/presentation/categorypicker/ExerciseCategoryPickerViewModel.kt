@@ -27,6 +27,7 @@ class ExerciseCategoryPickerViewModel(
 
     fun onAction(action: ExerciseCategoryPickerAction) {
         when (action) {
+            is ExerciseCategoryPickerAction.OnCategoryClick -> navigator.openExercises(action.categoryId)
             ExerciseCategoryPickerAction.OnBackClick -> navigator.back(ExerciseCategoryPickerKey)
         }
     }

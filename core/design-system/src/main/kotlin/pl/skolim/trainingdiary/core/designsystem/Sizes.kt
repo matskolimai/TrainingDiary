@@ -13,6 +13,7 @@ object Sizes {
     // The margin is Scaffold's own 16dp, which M3 doesn't expose.
     val fabClearance = fab + Spacing.large + Spacing.large
     val iconBig = 64.dp
+    val listRowCompactMinHeight = 56.dp
     val listRowMinHeight = 64.dp
     val listRowTallMinHeight = 72.dp
     val sheetItemHeight = 56.dp

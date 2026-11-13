@@ -8,5 +8,7 @@ class ExerciseCategoryPickerDsl(
     /** Each Exercise category's name paired with its Exercise count, in display order. */
     fun assertListed(vararg categories: Pair<String, Int>) = driver.assertListedInOrder(categories.toList())
 
+    fun pick(category: String) = driver.tapCategory(category)
+
     fun leave() = driver.leave()
 }

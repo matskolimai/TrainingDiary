@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.koin.android)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    testImplementation(projects.core.domain)
     testImplementation(libs.koin.test)
     testImplementation(libs.androidx.room3.runtime)
     testImplementation(libs.androidx.sqlite.bundled.jvm)

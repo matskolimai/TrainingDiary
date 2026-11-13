@@ -55,7 +55,11 @@ internal fun ExerciseCategoryPickerScreen(
             verticalArrangement = Arrangement.spacedBy(Spacing.medium),
         ) {
             items(items = state.categories, key = { it.id }) { category ->
-                ExerciseCategoryRow(name = category.name, exerciseCount = category.exerciseCount)
+                ExerciseCategoryRow(
+                    name = category.name,
+                    exerciseCount = category.exerciseCount,
+                    onClick = { onAction(ExerciseCategoryPickerAction.OnCategoryClick(category.id)) },
+                )
             }
         }
     }
@@ -65,11 +69,13 @@ internal fun ExerciseCategoryPickerScreen(
 private fun ExerciseCategoryRow(
     name: String,
     exerciseCount: Int,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AppListRow(
-        trailing = { AppCountBadge(count = exerciseCount, modifier = Modifier.padding(end = Spacing.medium)) },
         modifier = modifier,
+        onClick = onClick,
+        trailing = { AppCountBadge(count = exerciseCount, modifier = Modifier.padding(end = Spacing.medium)) },
         minHeight = Sizes.listRowTallMinHeight,
     ) {
         Text(text = name, style = MaterialTheme.typography.bodyLarge)

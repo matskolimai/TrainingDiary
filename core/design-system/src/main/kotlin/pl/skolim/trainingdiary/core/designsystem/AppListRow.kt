@@ -1,5 +1,6 @@
 package pl.skolim.trainingdiary.core.designsystem
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -17,13 +18,13 @@ import androidx.compose.ui.unit.Dp
 
 /**
  * A separated, rounded list row: [content] fills the space and wraps, [trailing] sits at the end.
- * The row itself isn't clickable; interactions belong to the slots. [minHeight] is one of the `Sizes.listRow*`
- * heights.
+ * With [onClick] the whole row is the tap target. [minHeight] is one of the `Sizes.listRow*` heights.
  */
 @Composable
 fun AppListRow(
-    trailing: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    trailing: (@Composable () -> Unit)? = null,
     minHeight: Dp = Sizes.listRowMinHeight,
     content: @Composable () -> Unit,
 ) {
@@ -35,15 +36,18 @@ fun AppListRow(
         Row(
             modifier =
                 Modifier
+                    .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
                     .heightIn(min = minHeight)
-                    .padding(start = Spacing.large, end = Spacing.extraSmall),
+                    // Trailing content pads its own end (an icon button through its touch target); text alone takes
+                    // the full margin.
+                    .padding(start = Spacing.large, end = if (trailing != null) Spacing.extraSmall else Spacing.large),
             horizontalArrangement = Arrangement.spacedBy(Spacing.large),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 content()
             }
-            trailing()
+            trailing?.invoke()
         }
     }
 }
@@ -72,4 +76,18 @@ internal fun AppListRowPreviewLongText() {
     AppListRowPreviewContent(
         text = "A much longer item name that does not fit on a single line and wraps onto the next ones",
     )
+}
+
+@Preview
+@Composable
+internal fun AppListRowPreviewWithoutTrailing() {
+    AppPreview {
+        AppListRow(
+            modifier = Modifier.padding(Spacing.large),
+            onClick = {},
+            minHeight = Sizes.listRowCompactMinHeight,
+        ) {
+            Text(text = "A much longer item name that does not fit on a single line and wraps onto the next ones")
+        }
+    }
 }
