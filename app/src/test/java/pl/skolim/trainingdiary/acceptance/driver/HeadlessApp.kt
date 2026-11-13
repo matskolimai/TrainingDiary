@@ -27,6 +27,7 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListE
 import pl.skolim.trainingdiary.feature.trainings.presentation.list.TrainingListViewModel
 import pl.skolim.trainingdiary.feature.trainings.presentation.seteditor.SetEditorViewModel
 import pl.skolim.trainingdiary.pop
+import pl.skolim.trainingdiary.popTo
 import pl.skolim.trainingdiary.push
 import kotlin.time.Duration
 
@@ -66,9 +67,13 @@ class HeadlessApp(
 
                     is NavRequest.Pop -> {
                         backStack.pop(request.key)
-                        if (backStack.size < previousSize) entries.removeLast().store.clear()
+                    }
+
+                    is NavRequest.PopTo -> {
+                        backStack.popTo(request.keyType)
                     }
                 }
+                repeat(previousSize - backStack.size) { entries.removeLast().store.clear() }
                 if (backStack.size != previousSize) collectTop()
             }
         }
