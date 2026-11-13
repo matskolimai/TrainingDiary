@@ -5,5 +5,5 @@ data class Exercise(
     val id: Long,
     val name: String,
     val category: ExerciseCategory,
-    val isTimed: Boolean,
+    val isTimed: Boolean = false,
 )
