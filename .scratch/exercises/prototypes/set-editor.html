@@ -1,0 +1,404 @@
+<!doctype html>
+<!--
+  PROTOTYPE — throwaway. Answers: "How should the Set editor look and behave?"
+  Variants switchable via ?variant=A|B|C|D|E and the floating bar (or ← / → when no input is focused). Hosted in the
+  real flow: Training editor (variant D of training-editor.html) → „Dodaj ćwiczenie” → pickers (variant E of
+  pickers.html) → Set editor → back to the editor. Tapping a Training exercise row opens the Set editor in edit mode.
+  E = winner (A + new Set copies the previous one + hold-to-repeat). In-memory only. Limits (1–10 Sets, 0–300 kg, 1–100 reps) are placeholders for the rules ticket.
+-->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set editor prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<style>
+  :root {
+    --primary: #D0BCFF; --on-primary: #381E72;
+    --primary-container: #4F378B; --on-primary-container: #EADDFF;
+    --secondary-container: #4A4458; --on-secondary-container: #E8DEF8;
+    --surface: #141218; --on-surface: #E6E0E9; --on-surface-variant: #CAC4D0;
+    --surface-c-low: #1D1B20; --surface-c: #211F26; --surface-c-high: #2B2930; --surface-c-highest: #36343B;
+    --outline: #938F99; --outline-variant: #49454F;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #050506; color: var(--on-surface);
+    font-family: Roboto, system-ui, sans-serif; }
+  body { display: flex; align-items: flex-start; justify-content: center; gap: 24px; padding: 24px 16px 96px; }
+  .phone { position: relative; width: 412px; max-width: 100%; height: 860px; background: var(--surface);
+    border-radius: 28px; overflow: hidden; box-shadow: 0 0 0 10px #1a1a1d, 0 20px 60px rgba(0,0,0,.6);
+    display: flex; flex-direction: column; }
+  .statusbar { height: 32px; flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; font-size: 13px; }
+  .navbar { height: 24px; flex: none; display: flex; align-items: center; justify-content: center; }
+  .navbar::after { content: ""; width: 108px; height: 4px; border-radius: 2px; background: var(--on-surface); opacity: .6; }
+  .screen { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .content { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+  .ms { font-family: 'Material Symbols Outlined'; font-size: 24px; line-height: 1; font-weight: normal;
+    font-style: normal; display: inline-block; user-select: none; }
+  .icon-btn { width: 48px; height: 48px; border: 0; background: none; color: var(--on-surface);
+    border-radius: 50%; display: grid; place-items: center; cursor: pointer; flex: none; }
+  .icon-btn.dim { color: var(--on-surface-variant); }
+  .icon-btn:hover { background: rgba(230,224,233,.08); }
+  .icon-btn:disabled, .tonal:disabled, .big-btn:disabled { opacity: .38; cursor: default; }
+  .tab { height: 64px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 4px; }
+  .tab .title { flex: 1; min-width: 0; font-size: 22px; padding-left: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tab .title small { display: block; font-size: 14px; color: var(--on-surface-variant); margin-top: 2px;
+    overflow: hidden; text-overflow: ellipsis; }
+  .clickable { cursor: pointer; }
+  .clickable:hover { filter: brightness(1.12); }
+  .btn { border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 500 14px Roboto, sans-serif; letter-spacing: .1px; }
+  .btn.filled { background: var(--primary); color: var(--on-primary); }
+  .btn.outlined { background: none; color: var(--primary); border: 1px solid var(--outline); }
+  .btn .ms { font-size: 18px; }
+  .pinned { padding: 16px; flex: none; }
+  .pinned .btn { width: 100%; height: 56px; border-radius: 28px; font-size: 16px; }
+  .of { position: relative; margin-top: 8px; }
+  .of input { width: 100%; height: 56px; padding: 0 16px; border-radius: 4px; border: 1px solid var(--outline);
+    background: none; color: var(--on-surface); font: 400 16px Roboto; outline: none; }
+  .of label { position: absolute; left: 12px; top: -8px; padding: 0 4px; background: var(--surface);
+    font-size: 12px; line-height: 16px; color: var(--on-surface-variant); }
+  .card-list { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; }
+  .card { background: var(--surface-c); border-radius: 16px; min-height: 72px; display: flex; align-items: center;
+    gap: 16px; padding: 12px 4px 12px 16px; }
+  .card .txt { flex: 1; min-width: 0; }
+  .card.ex { min-height: 56px; padding-right: 16px; }
+  .h { font-size: 16px; line-height: 24px; }
+  .s { font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
+  .badge { min-width: 28px; height: 28px; padding: 0 8px; border-radius: 14px; background: var(--surface-c-highest);
+    color: var(--on-surface-variant); font-size: 13px; font-weight: 500; display: grid; place-items: center; margin-right: 12px; }
+  .tonal { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--secondary-container);
+    color: var(--on-secondary-container); display: grid; place-items: center; cursor: pointer; flex: none; }
+  .num { font-variant-numeric: tabular-nums; }
+  .val { cursor: pointer; user-select: none; }
+
+  /* A: row cards, ± at the right end of the focused row */
+  .a-count { display: flex; align-items: center; gap: 12px; margin: 8px 16px 16px; padding: 8px 8px 8px 16px;
+    background: var(--surface-c-low); border-radius: 16px; }
+  .a-count .lbl { flex: 1; font-size: 16px; }
+  .a-count .n { min-width: 24px; text-align: center; font-size: 22px; }
+  .a-row { background: var(--surface-c); border-radius: 16px; min-height: 64px; display: flex; align-items: center;
+    gap: 8px; padding: 8px 8px 8px 12px; }
+  .a-row .no { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-c-highest); display: grid;
+    place-items: center; font-size: 14px; color: var(--on-surface-variant); flex: none; }
+  .pill { height: 40px; padding: 0 14px; border-radius: 12px; display: flex; align-items: center; font-size: 16px;
+    border: 2px solid transparent; }
+  .pill.on { background: var(--secondary-container); color: var(--on-secondary-container); border-color: var(--primary); }
+  .a-row .sp { flex: 1; }
+  .a-row .pm { display: flex; gap: 4px; }
+  .a-row .pm.off { visibility: hidden; }
+
+  /* B: table + fixed ± rail on the right */
+  .b-count { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 8px 0 20px; }
+  .b-count .n { font-size: 28px; min-width: 110px; text-align: center; }
+  .b-wrap { display: flex; flex: 1; min-height: 0; }
+  .b-table { flex: 1; min-width: 0; overflow-y: auto; scrollbar-width: none; padding-left: 16px; }
+  .b-head, .b-r { display: grid; grid-template-columns: 56px 1fr 1fr; align-items: center; }
+  .b-head { height: 40px; font-size: 12px; color: var(--on-surface-variant); border-bottom: 1px solid var(--outline-variant);
+    letter-spacing: .5px; }
+  .b-r { height: 56px; border-bottom: 1px solid var(--outline-variant); font-size: 18px; }
+  .b-r .no { color: var(--on-surface-variant); font-size: 14px; padding-left: 8px; }
+  .b-cell { height: 44px; margin-right: 8px; border-radius: 12px; display: flex; align-items: center; padding: 0 12px; }
+  .b-cell.on { background: var(--primary-container); color: var(--on-primary-container); }
+  .b-rail { width: 88px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 16px; padding: 0 12px; }
+  .big-btn { width: 64px; height: 64px; border-radius: 20px; border: 0; background: var(--primary-container);
+    color: var(--on-primary-container); display: grid; place-items: center; cursor: pointer; }
+  .big-btn .ms { font-size: 32px; }
+  .b-rail .cap { font-size: 12px; text-align: center; color: var(--on-surface-variant); line-height: 16px; }
+
+  /* C: compact rows + docked edit panel at the bottom */
+  .c-count { display: flex; align-items: center; gap: 8px; padding: 8px 16px 12px; font-size: 14px; color: var(--on-surface-variant); }
+  .seg { display: flex; border: 1px solid var(--outline); border-radius: 20px; overflow: hidden; }
+  .seg button { width: 48px; height: 36px; border: 0; background: none; color: var(--on-surface); cursor: pointer; display: grid; place-items: center; }
+  .seg button + button { border-left: 1px solid var(--outline); }
+  .seg button:disabled { opacity: .38; cursor: default; }
+  .seg .ms { font-size: 20px; }
+  .c-row { display: flex; align-items: center; gap: 16px; height: 56px; padding: 0 16px; font-size: 18px; }
+  .c-row.cur { background: var(--surface-c-low); }
+  .c-row .lbl { width: 72px; font-size: 14px; color: var(--on-surface-variant); }
+  .c-row .x { color: var(--on-surface-variant); }
+  .u { border-bottom: 2px solid transparent; padding: 4px 2px; }
+  .u.on { color: var(--primary); border-color: var(--primary); }
+  .dock { flex: none; background: var(--surface-c-high); border-radius: 28px 28px 0 0; padding: 20px 16px 20px 24px;
+    display: flex; align-items: center; gap: 12px; }
+  .dock .txt { flex: 1; }
+  .dock .big { font-size: 36px; line-height: 44px; }
+
+  /* D: big-number cards, stacked ± on the right of the focused card */
+  .d-count { display: flex; align-items: center; gap: 16px; padding: 8px 16px 16px; }
+  .d-count .lbl { flex: 1; font-size: 22px; }
+  .d-card { background: var(--surface-c); border-radius: 20px; display: flex; align-items: stretch; padding: 8px; gap: 8px; }
+  .d-card .no { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; color: var(--on-surface-variant);
+    text-align: center; letter-spacing: 1px; }
+  .d-half { flex: 1; border-radius: 14px; padding: 10px 14px; background: var(--surface-c-high); }
+  .d-half.on { background: var(--secondary-container); outline: 2px solid var(--primary); }
+  .d-half .big { font-size: 30px; line-height: 38px; }
+  .d-half .cap { font-size: 12px; color: var(--on-surface-variant); }
+  .d-pm { display: flex; flex-direction: column; justify-content: center; gap: 8px; width: 40px; }
+  .d-pm.off { visibility: hidden; }
+
+  /* Prototype chrome (deliberately not Material) */
+  .panel { width: 320px; flex: none; font: 13px/1.5 ui-monospace, Consolas, monospace; color: #bbb; }
+  .panel h3 { font-size: 13px; color: #fff; margin: 12px 0 8px; }
+  .panel label { display: flex; gap: 8px; align-items: center; cursor: pointer; margin-bottom: 6px; }
+  .panel pre { background: #111; border: 1px solid #333; padding: 8px; white-space: pre-wrap; margin: 12px 0 0; }
+  .panel p { margin: 0 0 12px; }
+  .switcher { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 10; display: flex;
+    align-items: center; gap: 4px; background: #ffd400; color: #111; border-radius: 999px; padding: 4px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.6); font: 600 14px ui-monospace, Consolas, monospace; }
+  .switcher button { border: 0; background: #111; color: #ffd400; width: 36px; height: 36px; border-radius: 50%;
+    cursor: pointer; font-size: 18px; }
+  .switcher span { padding: 0 12px; min-width: 320px; text-align: center; }
+  @media (max-width: 760px) { body { flex-direction: column; align-items: center; } .panel { width: 412px; max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>▴ ◢ ▮</span></div>
+  <div class="screen" id="screen"></div>
+  <div class="navbar"></div>
+</div>
+
+<div class="panel">
+  <h3 id="vname" style="margin-top:0"></h3>
+  <p id="vdesc"></p>
+  <h3>Ekran</h3>
+  <label><input type="radio" name="scr" value="editor"> Edytor treningu</label>
+  <label><input type="radio" name="scr" value="addSets"> Edytor serii — dodawanie (Przysiad bułgarski)</label>
+  <label><input type="radio" name="scr" value="editSets"> Edytor serii — edycja (pierwsze ćwiczenie)</label>
+  <h3>Nowa seria (przycisk + u góry) zaczyna od</h3>
+  <label><input type="radio" name="newset" value="default"> 0 kg i 12 powt.</label>
+  <label><input type="radio" name="newset" value="copy"> kopii ostatniej serii (dodatek)</label>
+  <h3>Dodatek: przytrzymanie ±</h3>
+  <label><input type="checkbox" id="repeat"> przytrzymanie powtarza krok</label>
+  <p style="margin-top:8px">Klikaj jak w aplikacji. Dodawanie: „Dodaj ćwiczenie” → kategoria → ćwiczenie → edytor
+    serii. Edycja: stuknij ćwiczenie na liście. Stuknij ciężar albo powtórzenia, żeby je wybrać.</p>
+  <pre id="state"></pre>
+</div>
+
+<div class="switcher">
+  <button id="prev" title="Poprzedni (←)">‹</button>
+  <span id="label"></span>
+  <button id="next" title="Następny (→)">›</button>
+</div>
+
+<script>
+const ms = n => `<span class="ms">${n}</span>`;
+const CATALOGUE = {
+  'Klatka piersiowa': ['Wyciskanie hantli na ławce płaskiej', 'Wyciskanie hantli na ławce skośnej', 'Rozpiętki z hantlami', 'Pompki', 'Pompki na poręczach (dipy)'],
+  'Plecy': ['Podciąganie na drążku', 'Wiosłowanie hantlem w opadzie', 'Wiosłowanie hantlami oburącz', 'Martwy ciąg z hantlami', 'Pullover z hantlem'],
+  'Barki': ['Wyciskanie hantli nad głowę', 'Unoszenie hantli bokiem', 'Unoszenie hantli przodem', 'Odwrotne rozpiętki w opadzie', 'Arnoldki'],
+  'Biceps': ['Uginanie ramion z hantlami', 'Uginanie młotkowe', 'Uginanie skoncentrowane', 'Podciąganie podchwytem'],
+  'Triceps': ['Wyciskanie francuskie hantlem', 'Prostowanie ramienia w opadzie', 'Pompki diamentowe', 'Dipy na ławce'],
+  'Nogi': ['Przysiad z hantlami (goblet)', 'Wykroki z hantlami', 'Przysiad bułgarski', 'Martwy ciąg na prostych nogach', 'Wspięcia na palce', 'Hip thrust z hantlem'],
+  'Brzuch': ['Plank', 'Brzuszki', 'Unoszenie nóg w zwisie', 'Russian twist z hantlem', 'Deska boczna'],
+};
+const CATS = Object.keys(CATALOGUE);
+const LIMITS = { sets: [1, 10], kg: [0, 300], reps: [1, 100] };
+const STEP = { kg: 1.5, reps: 1 };
+
+const plural = (n, one, few, many) => n === 1 ? one : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? few : many;
+const seriesWord = n => plural(n, 'seria', 'serie', 'serii');
+const kg = v => `${String(v).replace('.', ',')} kg`;
+const newSet = () => ({ kg: 0, reps: 12 });
+
+let screen = 'cat', cat = null, newSetMode = 'default', holdRepeat = false;
+let items = [
+  { ex: 'Wyciskanie hantli na ławce płaskiej', cat: 'Klatka piersiowa', sets: [{ kg: 12, reps: 10 }, { kg: 13.5, reps: 8 }, { kg: 13.5, reps: 8 }] },
+  { ex: 'Unoszenie hantli bokiem', cat: 'Barki', sets: [{ kg: 6, reps: 12 }, { kg: 6, reps: 12 }, { kg: 6, reps: 12 }, { kg: 6, reps: 12 }] },
+];
+// The Set editor's working state. In edit mode it is the stored item itself (immediate saving).
+let ed = null; // { mode: 'add'|'edit', ex, cat, sets, focus: { i, f: 'kg'|'reps' }, item? }
+const log = [];
+const back = `<button class="icon-btn" data-back aria-label="Wstecz">${ms('arrow_back')}</button>`;
+
+function openSets(mode, item, ex, c) {
+  if (mode === 'edit') ed = { mode, ex: item.ex, cat: item.cat, sets: item.sets, item, focus: { i: 0, f: 'kg' } };
+  else ed = { mode, ex, cat: c, sets: [newSet(), newSet(), newSet()], focus: { i: 0, f: 'kg' } };
+  screen = 'sets';
+}
+
+function changeCount(d) {
+  const s = ed.sets, [lo, hi] = LIMITS.sets;
+  if (d > 0 && s.length < hi) { s.push(newSetMode === 'copy' ? { ...s[s.length - 1] } : newSet()); log.push(`+ seria → ${s.length}`); }
+  if (d < 0 && s.length > lo) { s.pop(); log.push(`− seria → ${s.length}`); if (ed.focus.i >= s.length) ed.focus.i = s.length - 1; }
+}
+function changeValue(d) {
+  const { i, f } = ed.focus, set = ed.sets[i], [lo, hi] = LIMITS[f];
+  const v = Math.round((set[f] + d * STEP[f]) * 10) / 10;
+  if (v < lo || v > hi) return false;
+  set[f] = v; log.push(`seria ${i + 1} ${f === 'kg' ? 'ciężar' : 'powt.'} → ${f === 'kg' ? kg(v) : v}`);
+  return true;
+}
+const canValue = d => { const { i, f } = ed.focus, v = ed.sets[i][f] + d * STEP[f]; return v >= LIMITS[f][0] - 1e-9 && v <= LIMITS[f][1] + 1e-9; };
+const isOn = (i, f) => ed.focus.i === i && ed.focus.f === f;
+
+function setsTitle() {
+  return ed.mode === 'add'
+    ? `<span class="title">Dodaj ćwiczenie<small>Krok 3 z 3: ${ed.ex}</small></span>`
+    : `<span class="title">${ed.ex}<small>${ed.cat}</small></span>`;
+}
+const pmBtns = (cls = 'tonal') => `<button class="${cls}" data-val="-1" aria-label="Zmniejsz" ${canValue(-1) ? '' : 'disabled'}>${ms('remove')}</button>
+  <button class="${cls}" data-val="1" aria-label="Zwiększ" ${canValue(1) ? '' : 'disabled'}>${ms('add')}</button>`;
+const cntBtns = (cls = 'tonal') => `<button class="${cls}" data-cnt="-1" aria-label="Usuń serię" ${ed.sets.length > LIMITS.sets[0] ? '' : 'disabled'}>${ms('remove')}</button>`;
+const cntPlus = (cls = 'tonal') => `<button class="${cls}" data-cnt="1" aria-label="Dodaj serię" ${ed.sets.length < LIMITS.sets[1] ? '' : 'disabled'}>${ms('add')}</button>`;
+
+const V = {
+  A: { name: 'Karty serii, ± przy wybranym wierszu', leave: 'button',
+    desc: 'U góry pole „Serie” z − N +. Każda seria to karta jak w edytorze treningu: numer w kółku, dwie „pigułki” (ciężar, powtórzenia). Wybrana pigułka ma tonalne tło i obwódkę primary; ± pojawiają się po prawej tylko w wierszu z wybraną wartością. Na dole przypięty przycisk: „Dodaj do treningu” (dodawanie) / „Gotowe” (edycja). Wstecz przy dodawaniu = porzuć i wróć do listy ćwiczeń.',
+    render: () => `<div class="tab">${back}${setsTitle()}</div>
+      <div class="content"><div class="a-count"><span class="lbl">Serie</span>${cntBtns()}<span class="n num">${ed.sets.length}</span>${cntPlus()}</div>
+        <div class="card-list" style="padding-bottom:24px">${ed.sets.map((s, i) => `<div class="a-row"><span class="no">${i + 1}</span>
+          <span class="pill val num ${isOn(i, 'kg') ? 'on' : ''}" data-f="${i}:kg">${kg(s.kg)}</span>
+          <span class="pill val num ${isOn(i, 'reps') ? 'on' : ''}" data-f="${i}:reps">${s.reps} powt.</span><span class="sp"></span>
+          <span class="pm ${ed.focus.i === i ? '' : 'off'}">${ed.focus.i === i ? pmBtns() : ''}</span></div>`).join('')}</div></div>
+      <div class="pinned"><button class="btn filled" data-done>${ed.mode === 'add' ? 'Dodaj do treningu' : 'Gotowe'}</button></div>` },
+  B: { name: 'Tabela + stała szyna ± po prawej', leave: 'back',
+    desc: 'Duży licznik „− 3 serie +” na środku u góry. Pod nim gęsta tabela (Seria | Ciężar | Powt.) z separatorami; wybrana komórka ma wypełnienie primaryContainer. Po prawej stała pionowa szyna z dużymi + i − (64dp) i podpisem, co zmieniają. Brak przycisku zatwierdzania: strzałka wstecz zapisuje (przy dodawaniu dodaje ćwiczenie do treningu).',
+    render: () => { const { i, f } = ed.focus;
+      return `<div class="tab">${back}${setsTitle()}</div>
+      <div class="b-count">${cntBtns()}<span class="n num">${ed.sets.length} ${seriesWord(ed.sets.length)}</span>${cntPlus()}</div>
+      <div class="b-wrap"><div class="b-table"><div class="b-head"><span style="padding-left:8px">SERIA</span><span style="padding-left:12px">CIĘŻAR</span><span style="padding-left:12px">POWT.</span></div>
+        ${ed.sets.map((s, k) => `<div class="b-r num"><span class="no">${k + 1}</span>
+          <span class="b-cell val ${isOn(k, 'kg') ? 'on' : ''}" data-f="${k}:kg">${kg(s.kg)}</span>
+          <span class="b-cell val ${isOn(k, 'reps') ? 'on' : ''}" data-f="${k}:reps">${s.reps}</span></div>`).join('')}</div>
+        <div class="b-rail"><button class="big-btn" data-val="1" aria-label="Zwiększ" ${canValue(1) ? '' : 'disabled'}>${ms('add')}</button>
+          <span class="cap">Seria ${i + 1}<br>${f === 'kg' ? '± 1,5 kg' : '± 1 powt.'}</span>
+          <button class="big-btn" data-val="-1" aria-label="Zmniejsz" ${canValue(-1) ? '' : 'disabled'}>${ms('remove')}</button></div></div>`; } },
+  C: { name: 'Lista + panel edycji zadokowany na dole', leave: 'check',
+    desc: 'W top barze po prawej ikona ✓ („Gotowe”); wstecz przy dodawaniu porzuca. Licznik serii jako mały przycisk segmentowy „− | +” obok tekstu „3 serie”. Serie to gęste wiersze „Seria 1   0 kg × 12”, wybrana wartość podkreślona na primary. Na dole zadokowany panel: podpis „Seria 2 · ciężar”, duża wartość 36sp i duże ± po prawej.',
+    render: () => { const { i, f } = ed.focus, v = ed.sets[i][f];
+      return `<div class="tab">${back}${setsTitle()}<button class="icon-btn" data-done aria-label="Gotowe">${ms('check')}</button></div>
+      <div class="c-count"><span style="flex:1">${ed.sets.length} ${seriesWord(ed.sets.length)}</span><div class="seg">${cntBtns('')}${cntPlus('')}</div></div>
+      <div class="content">${ed.sets.map((s, k) => `<div class="c-row num ${k === i ? 'cur' : ''}"><span class="lbl">Seria ${k + 1}</span>
+        <span class="u val ${isOn(k, 'kg') ? 'on' : ''}" data-f="${k}:kg">${kg(s.kg)}</span><span class="x">×</span>
+        <span class="u val ${isOn(k, 'reps') ? 'on' : ''}" data-f="${k}:reps">${s.reps}</span></div>`).join('')}</div>
+      <div class="dock"><div class="txt"><div class="s">Seria ${i + 1} · ${f === 'kg' ? 'ciężar' : 'powtórzenia'}</div>
+        <div class="big num">${f === 'kg' ? kg(v) : v}</div></div>${pmBtns('big-btn')}</div>`; } },
+  D: { name: 'Duże liczby, karta = dwa segmenty', leave: 'button',
+    desc: 'Tytuł sekcji „3 serie” 22sp z − + po prawej. Każda seria to karta z dwoma dużymi segmentami (30sp): ciężar | powtórzenia, z podpisem pod liczbą. Wybrany segment tonalny z obwódką. ± ułożone pionowo (+ nad −) po prawej stronie wybranej karty. Numer serii pionowo z lewej. Przypięty przycisk jak w A.',
+    render: () => `<div class="tab">${back}${setsTitle()}</div>
+      <div class="d-count"><span class="lbl">${ed.sets.length} ${seriesWord(ed.sets.length)}</span>${cntBtns()}${cntPlus()}</div>
+      <div class="content"><div class="card-list" style="padding-bottom:24px">${ed.sets.map((s, i) => `<div class="d-card"><span class="no">SERIA ${i + 1}</span>
+        <div class="d-half val ${isOn(i, 'kg') ? 'on' : ''}" data-f="${i}:kg"><div class="big num">${String(s.kg).replace('.', ',')}</div><div class="cap">kg</div></div>
+        <div class="d-half val ${isOn(i, 'reps') ? 'on' : ''}" data-f="${i}:reps"><div class="big num">${s.reps}</div><div class="cap">powtórzeń</div></div>
+        <div class="d-pm ${ed.focus.i === i ? '' : 'off'}">${ed.focus.i === i ? `<button class="tonal" data-val="1" aria-label="Zwiększ" ${canValue(1) ? '' : 'disabled'}>${ms('add')}</button><button class="tonal" data-val="-1" aria-label="Zmniejsz" ${canValue(-1) ? '' : 'disabled'}>${ms('remove')}</button>` : ''}</div></div>`).join('')}</div></div>
+      <div class="pinned"><button class="btn filled" data-done>${ed.mode === 'add' ? 'Dodaj do treningu' : 'Gotowe'}</button></div>` },
+};
+V.E = { name: 'A + kopia serii + przytrzymanie (zwycięzca)', leave: 'button',
+  desc: 'Wariant A. Nowa seria kopiuje ciężar i powtórzenia poprzedniej; przytrzymanie ± powtarza krok (oba włączone).',
+  render: () => V.A.render() };
+const KEYS = Object.keys(V);
+let variant = new URLSearchParams(location.search).get('variant');
+if (!V[variant]) variant = 'A';
+
+function editor() {
+  return `<div class="tab">${back}<span class="title">Edytuj trening</span></div>
+    <div class="content"><div style="padding:16px 16px 0"><div class="of"><input value="Push day"><label>Nazwa</label></div></div>
+      <div class="card-list" style="padding-top:24px">${items.map((it, k) => `<div class="card clickable" data-item="${k}"><div class="txt"><div class="h">${it.ex}</div>
+        <div class="s">${it.cat} · ${it.sets.length} ${seriesWord(it.sets.length)}</div></div><button class="icon-btn dim">${ms('more_vert')}</button></div>`).join('')}</div>
+      <button class="btn outlined" data-add style="margin:16px 16px 24px;height:40px;border-radius:20px;width:calc(100% - 32px)">${ms('add')}Dodaj ćwiczenie</button></div>
+    <div class="pinned"><button class="btn filled">Zapisz</button></div>`;
+}
+const pickCat = () => `<div class="tab">${back}<span class="title">Dodaj ćwiczenie<small>Krok 1 z 3: kategoria</small></span></div>
+  <div class="content"><div class="card-list" style="padding:8px 16px 24px">${CATS.map(c => `<div class="card clickable" data-cat="${c}">
+    <div class="txt h">${c}</div><span class="badge">${CATALOGUE[c].length}</span></div>`).join('')}</div></div>`;
+const pickEx = () => `<div class="tab">${back}<span class="title">Dodaj ćwiczenie<small>Krok 2 z 3: ${cat}</small></span></div>
+  <div class="content"><div class="card-list" style="padding:8px 16px 24px">${CATALOGUE[cat].map(e => `<div class="card ex clickable" data-ex="${e}">
+    <div class="txt h">${e}</div></div>`).join('')}</div></div>`;
+
+function render() {
+  const s = document.getElementById('screen');
+  const old = s.querySelector('.content, .b-table'), top = old ? old.scrollTop : 0;
+  s.innerHTML = screen === 'editor' ? editor() : screen === 'cat' ? pickCat() : screen === 'ex' ? pickEx() : V[variant].render();
+  const nu = s.querySelector('.content, .b-table'); if (nu && keepScroll) nu.scrollTop = top;
+  keepScroll = false;
+  const radio = screen === 'sets' ? (ed.mode === 'add' ? 'addSets' : 'editSets') : screen === 'editor' ? 'editor' : null;
+  document.querySelectorAll('input[name=scr]').forEach(r => r.checked = r.value === radio);
+  document.querySelector(`input[name=newset][value=${newSetMode}]`).checked = true;
+  document.getElementById('repeat').checked = holdRepeat;
+  document.getElementById('label').textContent = `${variant} (${V[variant].name})`;
+  document.getElementById('vname').textContent = `Wariant ${variant} — ${V[variant].name}`;
+  document.getElementById('vdesc').textContent = V[variant].desc;
+  document.getElementById('state').textContent = JSON.stringify({
+    variant, screen, category: cat,
+    setEditor: ed && screen === 'sets' ? { mode: ed.mode, exercise: ed.ex, focus: `seria ${ed.focus.i + 1} / ${ed.focus.f}`,
+      sets: ed.sets.map(x => `${kg(x.kg)} × ${x.reps}`) } : null,
+    stored: items.map(i => `${i.ex}: ${i.sets.map(x => `${kg(x.kg)}×${x.reps}`).join(', ')}`),
+    log: log.slice(-6) }, null, 2);
+}
+let keepScroll = false;
+
+function finishAdd() { items.push({ ex: ed.ex, cat: ed.cat, sets: ed.sets }); log.push(`dodano „${ed.ex}” (${ed.sets.length} ${seriesWord(ed.sets.length)})`); }
+function leaveSets(how) {
+  const v = V[variant];
+  if (ed.mode === 'add') {
+    if (how === 'done' || v.leave === 'back') { finishAdd(); screen = 'editor'; }
+    else { log.push('Wstecz: porzucono, powrót do listy ćwiczeń'); screen = 'ex'; }
+  } else { log.push(`Edycja zakończona (${how}); zmiany zapisane na bieżąco`); screen = 'editor'; }
+  render();
+  if (screen === 'editor' && ed.mode === 'add') { const k = document.querySelector('.content'); k.scrollTop = k.scrollHeight; }
+}
+
+let holdTimer = null;
+const stopHold = () => { clearTimeout(holdTimer); clearInterval(holdTimer); holdTimer = null; };
+document.addEventListener('pointerup', stopHold);
+document.addEventListener('pointercancel', stopHold);
+
+document.getElementById('screen').addEventListener('pointerdown', e => {
+  const b = e.target.closest('[data-val]');
+  if (!b || b.disabled) return;
+  e.preventDefault();
+  const d = +b.dataset.val;
+  changeValue(d); keepScroll = true; render();
+  if (holdRepeat) holdTimer = setTimeout(() => { holdTimer = setInterval(() => {
+    if (!changeValue(d)) return stopHold(); keepScroll = true; render(); }, 90); }, 400);
+});
+
+document.getElementById('screen').addEventListener('click', e => {
+  const t = sel => e.target.closest(sel);
+  if (t('[data-val]')) return;
+  if (t('[data-add]')) { screen = 'cat'; cat = null; log.push('Dodaj ćwiczenie → kategoria'); return render(); }
+  if (t('[data-item]')) { if (t('.icon-btn')) return; openSets('edit', items[+t('[data-item]').dataset.item]); log.push(`edycja „${ed.ex}”`); return render(); }
+  if (t('[data-cat]')) { cat = t('[data-cat]').dataset.cat; screen = 'ex'; log.push(`kategoria „${cat}”`); return render(); }
+  if (t('[data-ex]')) { openSets('add', null, t('[data-ex]').dataset.ex, cat); log.push(`ćwiczenie „${ed.ex}” → edytor serii`); return render(); }
+  if (t('[data-f]')) { const [i, f] = t('[data-f]').dataset.f.split(':'); ed.focus = { i: +i, f }; keepScroll = true; return render(); }
+  if (t('[data-cnt]')) { const b = t('[data-cnt]'); if (b.disabled) return; changeCount(+b.dataset.cnt); keepScroll = true; return render(); }
+  if (t('[data-done]')) return leaveSets('done');
+  if (t('[data-back]')) {
+    if (screen === 'sets') return leaveSets('back');
+    screen = screen === 'ex' ? 'cat' : 'editor'; log.push(`Wstecz → ${screen}`); return render();
+  }
+});
+
+function setVariant(k) {
+  variant = k;
+  if (k === 'E') { newSetMode = 'copy'; holdRepeat = true; }
+  const u = new URL(location); u.searchParams.set('variant', k); history.replaceState(null, '', u);
+  render();
+}
+const step = d => setVariant(KEYS[(KEYS.indexOf(variant) + d + KEYS.length) % KEYS.length]);
+document.getElementById('prev').onclick = () => step(-1);
+document.getElementById('next').onclick = () => step(1);
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input:not([type=radio]):not([type=checkbox]), textarea, [contenteditable]')) return;
+  if (e.key === 'ArrowLeft') step(-1);
+  if (e.key === 'ArrowRight') step(1);
+});
+document.querySelectorAll('input[name=scr]').forEach(r => r.onchange = () => {
+  if (r.value === 'editor') screen = 'editor';
+  if (r.value === 'addSets') { cat = 'Nogi'; openSets('add', null, 'Przysiad bułgarski', 'Nogi'); }
+  if (r.value === 'editSets') openSets('edit', items[0]);
+  render();
+});
+document.querySelectorAll('input[name=newset]').forEach(r => r.onchange = () => { newSetMode = r.value; render(); });
+document.getElementById('repeat').onchange = e => { holdRepeat = e.target.checked; render(); };
+
+cat = 'Nogi'; openSets('add', null, 'Przysiad bułgarski', 'Nogi');
+setVariant(variant);
+</script>
+</body>
+</html>

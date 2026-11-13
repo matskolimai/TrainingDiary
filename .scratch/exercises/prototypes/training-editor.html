@@ -1,0 +1,366 @@
+<!doctype html>
+<!--
+  PROTOTYPE — throwaway. Answers: "How should the Training editor look once a Training has Training exercises?"
+  Three structurally different variants extending variant A of training-form.html, switchable via ?variant=A|B|C
+  and the floating bar (or ← / → when no input is focused). Dark theme only, Polish strings, M3 baseline dark tokens.
+  Add / edit / delete only change in-memory state and log; nothing is stored.
+-->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training editor prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #D0BCFF; --on-primary: #381E72;
+    --primary-container: #4F378B; --on-primary-container: #EADDFF;
+    --secondary-container: #4A4458; --on-secondary-container: #E8DEF8;
+    --surface: #141218; --on-surface: #E6E0E9; --on-surface-variant: #CAC4D0;
+    --surface-c-low: #1D1B20; --surface-c: #211F26; --surface-c-high: #2B2930; --surface-c-highest: #36343B;
+    --outline: #938F99; --outline-variant: #49454F; --error: #F2B8B5;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #050506; color: var(--on-surface);
+    font-family: Roboto, system-ui, sans-serif; }
+  body { display: flex; align-items: flex-start; justify-content: center; gap: 24px; padding: 24px 16px 96px; }
+  .phone { position: relative; width: 412px; max-width: 100%; height: 860px; background: var(--surface);
+    border-radius: 28px; overflow: hidden; box-shadow: 0 0 0 10px #1a1a1d, 0 20px 60px rgba(0,0,0,.6);
+    display: flex; flex-direction: column; }
+  .statusbar { height: 32px; flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; font-size: 13px; }
+  .navbar { height: 24px; flex: none; display: flex; align-items: center; justify-content: center; }
+  .navbar::after { content: ""; width: 108px; height: 4px; border-radius: 2px; background: var(--on-surface); opacity: .6; }
+  .screen { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .content { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+  .bottom { flex: none; }
+  .icon { width: 24px; height: 24px; fill: currentColor; flex: none; }
+  .icon-btn { width: 48px; height: 48px; border: 0; background: none; color: var(--on-surface);
+    border-radius: 50%; display: grid; place-items: center; cursor: pointer; flex: none; }
+  .icon-btn.dim { color: var(--on-surface-variant); }
+  .icon-btn:hover { background: rgba(230,224,233,.08); }
+  .tab { height: 64px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 4px; }
+  .tab .title { flex: 1; font-size: 22px; padding-left: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .btn { border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 500 14px Roboto, sans-serif; letter-spacing: .1px; }
+  .btn.filled { background: var(--primary); color: var(--on-primary); }
+  .btn.tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .btn.outlined { background: none; color: var(--primary); border: 1px solid var(--outline); }
+  .btn.text { background: none; color: var(--primary); }
+  .btn:disabled { cursor: default; background: rgba(230,224,233,.12); color: rgba(230,224,233,.38); border-color: transparent; }
+  .btn.text:disabled { background: none; }
+  .btn .icon { width: 18px; height: 18px; }
+  .of { position: relative; margin-top: 8px; }
+  .of input { width: 100%; height: 56px; padding: 0 16px; border-radius: 4px; border: 1px solid var(--outline);
+    background: none; color: var(--on-surface); font: 400 16px Roboto; outline: none; caret-color: var(--primary); }
+  .of input:focus { border: 2px solid var(--primary); padding: 0 15px; }
+  .of label { position: absolute; left: 12px; top: -8px; padding: 0 4px; background: var(--surface);
+    font-size: 12px; line-height: 16px; color: var(--on-surface-variant); }
+  .of input:focus + label { color: var(--primary); }
+  .section { font: 500 14px/20px Roboto; color: var(--primary); padding: 24px 16px 8px; }
+  .empty-hint { color: var(--on-surface-variant); font-size: 14px; line-height: 20px; padding: 8px 16px 16px; }
+  .clickable { cursor: pointer; }
+
+  /* A: cards + ⋮ sheet, add button under the list, Zapisz pinned */
+  .a-pad { padding: 16px 16px 0; }
+  .a-list { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; }
+  .a-row { background: var(--surface-c); border-radius: 16px; min-height: 72px; display: flex; align-items: center;
+    gap: 16px; padding: 12px 4px 12px 16px; }
+  .a-row .txt { flex: 1; min-width: 0; }
+  .a-row .h { font-size: 16px; line-height: 24px; }
+  .a-row .s { font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
+  .a-add { margin: 16px 16px 24px; height: 40px; border-radius: 20px; }
+  .a-bottom { padding: 16px; }
+  .a-bottom .btn { width: 100%; height: 56px; border-radius: 28px; font-size: 16px; }
+
+  /* B: plain list with dividers, inline icons, set chips, Zapisz in top bar, extended FAB */
+  .tab .btn.text { height: 40px; padding: 0 12px; border-radius: 20px; margin-right: 8px; }
+  .b-pad { padding: 8px 16px 0; }
+  .b-row { display: flex; align-items: flex-start; gap: 4px; padding: 12px 4px 12px 16px;
+    border-bottom: 1px solid var(--outline-variant); }
+  .b-row .txt { flex: 1; min-width: 0; padding-top: 2px; }
+  .b-row .h { font-size: 16px; line-height: 24px; }
+  .b-row .cat { font-size: 12px; line-height: 16px; color: var(--on-surface-variant); text-transform: uppercase;
+    letter-spacing: .5px; margin-bottom: 2px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { height: 28px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--outline-variant);
+    font-size: 13px; display: flex; align-items: center; color: var(--on-surface-variant); }
+  .fab-ext { position: absolute; right: 16px; bottom: 16px; height: 56px; padding: 0 20px 0 16px; border-radius: 16px;
+    background: var(--primary-container); color: var(--on-primary-container); box-shadow: 0 3px 6px rgba(0,0,0,.35);
+    font-size: 14px; }
+  .fab-ext .icon { width: 24px; height: 24px; }
+
+  /* C: expanded cards with set table, dashed add tile, no Zapisz at all */
+  .c-pad { padding: 16px 16px 0; }
+  .c-list { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; }
+  .c-card { background: var(--surface-c); border-radius: 16px; padding: 4px 4px 12px 16px; }
+  .c-head { display: flex; align-items: center; gap: 8px; }
+  .c-head .txt { flex: 1; min-width: 0; padding: 8px 0; }
+  .c-head .h { font-size: 16px; line-height: 24px; }
+  .c-tag { display: inline-block; margin-top: 4px; font-size: 12px; line-height: 16px; padding: 2px 8px; border-radius: 6px;
+    background: var(--secondary-container); color: var(--on-secondary-container); }
+  table { border-collapse: collapse; width: calc(100% - 12px); font-size: 14px; }
+  th { text-align: left; font-weight: 500; font-size: 12px; color: var(--on-surface-variant); padding: 4px 0; }
+  td { padding: 4px 0; border-top: 1px solid var(--outline-variant); }
+  th:not(:first-child), td:not(:first-child) { text-align: right; }
+  .c-add { margin: 12px 16px 24px; height: 64px; border-radius: 16px; border: 1px dashed var(--outline);
+    color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500;
+    cursor: pointer; }
+  .c-saved { font-size: 12px; color: var(--on-surface-variant); padding: 4px 16px 0; }
+
+  /* Sheet + snackbar */
+  .scrim { position: absolute; inset: 0; background: rgba(0,0,0,.32); display: flex; align-items: flex-end; z-index: 5; }
+  .sheet { width: 100%; background: var(--surface-c-low); border-radius: 28px 28px 0 0; padding: 8px 0 16px; }
+  .handle { width: 32px; height: 4px; border-radius: 2px; background: var(--outline); margin: 14px auto 16px; opacity: .6; }
+  .sheet-item { height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 24px; font-size: 16px; cursor: pointer; }
+  .sheet-item:hover { background: rgba(230,224,233,.08); }
+  .sheet-item .icon { color: var(--on-surface-variant); }
+  .snack { position: absolute; left: 16px; right: 16px; bottom: 88px; background: #E6E0E9; color: #322F35;
+    border-radius: 4px; min-height: 48px; display: flex; align-items: center; padding: 0 8px 0 16px; font-size: 14px;
+    z-index: 4; box-shadow: 0 3px 6px rgba(0,0,0,.35); }
+  .snack span { flex: 1; }
+  .snack button { background: none; border: 0; color: #6750A4; font: 500 14px Roboto; padding: 10px 12px; cursor: pointer; }
+
+  /* Prototype chrome (deliberately not Material) */
+  .panel { width: 300px; flex: none; font: 13px/1.5 ui-monospace, Consolas, monospace; color: #bbb; }
+  .panel h3 { font-size: 13px; color: #fff; margin: 0 0 8px; }
+  .panel label { display: flex; gap: 8px; align-items: center; cursor: pointer; margin-bottom: 6px; }
+  .panel pre { background: #111; border: 1px solid #333; padding: 8px; white-space: pre-wrap; margin: 12px 0 0; }
+  .panel p { margin: 0 0 12px; }
+  .switcher { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 10; display: flex;
+    align-items: center; gap: 4px; background: #ffd400; color: #111; border-radius: 999px; padding: 4px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.6); font: 600 14px ui-monospace, Consolas, monospace; }
+  .switcher button { border: 0; background: #111; color: #ffd400; width: 36px; height: 36px; border-radius: 50%;
+    cursor: pointer; font-size: 18px; }
+  .switcher span { padding: 0 12px; min-width: 300px; text-align: center; }
+  @media (max-width: 760px) { body { flex-direction: column; align-items: center; } .panel { width: 412px; max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>▴ ◢ ▮</span></div>
+  <div class="screen" id="screen"></div>
+  <div class="navbar"></div>
+</div>
+
+<div class="panel">
+  <h3 id="vname"></h3>
+  <p id="vdesc"></p>
+  <h3>Tryb</h3>
+  <label><input type="radio" name="mode" value="edit" checked> Edycja („Push day”)</label>
+  <label><input type="radio" name="mode" value="add"> Dodawanie (pusty trening)</label>
+  <h3 style="margin-top:12px">Ćwiczenia</h3>
+  <label><input type="radio" name="data" value="none"> Brak</label>
+  <label><input type="radio" name="data" value="some" checked> Kilka (różne serie)</label>
+  <label><input type="radio" name="data" value="many"> Dużo (przewijanie)</label>
+  <p style="margin-top:8px">„Dodaj ćwiczenie” dopisuje losowe ćwiczenie z katalogu (3 × 12 · 0 kg) zamiast przejść
+    przez wybór kategorii → ćwiczenia → edytor serii. Edycja i Zapisz tylko logują.</p>
+  <pre id="state"></pre>
+</div>
+
+<div class="switcher">
+  <button id="prev" title="Poprzedni (←)">‹</button>
+  <span id="label"></span>
+  <button id="next" title="Następny (→)">›</button>
+</div>
+
+<script>
+const svg = d => `<svg class="icon" viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+const I = {
+  back: svg('M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2Z'),
+  more: svg('M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2Zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2Zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2Z'),
+  add: svg('M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2Z'),
+  edit: svg('M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25ZM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z'),
+  del: svg('M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12ZM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4Z'),
+};
+
+const CATALOGUE = {
+  'Klatka piersiowa': ['Wyciskanie hantli na ławce płaskiej', 'Wyciskanie hantli na ławce skośnej', 'Rozpiętki z hantlami', 'Pompki', 'Pompki na poręczach (dipy)'],
+  'Plecy': ['Podciąganie na drążku', 'Wiosłowanie hantlem w opadzie', 'Wiosłowanie hantlami oburącz', 'Martwy ciąg z hantlami', 'Pullover z hantlem'],
+  'Barki': ['Wyciskanie hantli nad głowę', 'Unoszenie hantli bokiem', 'Unoszenie hantli przodem', 'Odwrotne rozpiętki w opadzie', 'Arnoldki'],
+  'Biceps': ['Uginanie ramion z hantlami', 'Uginanie młotkowe', 'Uginanie skoncentrowane', 'Podciąganie podchwytem'],
+  'Triceps': ['Wyciskanie francuskie hantlem', 'Prostowanie ramienia w opadzie', 'Pompki diamentowe', 'Dipy na ławce'],
+  'Nogi': ['Przysiad z hantlami (goblet)', 'Wykroki z hantlami', 'Przysiad bułgarski', 'Martwy ciąg na prostych nogach', 'Wspięcia na palce', 'Hip thrust z hantlem'],
+  'Brzuch': ['Plank', 'Brzuszki', 'Unoszenie nóg w zwisie', 'Russian twist z hantlem', 'Deska boczna'],
+};
+const S = (n, reps, kg) => Array.from({ length: n }, () => ({ reps, kg }));
+const SOME = () => [
+  { ex: 'Wyciskanie hantli na ławce płaskiej', cat: 'Klatka piersiowa', sets: [{ reps: 12, kg: 10.5 }, { reps: 12, kg: 10.5 }, { reps: 10, kg: 12 }] },
+  { ex: 'Wiosłowanie hantlem w opadzie', cat: 'Plecy', sets: S(3, 12, 15) },
+  { ex: 'Unoszenie hantli bokiem', cat: 'Barki', sets: S(4, 12, 4.5) },
+  { ex: 'Pompki', cat: 'Klatka piersiowa', sets: S(3, 15, 0) },
+  { ex: 'Plank', cat: 'Brzuch', sets: S(3, 30, 0) },
+];
+const MANY = () => [...SOME(),
+  { ex: 'Wyciskanie hantli nad głowę', cat: 'Barki', sets: S(3, 10, 9) },
+  { ex: 'Uginanie młotkowe', cat: 'Biceps', sets: [{ reps: 12, kg: 7.5 }, { reps: 10, kg: 9 }, { reps: 8, kg: 10.5 }] },
+  { ex: 'Wyciskanie francuskie hantlem', cat: 'Triceps', sets: S(3, 12, 6) },
+  { ex: 'Przysiad bułgarski', cat: 'Nogi', sets: S(3, 12, 0) },
+  { ex: 'Russian twist z hantlem', cat: 'Brzuch', sets: S(2, 20, 4.5) },
+];
+
+let mode = 'edit', name = 'Push day', items = SOME(), sheetFor = null, snack = null, nextId = 1;
+const log = [];
+items.forEach(i => i.id = nextId++);
+
+const kg = w => `${String(w).replace('.', ',')} kg`;
+const seriesWord = n => n === 1 ? 'seria' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 'serie' : 'serii';
+const exWord = n => n === 1 ? 'ćwiczenie' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 'ćwiczenia' : 'ćwiczeń';
+function summary(sets) {
+  const same = sets.every(s => s.reps === sets[0].reps && s.kg === sets[0].kg);
+  if (same) return `${sets.length} × ${sets[0].reps} · ${kg(sets[0].kg)}`;
+  const ws = sets.map(s => s.kg), lo = Math.min(...ws), hi = Math.max(...ws);
+  return `${sets.length} ${seriesWord(sets.length)} · ${sets.map(s => s.reps).join('/')} · ${lo === hi ? kg(lo) : `${String(lo).replace('.', ',')}–${kg(hi)}`}`;
+}
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const valid = () => name.trim().length > 0;
+const title = () => mode === 'edit' ? 'Edytuj trening' : 'Nowy trening';
+const field = () => `<div class="of"><input id="name" value="${esc(name)}" autocomplete="off"><label for="name">Nazwa</label></div>`;
+
+const V = {
+  A: { name: 'Karty + menu ⋮', render: renderA,
+    desc: 'Wariant A formularza bez zmian u góry i na dole: pole „Nazwa”, „Zapisz” przypięty do dołu (zapisuje tylko nazwę). Pod polem nagłówek „N ćwiczeń” jak licznik na liście treningów, osobne karty jak wiersze listy: nazwa ćwiczenia + „kategoria · 3 × 12 · 0 kg”. Klik w kartę = edycja serii, ⋮ = arkusz Edytuj / Usuń (jak na liście treningów). Pod listą przycisk outlined „Dodaj ćwiczenie”.' },
+  B: { name: 'Lista + ikony, Zapisz w pasku', render: renderB,
+    desc: '„Zapisz” przeniesiony do top bara (text button), dół ekranu zwolniony na rozszerzony FAB „Dodaj ćwiczenie”. Zwykła lista z separatorami, bez kart. Każdy wiersz: kategoria małymi wersalikami, nazwa, a pod nią każda seria jako chip „12 × 10,5 kg”. Edycja i usuwanie jako widoczne ikony ✎ 🗑 w wierszu, bez arkusza.' },
+  C: { name: 'Karty z tabelą, bez Zapisz', render: renderC,
+    desc: 'Odchylenie dla porównania: skoro ćwiczenia zapisują się od razu, nazwa też (przy wyjściu / po wpisaniu) — przycisku „Zapisz” nie ma wcale. Karta pokazuje pełną tabelę serii (Seria | kg | Powt.), kategoria jako etykieta; klik w kartę = edycja, ⋮ = Edytuj / Usuń. Na końcu listy przerywany kafelek „+ Dodaj ćwiczenie”.' },
+};
+V.D = { name: 'A uproszczony (zwycięzca)', render: renderD,
+  desc: 'Wariant A bez nagłówka z liczbą ćwiczeń i bez powtórzeń / ciężaru w wierszu: tylko nazwa ćwiczenia i „kategoria · N serii”. Bez ćwiczeń między polem a „Dodaj ćwiczenie” nie ma nic.' };
+function renderD() {
+  const list = items.length ? `<div class="a-list" style="padding-top:24px">${items.map(i => `
+        <div class="a-row clickable" data-edit="${i.id}"><div class="txt"><div class="h">${esc(i.ex)}</div>
+          <div class="s">${i.cat} · ${i.sets.length} ${seriesWord(i.sets.length)}</div></div>
+          <button class="icon-btn dim" data-more="${i.id}" aria-label="Więcej opcji">${I.more}</button></div>`).join('')}</div>` : '';
+  return `<div class="tab"><button class="icon-btn" data-back aria-label="Wstecz">${I.back}</button><span class="title">${title()}</span></div>
+    <div class="content"><div class="a-pad">${field()}</div>${list}
+      <button class="btn outlined a-add" data-add style="width:calc(100% - 32px)${items.length ? '' : ';margin-top:24px'}">${I.add}Dodaj ćwiczenie</button></div>
+    <div class="bottom a-bottom"><button class="btn filled" data-save ${valid() ? '' : 'disabled'}>Zapisz</button></div>`;
+}
+const KEYS = Object.keys(V);
+let variant = new URLSearchParams(location.search).get('variant');
+if (!V[variant]) variant = 'A';
+
+function renderA() {
+  const list = items.length
+    ? `<div class="section">${items.length} ${exWord(items.length)}</div><div class="a-list">${items.map(i => `
+        <div class="a-row clickable" data-edit="${i.id}"><div class="txt"><div class="h">${esc(i.ex)}</div>
+          <div class="s">${i.cat} · ${summary(i.sets)}</div></div>
+          <button class="icon-btn dim" data-more="${i.id}" aria-label="Więcej opcji">${I.more}</button></div>`).join('')}</div>`
+    : `<div class="section">Ćwiczenia</div><div class="empty-hint">Brak ćwiczeń w tym treningu.</div>`;
+  return `<div class="tab"><button class="icon-btn" data-back aria-label="Wstecz">${I.back}</button><span class="title">${title()}</span></div>
+    <div class="content"><div class="a-pad">${field()}</div>${list}
+      <button class="btn outlined a-add" data-add style="width:calc(100% - 32px)">${I.add}Dodaj ćwiczenie</button></div>
+    <div class="bottom a-bottom"><button class="btn filled" data-save ${valid() ? '' : 'disabled'}>Zapisz</button></div>`;
+}
+function renderB() {
+  const list = items.length
+    ? `<div class="section">Ćwiczenia</div>${items.map(i => `
+        <div class="b-row"><div class="txt"><div class="cat">${i.cat}</div><div class="h">${esc(i.ex)}</div>
+          <div class="chips">${i.sets.map(s => `<span class="chip">${s.reps} × ${kg(s.kg)}</span>`).join('')}</div></div>
+          <button class="icon-btn dim" data-edit="${i.id}" aria-label="Edytuj">${I.edit}</button>
+          <button class="icon-btn dim" data-del="${i.id}" aria-label="Usuń">${I.del}</button></div>`).join('')}
+        <div style="height:88px"></div>`
+    : `<div class="section">Ćwiczenia</div><div class="empty-hint">Dodaj pierwsze ćwiczenie przyciskiem poniżej.</div>`;
+  return `<div class="tab"><button class="icon-btn" data-back aria-label="Wstecz">${I.back}</button><span class="title">${title()}</span>
+      <button class="btn text" data-save ${valid() ? '' : 'disabled'}>Zapisz</button></div>
+    <div class="content"><div class="b-pad">${field()}</div>${list}</div>
+    <button class="btn fab-ext" data-add>${I.add}Dodaj ćwiczenie</button>`;
+}
+function renderC() {
+  const list = items.length
+    ? `<div class="section">${items.length} ${exWord(items.length)}</div><div class="c-list">${items.map(i => `
+        <div class="c-card clickable" data-edit="${i.id}"><div class="c-head"><div class="txt"><div class="h">${esc(i.ex)}</div>
+          <span class="c-tag">${i.cat}</span></div>
+          <button class="icon-btn dim" data-more="${i.id}" aria-label="Więcej opcji">${I.more}</button></div>
+          <table><tr><th>Seria</th><th>kg</th><th>Powt.</th></tr>${i.sets.map((s, n) => `<tr><td>${n + 1}</td>
+            <td>${String(s.kg).replace('.', ',')}</td><td>${s.reps}</td></tr>`).join('')}</table></div>`).join('')}</div>`
+    : `<div class="section">Ćwiczenia</div>`;
+  return `<div class="tab"><button class="icon-btn" data-back aria-label="Wstecz">${I.back}</button><span class="title">${title()}</span></div>
+    <div class="content"><div class="c-pad">${field()}</div><div class="c-saved">Zmiany zapisują się automatycznie</div>${list}
+      <div class="c-add" data-add>${I.add}Dodaj ćwiczenie</div></div>`;
+}
+
+function overlays() {
+  let h = '';
+  if (snack) h += `<div class="snack"><span>${snack.text}</span><button data-undo>Cofnij</button></div>`;
+  if (sheetFor != null) h += `<div class="scrim" data-scrim><div class="sheet"><div class="handle"></div>
+    <div class="sheet-item" data-edit="${sheetFor}">${I.edit}Edytuj</div><div class="sheet-item" data-del="${sheetFor}">${I.del}Usuń</div></div></div>`;
+  return h;
+}
+function showState() {
+  document.getElementById('state').textContent = JSON.stringify({
+    variant, mode, name, saveEnabled: valid(),
+    trainingExercises: items.map(i => `${i.ex} — ${summary(i.sets)}`), log: log.slice(-5),
+  }, null, 2);
+}
+function render() {
+  const s = document.getElementById('screen'), top = s.querySelector('.content')?.scrollTop ?? 0;
+  s.innerHTML = V[variant].render() + overlays();
+  const c = s.querySelector('.content'); if (c) c.scrollTop = top;
+  const inp = document.getElementById('name');
+  inp.addEventListener('input', () => {
+    name = inp.value;
+    document.querySelectorAll('[data-save]').forEach(b => b.disabled = !valid());
+    if (variant === 'C') log.push(`nazwa zapisana automatycznie: „${name.trim()}”`);
+    showState();
+  });
+  document.getElementById('label').textContent = `${variant} (${V[variant].name})`;
+  document.getElementById('vname').textContent = `Wariant ${variant} — ${V[variant].name}`;
+  document.getElementById('vdesc').textContent = V[variant].desc;
+  showState();
+}
+const find = id => items.find(i => i.id === +id);
+
+document.getElementById('screen').addEventListener('click', e => {
+  const t = sel => e.target.closest(sel);
+  if (t('[data-more]')) { sheetFor = +t('[data-more]').dataset.more; return render(); }
+  if (t('[data-edit]')) {
+    const i = find(t('[data-edit]').dataset.edit); sheetFor = null;
+    log.push(`edytuj „${i.ex}” → edytor serii`); return render();
+  }
+  if (t('[data-del]')) {
+    const id = +t('[data-del]').dataset.del, idx = items.findIndex(i => i.id === id), [gone] = items.splice(idx, 1);
+    sheetFor = null; log.push(`usunięto „${gone.ex}” (zapisane od razu)`);
+    snack = { text: `Usunięto „${gone.ex}”`, gone, idx }; clearTimeout(window.snackT);
+    window.snackT = setTimeout(() => { snack = null; render(); }, 4000);
+    return render();
+  }
+  if (t('[data-undo]')) { items.splice(snack.idx, 0, snack.gone); log.push(`cofnięto usunięcie „${snack.gone.ex}”`); snack = null; return render(); }
+  if (t('[data-scrim]')) { sheetFor = null; return render(); }
+  if (t('[data-add]')) {
+    const cats = Object.keys(CATALOGUE), cat = cats[Math.floor(Math.random() * cats.length)];
+    const ex = CATALOGUE[cat][Math.floor(Math.random() * CATALOGUE[cat].length)];
+    items.push({ id: nextId++, ex, cat, sets: S(3, 12, 0) });
+    log.push(`dodaj → kategoria → ćwiczenie → edytor serii → „${ex}” (zapisane od razu)`); render();
+    const c = document.querySelector('.content'); c.scrollTop = c.scrollHeight; return;
+  }
+  if (t('[data-save]')) { log.push(`Zapisz → nazwa „${name.trim()}” → wstecz`); return showState(); }
+  if (t('[data-back]')) { log.push('Wstecz → lista treningów'); return showState(); }
+});
+
+function setVariant(k) {
+  variant = k; sheetFor = null;
+  const u = new URL(location); u.searchParams.set('variant', k); history.replaceState(null, '', u);
+  render();
+}
+const step = d => setVariant(KEYS[(KEYS.indexOf(variant) + d + KEYS.length) % KEYS.length]);
+document.getElementById('prev').onclick = () => step(-1);
+document.getElementById('next').onclick = () => step(1);
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input:not([type=radio]), textarea, [contenteditable]')) return;
+  if (e.key === 'ArrowLeft') step(-1);
+  if (e.key === 'ArrowRight') step(1);
+});
+document.querySelectorAll('input[name=mode]').forEach(r => r.onchange = () => {
+  mode = r.value; name = mode === 'edit' ? 'Push day' : '';
+  if (mode === 'add') { items = []; document.querySelector('input[name=data][value=none]').checked = true; }
+  render();
+});
+document.querySelectorAll('input[name=data]').forEach(r => r.onchange = () => {
+  items = r.value === 'none' ? [] : r.value === 'some' ? SOME() : MANY(); items.forEach(i => i.id = nextId++); render();
+});
+render();
+</script>
+</body>
+</html>

@@ -22,6 +22,26 @@ The Screen that lists every Training in order and is where the user deletes one.
 _Avoid_: Home screen, trainings screen
 
 **Training editor**:
-The Screen where the user names a Training. It is the "new training screen" when adding and the "edit training
-screen" when changing an existing Training; both are the same Screen.
+The Screen where the user names a Training and edits its Training exercises; nothing is kept until the user saves.
+It is the "new training screen" when adding and the "edit training screen" when changing an existing
+Training; both are the same Screen.
 _Avoid_: Training form, training details
+
+**Exercise**:
+An entry in the app's fixed catalogue of movements (e.g. „Uginanie młotkowe”), belonging to exactly one Exercise
+category. Removing it from a Training never removes it from the catalogue.
+_Avoid_: Movement, lift; Exercise for the copy inside a Training (that is a Training exercise)
+
+**Exercise category**:
+A fixed group of Exercises by the body part they train: Klatka piersiowa, Plecy, Barki, Biceps, Triceps, Nogi, Brzuch.
+_Avoid_: Muscle group, body part, type
+
+**Training exercise**:
+An Exercise added to one Training, together with its Sets. The Training editor lists a Training's Training exercises.
+_Avoid_: Exercise (when the one inside a Training is meant), entry, item
+
+**Set**:
+One planned round of a Training exercise: a repetition count and a weight in kilograms (0 kg for bodyweight). A
+target in the Training template, not something recorded while training. For timed Exercises such as Plank the
+repetition count stands for seconds.
+_Avoid_: Series, round; session (that is a Training session)

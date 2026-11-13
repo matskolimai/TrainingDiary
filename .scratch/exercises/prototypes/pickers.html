@@ -1,0 +1,264 @@
+<!doctype html>
+<!--
+  PROTOTYPE — throwaway. Answers: "How should the Exercise category picker and the Exercise picker look?"
+  Variants switchable via ?variant=A|B|C|D|E and the floating bar (or ← / → when no input is focused). Hosted in the
+  real flow: Training editor (variant D of training-editor.html) → „Dodaj ćwiczenie” → category picker → Exercise
+  picker → (Set editor skipped: ticket 03) → back to the editor with the new Training exercise. In-memory only.
+  D deviates from the agreed flow (one screen instead of two) and is there only to compare. E = winner (B without icons).
+-->
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pickers prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<style>
+  :root {
+    --primary: #D0BCFF; --on-primary: #381E72;
+    --primary-container: #4F378B; --on-primary-container: #EADDFF;
+    --secondary-container: #4A4458; --on-secondary-container: #E8DEF8;
+    --surface: #141218; --on-surface: #E6E0E9; --on-surface-variant: #CAC4D0;
+    --surface-c-low: #1D1B20; --surface-c: #211F26; --surface-c-high: #2B2930; --surface-c-highest: #36343B;
+    --outline: #938F99; --outline-variant: #49454F;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #050506; color: var(--on-surface);
+    font-family: Roboto, system-ui, sans-serif; }
+  body { display: flex; align-items: flex-start; justify-content: center; gap: 24px; padding: 24px 16px 96px; }
+  .phone { position: relative; width: 412px; max-width: 100%; height: 860px; background: var(--surface);
+    border-radius: 28px; overflow: hidden; box-shadow: 0 0 0 10px #1a1a1d, 0 20px 60px rgba(0,0,0,.6);
+    display: flex; flex-direction: column; }
+  .statusbar { height: 32px; flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; font-size: 13px; }
+  .navbar { height: 24px; flex: none; display: flex; align-items: center; justify-content: center; }
+  .navbar::after { content: ""; width: 108px; height: 4px; border-radius: 2px; background: var(--on-surface); opacity: .6; }
+  .screen { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .content { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+  .ms { font-family: 'Material Symbols Outlined'; font-size: 24px; line-height: 1; font-weight: normal;
+    font-style: normal; display: inline-block; user-select: none; }
+  .icon-btn { width: 48px; height: 48px; border: 0; background: none; color: var(--on-surface);
+    border-radius: 50%; display: grid; place-items: center; cursor: pointer; flex: none; }
+  .icon-btn.dim { color: var(--on-surface-variant); }
+  .icon-btn:hover { background: rgba(230,224,233,.08); }
+  .tab { height: 64px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 4px; }
+  .tab .title { flex: 1; font-size: 22px; padding-left: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tab .title small { display: block; font-size: 14px; color: var(--on-surface-variant); margin-top: 2px; }
+  .clickable { cursor: pointer; }
+  .clickable:hover { filter: brightness(1.12); }
+
+  /* host: Training editor D */
+  .btn { border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 500 14px Roboto, sans-serif; letter-spacing: .1px; }
+  .btn.filled { background: var(--primary); color: var(--on-primary); }
+  .btn.outlined { background: none; color: var(--primary); border: 1px solid var(--outline); }
+  .btn .ms { font-size: 18px; }
+  .of { position: relative; margin-top: 8px; }
+  .of input { width: 100%; height: 56px; padding: 0 16px; border-radius: 4px; border: 1px solid var(--outline);
+    background: none; color: var(--on-surface); font: 400 16px Roboto; outline: none; }
+  .of label { position: absolute; left: 12px; top: -8px; padding: 0 4px; background: var(--surface);
+    font-size: 12px; line-height: 16px; color: var(--on-surface-variant); }
+  .card-list { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; }
+  .card { background: var(--surface-c); border-radius: 16px; min-height: 72px; display: flex; align-items: center;
+    gap: 16px; padding: 12px 4px 12px 16px; }
+  .card .txt { flex: 1; min-width: 0; }
+  .h { font-size: 16px; line-height: 24px; }
+  .s { font-size: 14px; line-height: 20px; color: var(--on-surface-variant); }
+
+  /* A: plain M3 list, dividers, count as supporting text, chevron */
+  .a-row { display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 8px 24px 8px 16px;
+    border-bottom: 1px solid var(--outline-variant); }
+  .a-row.one { min-height: 56px; }
+  .a-row .txt { flex: 1; min-width: 0; }
+  .a-row .ms { color: var(--on-surface-variant); }
+
+  /* B: cards like the Training editor rows, leading icon in a tonal circle, count badge */
+  .b-ic { width: 40px; height: 40px; border-radius: 50%; background: var(--secondary-container);
+    color: var(--on-secondary-container); display: grid; place-items: center; flex: none; }
+  .badge { min-width: 28px; height: 28px; padding: 0 8px; border-radius: 14px; background: var(--surface-c-highest);
+    color: var(--on-surface-variant); font-size: 13px; font-weight: 500; display: grid; place-items: center; margin-right: 12px; }
+  .card.ex { min-height: 56px; padding-right: 16px; }
+
+  /* C: medium top bar, 2-column tiles for categories, then a dense list */
+  .med { flex: none; padding: 0 4px 0; }
+  .med .row { height: 64px; display: flex; align-items: center; }
+  .med .big { font-size: 28px; line-height: 36px; padding: 0 16px 20px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px 24px; }
+  .tile { background: var(--surface-c-high); border-radius: 20px; height: 112px; padding: 16px;
+    display: flex; flex-direction: column; justify-content: space-between; }
+  .tile .ms { font-size: 32px; color: var(--primary); }
+  .tile .h { font-weight: 500; }
+  .c-row { display: flex; align-items: center; min-height: 48px; padding: 0 16px; font-size: 16px; }
+  .c-row .n { width: 32px; color: var(--on-surface-variant); font-size: 14px; }
+
+  /* D: one screen, category chips + list */
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 12px; scrollbar-width: none; flex: none; }
+  .chip { height: 32px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--outline-variant); white-space: nowrap;
+    display: flex; align-items: center; font-size: 14px; font-weight: 500; color: var(--on-surface-variant); cursor: pointer; }
+  .chip.on { background: var(--secondary-container); color: var(--on-secondary-container); border-color: transparent; }
+
+  /* Prototype chrome (deliberately not Material) */
+  .panel { width: 300px; flex: none; font: 13px/1.5 ui-monospace, Consolas, monospace; color: #bbb; }
+  .panel h3 { font-size: 13px; color: #fff; margin: 0 0 8px; }
+  .panel label { display: flex; gap: 8px; align-items: center; cursor: pointer; margin-bottom: 6px; }
+  .panel pre { background: #111; border: 1px solid #333; padding: 8px; white-space: pre-wrap; margin: 12px 0 0; }
+  .panel p { margin: 0 0 12px; }
+  .switcher { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 10; display: flex;
+    align-items: center; gap: 4px; background: #ffd400; color: #111; border-radius: 999px; padding: 4px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.6); font: 600 14px ui-monospace, Consolas, monospace; }
+  .switcher button { border: 0; background: #111; color: #ffd400; width: 36px; height: 36px; border-radius: 50%;
+    cursor: pointer; font-size: 18px; }
+  .switcher span { padding: 0 12px; min-width: 300px; text-align: center; }
+  @media (max-width: 760px) { body { flex-direction: column; align-items: center; } .panel { width: 412px; max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar"><span>9:41</span><span>▴ ◢ ▮</span></div>
+  <div class="screen" id="screen"></div>
+  <div class="navbar"></div>
+</div>
+
+<div class="panel">
+  <h3 id="vname"></h3>
+  <p id="vdesc"></p>
+  <h3>Ekran</h3>
+  <label><input type="radio" name="scr" value="editor"> Edytor treningu</label>
+  <label><input type="radio" name="scr" value="cat"> Wybór kategorii</label>
+  <label><input type="radio" name="scr" value="ex"> Wybór ćwiczenia (Nogi)</label>
+  <p style="margin-top:8px">Klikaj jak w aplikacji: „Dodaj ćwiczenie” → kategoria → ćwiczenie. Edytor serii jest
+    pominięty (osobny prototyp): wybrane ćwiczenie wraca do edytora z 3 seriami.</p>
+  <pre id="state"></pre>
+</div>
+
+<div class="switcher">
+  <button id="prev" title="Poprzedni (←)">‹</button>
+  <span id="label"></span>
+  <button id="next" title="Następny (→)">›</button>
+</div>
+
+<script>
+const ms = n => `<span class="ms">${n}</span>`;
+const CATALOGUE = {
+  'Klatka piersiowa': ['Wyciskanie hantli na ławce płaskiej', 'Wyciskanie hantli na ławce skośnej', 'Rozpiętki z hantlami', 'Pompki', 'Pompki na poręczach (dipy)'],
+  'Plecy': ['Podciąganie na drążku', 'Wiosłowanie hantlem w opadzie', 'Wiosłowanie hantlami oburącz', 'Martwy ciąg z hantlami', 'Pullover z hantlem'],
+  'Barki': ['Wyciskanie hantli nad głowę', 'Unoszenie hantli bokiem', 'Unoszenie hantli przodem', 'Odwrotne rozpiętki w opadzie', 'Arnoldki'],
+  'Biceps': ['Uginanie ramion z hantlami', 'Uginanie młotkowe', 'Uginanie skoncentrowane', 'Podciąganie podchwytem'],
+  'Triceps': ['Wyciskanie francuskie hantlem', 'Prostowanie ramienia w opadzie', 'Pompki diamentowe', 'Dipy na ławce'],
+  'Nogi': ['Przysiad z hantlami (goblet)', 'Wykroki z hantlami', 'Przysiad bułgarski', 'Martwy ciąg na prostych nogach', 'Wspięcia na palce', 'Hip thrust z hantlem'],
+  'Brzuch': ['Plank', 'Brzuszki', 'Unoszenie nóg w zwisie', 'Russian twist z hantlem', 'Deska boczna'],
+};
+// Loose stand-ins: Material Symbols has no icon per muscle group.
+const ICON = { 'Klatka piersiowa': 'fitness_center', 'Plecy': 'rowing', 'Barki': 'accessibility_new',
+  'Biceps': 'sports_martial_arts', 'Triceps': 'sports_handball', 'Nogi': 'directions_run', 'Brzuch': 'self_improvement' };
+const CATS = Object.keys(CATALOGUE);
+
+const plural = (n, one, few, many) => n === 1 ? one : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? few : many;
+const exCount = n => `${n} ${plural(n, 'ćwiczenie', 'ćwiczenia', 'ćwiczeń')}`;
+const seriesWord = n => plural(n, 'seria', 'serie', 'serii');
+
+let screen = 'editor', cat = null, items = [
+  { ex: 'Wyciskanie hantli na ławce płaskiej', cat: 'Klatka piersiowa', n: 3 },
+  { ex: 'Unoszenie hantli bokiem', cat: 'Barki', n: 4 },
+];
+const log = [];
+const back = `<button class="icon-btn" data-back aria-label="Wstecz">${ms('arrow_back')}</button>`;
+
+function editor() {
+  return `<div class="tab">${back}<span class="title">Edytuj trening</span></div>
+    <div class="content"><div style="padding:16px 16px 0"><div class="of"><input value="Push day"><label>Nazwa</label></div></div>
+      <div class="card-list" style="padding-top:24px">${items.map(i => `<div class="card"><div class="txt"><div class="h">${i.ex}</div>
+        <div class="s">${i.cat} · ${i.n} ${seriesWord(i.n)}</div></div><button class="icon-btn dim">${ms('more_vert')}</button></div>`).join('')}</div>
+      <button class="btn outlined" data-add style="margin:16px 16px 24px;height:40px;border-radius:20px;width:calc(100% - 32px)">${ms('add')}Dodaj ćwiczenie</button></div>
+    <div style="padding:16px"><button class="btn filled" style="width:100%;height:56px;border-radius:28px;font-size:16px">Zapisz</button></div>`;
+}
+
+const V = {
+  A: { name: 'Zwykła lista z separatorami',
+    desc: 'Najprostsze M3: top bar „Wybierz kategorię”, potem tytuł = nazwa kategorii. Kategorie jako dwulinijkowe wiersze (nazwa + „5 ćwiczeń”) z separatorami i strzałką ›. Ćwiczenia jako jednolinijkowe wiersze 56dp z separatorami, bez strzałki. Brak ikon.',
+    cat: () => `<div class="tab">${back}<span class="title">Wybierz kategorię</span></div>
+      <div class="content">${CATS.map(c => `<div class="a-row clickable" data-cat="${c}"><div class="txt"><div class="h">${c}</div>
+        <div class="s">${exCount(CATALOGUE[c].length)}</div></div>${ms('chevron_right')}</div>`).join('')}</div>`,
+    ex: () => `<div class="tab">${back}<span class="title">${cat}</span></div>
+      <div class="content">${CATALOGUE[cat].map(e => `<div class="a-row one clickable" data-ex="${e}"><div class="txt h">${e}</div></div>`).join('')}</div>` },
+  B: { name: 'Karty jak w edytorze, z ikonami',
+    desc: 'Wiersze jak karty w edytorze treningu i na liście treningów (surfaceContainer, 16dp rogi, 12dp odstępu). Kategoria: ikona w tonalnym kółku (umowna — Material nie ma ikon partii mięśni), nazwa, licznik ćwiczeń jako plakietka po prawej. Oba ekrany mają tytuł „Dodaj ćwiczenie”, a pod nim krok: „Krok 1 z 3: kategoria” / „Krok 2 z 3: Nogi”.',
+    cat: () => `<div class="tab">${back}<span class="title">Dodaj ćwiczenie<small>Krok 1 z 3: kategoria</small></span></div>
+      <div class="content"><div class="card-list" style="padding:8px 16px 24px">${CATS.map(c => `<div class="card clickable" data-cat="${c}">
+        <div class="b-ic">${ms(ICON[c])}</div><div class="txt h">${c}</div><span class="badge">${CATALOGUE[c].length}</span></div>`).join('')}</div></div>`,
+    ex: () => `<div class="tab">${back}<span class="title">Dodaj ćwiczenie<small>Krok 2 z 3: ${cat}</small></span></div>
+      <div class="content"><div class="card-list" style="padding:8px 16px 24px">${CATALOGUE[cat].map(e => `<div class="card ex clickable" data-ex="${e}">
+        <div class="txt h">${e}</div></div>`).join('')}</div></div>` },
+  C: { name: 'Kafelki kategorii + gęsta lista',
+    desc: 'Duży (medium) top bar z tytułem 28sp: „Kategoria”, potem nazwa kategorii. Kategorie jako siatka 2 kolumn dużych kafelków (ikona w kolorze primary, nazwa, licznik) — wszystkie 7 widać bez przewijania. Ćwiczenia jako gęsta lista 48dp bez separatorów, z numerem porządkowym.',
+    cat: () => `<div class="med"><div class="row">${back}</div><div class="big">Kategoria</div></div>
+      <div class="content"><div class="grid">${CATS.map(c => `<div class="tile clickable" data-cat="${c}">${ms(ICON[c])}
+        <div><div class="h">${c}</div><div class="s">${exCount(CATALOGUE[c].length)}</div></div></div>`).join('')}</div></div>`,
+    ex: () => `<div class="med"><div class="row">${back}</div><div class="big">${cat}</div></div>
+      <div class="content">${CATALOGUE[cat].map((e, n) => `<div class="c-row clickable" data-ex="${e}"><span class="n">${n + 1}</span>${e}</div>`).join('')}</div>` },
+  D: { name: 'Jeden ekran: chipy + lista (odchylenie)',
+    desc: 'ODCHYLENIE od ustalonego przepływu, tylko do porównania: zamiast dwóch ekranów jeden — „Wybierz ćwiczenie”, pod paskiem przewijany rząd chipów kategorii (pierwsza zaznaczona), pod nim lista ćwiczeń tej kategorii. Jeden krok mniej, ale kategorie częściowo schowane za krawędzią.',
+    cat: () => V.D.ex(),
+    ex: () => { const c = cat ?? CATS[0];
+      return `<div class="tab">${back}<span class="title">Wybierz ćwiczenie</span></div>
+      <div class="chips">${CATS.map(k => `<span class="chip ${k === c ? 'on' : ''}" data-chip="${k}">${k}</span>`).join('')}</div>
+      <div class="content">${CATALOGUE[c].map(e => `<div class="a-row one clickable" data-ex="${e}" data-c="${c}"><div class="txt h">${e}</div></div>`).join('')}</div>`; } },
+};
+V.E = { name: 'B bez ikon (zwycięzca)',
+  desc: 'Wariant B bez ikon partii mięśni: karty jak w edytorze, nazwa kategorii + plakietka z liczbą ćwiczeń, tytuł „Dodaj ćwiczenie” z krokiem pod spodem.',
+  cat: () => V.B.cat().replace(/<div class="b-ic">.*?<\/span><\/div>/g, ''),
+  ex: () => V.B.ex() };
+const KEYS = Object.keys(V);
+let variant = new URLSearchParams(location.search).get('variant');
+if (!V[variant]) variant = 'A';
+
+function render() {
+  const s = document.getElementById('screen');
+  s.innerHTML = screen === 'editor' ? editor() : V[variant][screen]();
+  document.querySelector(`input[name=scr][value=${screen}]`).checked = true;
+  document.getElementById('label').textContent = `${variant} (${V[variant].name})`;
+  document.getElementById('vname').textContent = `Wariant ${variant} — ${V[variant].name}`;
+  document.getElementById('vdesc').textContent = V[variant].desc;
+  document.getElementById('state').textContent = JSON.stringify({ variant, screen, category: cat,
+    trainingExercises: items.map(i => `${i.ex} (${i.cat})`), log: log.slice(-5) }, null, 2);
+}
+
+document.getElementById('screen').addEventListener('click', e => {
+  const t = sel => e.target.closest(sel);
+  if (t('[data-add]')) { screen = 'cat'; cat = null; log.push('Dodaj ćwiczenie → wybór kategorii'); return render(); }
+  if (t('[data-chip]')) { cat = t('[data-chip]').dataset.chip; screen = 'ex'; return render(); }
+  if (t('[data-cat]')) { cat = t('[data-cat]').dataset.cat; screen = 'ex'; log.push(`kategoria „${cat}”`); return render(); }
+  if (t('[data-ex]')) {
+    const el = t('[data-ex]'), c = el.dataset.c ?? cat;
+    items.push({ ex: el.dataset.ex, cat: c, n: 3 });
+    log.push(`ćwiczenie „${el.dataset.ex}” → (edytor serii pominięty) → edytor treningu`);
+    screen = 'editor'; render(); const k = document.querySelector('.content'); k.scrollTop = k.scrollHeight; return;
+  }
+  if (t('[data-back]')) {
+    const from = screen;
+    screen = screen === 'ex' && variant !== 'D' ? 'cat' : 'editor';
+    log.push(`Wstecz: ${from} → ${screen}`); return render();
+  }
+});
+
+function setVariant(k) {
+  variant = k;
+  const u = new URL(location); u.searchParams.set('variant', k); history.replaceState(null, '', u);
+  render();
+}
+const step = d => setVariant(KEYS[(KEYS.indexOf(variant) + d + KEYS.length) % KEYS.length]);
+document.getElementById('prev').onclick = () => step(-1);
+document.getElementById('next').onclick = () => step(1);
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input:not([type=radio]), textarea, [contenteditable]')) return;
+  if (e.key === 'ArrowLeft') step(-1);
+  if (e.key === 'ArrowRight') step(1);
+});
+document.querySelectorAll('input[name=scr]').forEach(r => r.onchange = () => {
+  screen = r.value; cat = screen === 'ex' ? 'Nogi' : null; render();
+});
+screen = 'cat';
+render();
+</script>
+</body>
+</html>
