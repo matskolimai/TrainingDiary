@@ -39,7 +39,6 @@ internal fun ExerciseCategoryPickerScreen(
         topBar = {
             AppTopBarWithBack(
                 title = stringResource(R.string.exercise_category_picker_title),
-                subtitle = stringResource(R.string.exercise_category_picker_subtitle),
                 onBackClick = { onAction(ExerciseCategoryPickerAction.OnBackClick) },
             )
         },

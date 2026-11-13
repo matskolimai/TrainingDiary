@@ -4,6 +4,7 @@ import android.content.res.Resources
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasAnySibling
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
@@ -18,7 +19,7 @@ class ExerciseCategoryPickerUiDriver(
 ) : ExerciseCategoryPickerDriver {
     // A row is its category's name next to a badge holding the Exercise count.
     override fun assertListedInOrder(categories: List<Pair<String, Int>>) {
-        compose.waitUntilExactlyOneExists(subtitle())
+        compose.waitUntilExactlyOneExists(title())
         val tops =
             categories.map { (name, count) ->
                 val row = hasText(name) and hasAnySibling(hasAnyChild(hasText(count.toString())))
@@ -32,12 +33,14 @@ class ExerciseCategoryPickerUiDriver(
     }
 
     override fun leave() {
-        compose.waitUntilExactlyOneExists(subtitle())
+        compose.waitUntilExactlyOneExists(title())
         compose
             .onNodeWithContentDescription(resources.getString(DesignSystemR.string.design_system_cd_back))
             .performClick()
-        compose.waitUntilDoesNotExist(subtitle())
+        compose.waitUntilDoesNotExist(title())
     }
 
-    private fun subtitle(): SemanticsMatcher = hasText(resources.getString(R.string.exercise_category_picker_subtitle))
+    // The Training editor's „Dodaj ćwiczenie” button has the same text; the title is the one that isn't clickable.
+    private fun title(): SemanticsMatcher =
+        hasText(resources.getString(R.string.exercise_category_picker_title)) and !hasClickAction()
 }

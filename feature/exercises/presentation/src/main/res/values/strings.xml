@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="exercise_category_picker_title">Dodaj ćwiczenie</string>
-    <string name="exercise_category_picker_subtitle">Krok 1 z 3: kategoria</string>
 </resources>

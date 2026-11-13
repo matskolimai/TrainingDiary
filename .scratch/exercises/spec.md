@@ -19,8 +19,8 @@ want to lose an edit by pressing back by accident.
 
 The Training editor gains a list of **Training exercises** and an outlined „Dodaj ćwiczenie” button under it.
 
-- **Adding** walks three Screens titled „Dodaj ćwiczenie”: the **Exercise category picker** („Krok 1 z 3:
-  kategoria”, 7 categories with an Exercise count badge), the **Exercise picker** („Krok 2 z 3: <category>”, a plain
+- **Adding** walks three Screens titled „Dodaj ćwiczenie”: the **Exercise category picker** (7
+  categories with an Exercise count badge), the **Exercise picker** („Krok 2 z 3: <category>”, a plain
   list of that category's Exercises) and the **Set editor** („Krok 3 z 3: <Exercise>”). „Dodaj do treningu” returns
   straight to the Training editor with the new Training exercise at the end of the list.
 - The **Set editor** shows a „Serie” count with − / + and one card per Set holding a weight pill („0 kg”) and a reps
@@ -71,8 +71,8 @@ Dark theme only, Polish UI, English code, as in the rest of the app.
     Barki, Biceps, Triceps, Nogi, Brzuch) in that order, so that I narrow down the Exercise by body part first.
 16. As the user, I want each Exercise category row to show how many Exercises it holds in a small badge, so that I
     know what to expect before opening it.
-17. As the user, I want the picker titled „Dodaj ćwiczenie” with the subtitle „Krok 1 z 3: kategoria”, so that I know
-    where I am in adding.
+17. As the user, I want the picker titled „Dodaj ćwiczenie”, so that I know I'm adding an Exercise. (The step
+    subtitle „Krok 1 z 3: kategoria” was dropped: the top bar shows only its title.)
 18. As the user, I want tapping an Exercise category to list its Exercises in catalogue order, so that I can pick one.
 19. As the user, I want the Exercise picker's subtitle to read „Krok 2 z 3: <Exercise category>”, so that I see which
     category I opened.
@@ -313,7 +313,7 @@ Dark theme only, Polish UI, English code, as in the rest of the app.
 New components, one ticket each, each with a preview and snapshot, landing right before its first user:
 
 - `AppCountBadge` (28dp, fully rounded, `surfaceContainerHighest`, 13sp medium, `onSurfaceVariant`).
-- A subtitle parameter on `AppTopBarWithBack` (bodyMedium 14sp, `onSurfaceVariant`, under a 22sp title).
+- ~~A subtitle parameter on `AppTopBarWithBack`~~: dropped (ticket 03 reverted); the top bar shows only its title.
 - `AppValuePill` (tappable, 40dp high, 12dp corners, 16sp; focused = `secondaryContainer` fill + 2dp `primary`
   border).
 - `AppRepeatIconButton` (tonal 40dp icon button, hold to repeat, disabled state).
@@ -344,7 +344,7 @@ Exercise category rows, Exercise rows and Training exercise cards reuse `AppList
 
 ### Strings
 
-- New Polish strings as resources in the module that shows them: „Dodaj ćwiczenie”, „Krok 1 z 3: kategoria”,
+- New Polish strings as resources in the module that shows them: „Dodaj ćwiczenie”,
   „Krok 2 z 3: %s”, „Krok 3 z 3: %s”, „Serie”, „%s kg”, „%d powt.”, „%d s”, „Dodaj do treningu”, „Gotowe”, plurals
   seria / serie / serii. Catalogue names are data, not resources.
 
@@ -442,6 +442,6 @@ Focus is ViewModel state, so both channels check it. No ViewModel-only case.
 
 ## Additions
 
-Kept additions carried from the prototypes and grilling (already approved by the user): row tap opens the Set
-editor; step subtitles „Krok N z 3”; Exercise count badge on category rows; ± only on the focused row; hold to
-repeat; the „s” label for timed Exercises. No new additions in this spec.
+Kept additions carried from the prototypes and grilling (already approved by the user): row tap opens the Set editor;
+~~step subtitles „Krok N z 3”~~ (dropped by the user); Exercise count badge on category rows; ± only on the focused row;
+hold to repeat; the „s” label for timed Exercises. No new additions in this spec.

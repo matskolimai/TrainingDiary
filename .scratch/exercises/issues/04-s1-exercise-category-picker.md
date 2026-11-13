@@ -1,12 +1,11 @@
 # 04: S1 Exercise category picker
 
-**What to build:** the Training editor shows an outlined „Dodaj ćwiczenie” button under the name field. Tapping it
-opens the Exercise category picker: title „Dodaj ćwiczenie”, subtitle „Krok 1 z 3: kategoria”, the 7 Exercise
-categories in catalogue order, each a card row with its Exercise count in a badge. Back (top bar or system) returns to
-the Training editor with its input intact. Tapping a category does nothing yet. See `../spec.md` (Navigation, Visual
-details).
+**What to build:** the Training editor shows an outlined „Dodaj ćwiczenie” button under the name field. Tapping it opens
+the Exercise category picker: title „Dodaj ćwiczenie” (no subtitle; see 03), the 7 Exercise categories in catalogue
+order, each a card row with its Exercise count in a badge. Back (top bar or system) returns to the Training editor with
+its input intact. Tapping a category does nothing yet. See `../spec.md` (Navigation, Visual details).
 
-**Blocked by:** 01 (Modules and catalogue), 02 (AppCountBadge), 03 (Subtitle on AppTopBarWithBack).
+**Blocked by:** 01 (Modules and catalogue), 02 (AppCountBadge).
 
 **Status:** ready-for-agent
 
