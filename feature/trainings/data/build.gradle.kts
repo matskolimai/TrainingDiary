@@ -10,4 +10,5 @@ android {
 dependencies {
     implementation(projects.feature.trainings.domain)
     implementation(projects.core.database)
+    implementation(projects.core.domain)
 }
