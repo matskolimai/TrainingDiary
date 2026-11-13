@@ -8,14 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
 import pl.skolim.trainingdiary.core.designsystem.AppListRow
 import pl.skolim.trainingdiary.core.designsystem.Sizes
 import pl.skolim.trainingdiary.core.designsystem.Spacing
 import pl.skolim.trainingdiary.feature.trainings.domain.TrainingExercise
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 
-// Merged so the card reads as one item: its name, then its category and number of Sets.
 @Composable
 internal fun TrainingExerciseCard(
     trainingExercise: TrainingExercise,
@@ -23,7 +21,7 @@ internal fun TrainingExerciseCard(
 ) {
     val setCount = trainingExercise.sets.size
     AppListRow(
-        modifier = modifier.semantics(mergeDescendants = true) {},
+        modifier = modifier,
         minHeight = Sizes.listRowTallMinHeight,
     ) {
         Column(modifier = Modifier.padding(vertical = Spacing.medium)) {

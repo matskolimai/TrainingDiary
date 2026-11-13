@@ -5,6 +5,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
@@ -44,8 +45,8 @@ class TrainingEditorUiDriver(
         compose.waitUntilExactlyOneExists(nameField() and isFocused())
     }
 
-    // A card merges its name and summary. Cards of every expected kind are read and ordered by position, so a
-    // missing, extra or misplaced copy of an expected Training exercise fails.
+    // A card is its name with the summary beside it. Cards of every expected kind are read and ordered by position,
+    // so a missing, extra or misplaced copy of an expected Training exercise fails.
     override fun assertExercisesInOrder(exercises: List<PlannedTrainingExercise>) {
         compose.waitUntilExactlyOneExists(nameField())
         val kinds = exercises.distinct()
@@ -106,7 +107,7 @@ class TrainingEditorUiDriver(
     private fun card(exercise: PlannedTrainingExercise): SemanticsMatcher {
         val sets = resources.getQuantityString(R.plurals.training_editor_sets, exercise.sets, exercise.sets)
         val summary = resources.getString(R.string.training_editor_exercise_summary, exercise.category, sets)
-        return hasText(exercise.name) and hasText(summary)
+        return hasText(exercise.name) and hasAnySibling(hasText(summary))
     }
 
     private fun hasNoInput(): SemanticsMatcher = hasInput("")
