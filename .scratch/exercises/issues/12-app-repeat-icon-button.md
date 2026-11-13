@@ -7,7 +7,12 @@ ticket; ticket 18 adds it. See `../spec.md` (Design system).
 
 **Status:** ready-for-agent
 
-- [ ] `AppRepeatIconButton(icon, contentDescription, enabled, onClick)` in `:core:design-system`; `remove` and `add`
+- [x] `AppRepeatIconButton(icon, contentDescription, enabled, onClick)` in `:core:design-system`; `remove` and `add`
       icons in `AppIcons` if missing.
-- [ ] Previews for enabled and disabled, snapshotted.
-- [ ] `./gradlew check` passes.
+- [x] Previews for enabled and disabled, snapshotted.
+- [x] `./gradlew check` passes.
+
+## Mutation testing
+
+Skill run; its diff leaves out `:core:design-system` (screenshot-covered), so no production Kotlin
+remained to mutate. The enabled and disabled snapshots cover the button.
