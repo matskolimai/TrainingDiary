@@ -2,7 +2,10 @@ package pl.skolim.trainingdiary.acceptance.driver
 
 import android.content.res.Resources
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyChild
+import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
@@ -32,6 +35,32 @@ class SetEditorUiDriver(
             }
         assertThat(tops).isInStrictOrder()
         compose.onNode(setCard(number = sets.size + 1)).assertDoesNotExist()
+    }
+
+    override fun addSet() {
+        val increment = hasContentDescription(resources.getString(DesignSystemR.string.design_system_cd_increment))
+        compose.waitUntilExactlyOneExists(increment)
+        compose.onNode(increment).performClick()
+        compose.waitForIdle()
+    }
+
+    override fun removeSet() {
+        val decrement = hasContentDescription(resources.getString(DesignSystemR.string.design_system_cd_decrement))
+        compose.waitUntilExactlyOneExists(decrement)
+        compose.onNode(decrement).performClick()
+        compose.waitForIdle()
+    }
+
+    override fun assertCount(
+        count: Int,
+        canRemove: Boolean,
+        canAdd: Boolean,
+    ) {
+        val decrement = hasContentDescription(resources.getString(DesignSystemR.string.design_system_cd_decrement))
+        val increment = hasContentDescription(resources.getString(DesignSystemR.string.design_system_cd_increment))
+        compose.waitUntilExactlyOneExists(hasText(count.toString()) and hasAnySibling(decrement))
+        if (canRemove) compose.onNode(decrement).assertIsEnabled() else compose.onNode(decrement).assertIsNotEnabled()
+        if (canAdd) compose.onNode(increment).assertIsEnabled() else compose.onNode(increment).assertIsNotEnabled()
     }
 
     override fun tapAddToTraining() {

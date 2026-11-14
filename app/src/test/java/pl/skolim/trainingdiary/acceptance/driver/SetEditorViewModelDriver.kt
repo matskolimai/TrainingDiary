@@ -20,6 +20,26 @@ class SetEditorViewModelDriver(
         assertThat(app.topKey is TrainingEditorKey).isTrue()
     }
 
+    override fun addSet() {
+        app.setEditor.onAction(SetEditorAction.OnIncrementSetsClick)
+        app.settle()
+    }
+
+    override fun removeSet() {
+        app.setEditor.onAction(SetEditorAction.OnDecrementSetsClick)
+        app.settle()
+    }
+
+    override fun assertCount(
+        count: Int,
+        canRemove: Boolean,
+        canAdd: Boolean,
+    ) {
+        assertThat(app.setEditor.state.value.sets).hasSize(count)
+        assertThat(app.setEditor.state.value.canRemoveSet).isEqualTo(canRemove)
+        assertThat(app.setEditor.state.value.canAddSet).isEqualTo(canAdd)
+    }
+
     override fun leave() {
         app.setEditor.onAction(SetEditorAction.OnBackClick)
         app.settle()

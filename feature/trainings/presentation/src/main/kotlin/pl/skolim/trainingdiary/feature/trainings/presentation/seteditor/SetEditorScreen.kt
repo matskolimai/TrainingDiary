@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.skolim.trainingdiary.core.designsystem.AppButton
+import pl.skolim.trainingdiary.core.designsystem.AppCountRow
 import pl.skolim.trainingdiary.core.designsystem.AppListRow
 import pl.skolim.trainingdiary.core.designsystem.AppNumberCircle
 import pl.skolim.trainingdiary.core.designsystem.AppPreview
@@ -52,12 +53,26 @@ internal fun SetEditorScreen(
         },
     ) { contentPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
+            AppCountRow(
+                label = stringResource(R.string.set_editor_sets),
+                count = state.sets.size,
+                onDecrement = { onAction(SetEditorAction.OnDecrementSetsClick) },
+                onIncrement = { onAction(SetEditorAction.OnIncrementSetsClick) },
+                decrementEnabled = state.canRemoveSet,
+                incrementEnabled = state.canAddSet,
+                modifier =
+                    Modifier.padding(
+                        start = Spacing.large,
+                        top = Spacing.small,
+                        end = Spacing.large,
+                        bottom = Spacing.large,
+                    ),
+            )
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 contentPadding =
                     PaddingValues(
                         start = Spacing.large,
-                        top = Spacing.small,
                         end = Spacing.large,
                         bottom = Spacing.extraLarge,
                     ),
@@ -111,5 +126,28 @@ private const val GRAMS_PER_KG = 1_000
 internal fun SetEditorPreviewNew() {
     AppPreview {
         SetEditorScreen(state = SetEditorState(), onAction = {})
+    }
+}
+
+@Preview
+@Composable
+internal fun SetEditorPreviewMin() {
+    AppPreview {
+        SetEditorScreen(
+            state = SetEditorState(sets = listOf(ExerciseSet(reps = 12, weightGrams = 0))),
+            onAction = {},
+        )
+    }
+}
+
+@Suppress("MagicNumber") // Explicit preview data at the upper count limit.
+@Preview
+@Composable
+internal fun SetEditorPreviewMax() {
+    AppPreview {
+        SetEditorScreen(
+            state = SetEditorState(sets = List(10) { ExerciseSet(reps = 12, weightGrams = 0) }),
+            onAction = {},
+        )
     }
 }

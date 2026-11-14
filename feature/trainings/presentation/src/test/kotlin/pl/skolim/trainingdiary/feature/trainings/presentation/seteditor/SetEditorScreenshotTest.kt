@@ -9,5 +9,11 @@ class SetEditorScreenshotTest {
     val paparazzi = appPaparazzi()
 
     @Test
+    fun min() = paparazzi.snapshot { SetEditorPreviewMin() }
+
+    @Test
+    fun max() = paparazzi.snapshot { SetEditorPreviewMax() }
+
+    @Test
     fun new() = paparazzi.snapshot { SetEditorPreviewNew() }
 }

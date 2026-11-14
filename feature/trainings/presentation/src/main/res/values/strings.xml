@@ -24,6 +24,7 @@
     </plurals>
 
     <string name="set_editor_title">Dodaj ćwiczenie</string>
+    <string name="set_editor_sets">Serie</string>
     <string name="set_editor_weight">%1$s kg</string>
     <string name="set_editor_reps">%1$d powt.</string>
     <string name="set_editor_add_to_training">Dodaj do treningu</string>
