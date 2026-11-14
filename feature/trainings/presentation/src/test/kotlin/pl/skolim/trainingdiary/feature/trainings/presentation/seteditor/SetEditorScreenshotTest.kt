@@ -21,5 +21,8 @@ class SetEditorScreenshotTest {
     fun maxReps() = paparazzi.snapshot { SetEditorPreviewMaxReps() }
 
     @Test
+    fun maxWeight() = paparazzi.snapshot { SetEditorPreviewMaxWeight() }
+
+    @Test
     fun new() = paparazzi.snapshot { SetEditorPreviewNew() }
 }

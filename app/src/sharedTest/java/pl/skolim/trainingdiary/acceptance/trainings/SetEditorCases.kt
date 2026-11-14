@@ -28,33 +28,78 @@ interface SetEditorCases : AcceptanceCases {
         }
 
     @Test
-    fun `value changes affect only the focused reps and leave weights unchanged`() =
+    fun `value changes affect only the focused value of the focused set`() =
         app {
             given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
             setEditor.increaseValue()
             setEditor.assertSets(
-                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "1,5", reps = 12),
                 PlannedSet(weightKg = "0", reps = 12),
                 PlannedSet(weightKg = "0", reps = 12),
             )
-            setEditor.decreaseValue()
             setEditor.focusReps(set = 2)
             setEditor.assertValueControls(set = 2, canDecrease = true, canIncrease = true)
             setEditor.increaseValue()
             setEditor.increaseValue()
             setEditor.decreaseValue()
             setEditor.assertSets(
-                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "1,5", reps = 12),
                 PlannedSet(weightKg = "0", reps = 13),
                 PlannedSet(weightKg = "0", reps = 12),
             )
             setEditor.focusWeight(set = 3)
-            setEditor.assertValueControls(set = 3, canDecrease = true, canIncrease = true)
+            setEditor.assertValueControls(set = 3, canDecrease = false, canIncrease = true)
+            setEditor.increaseValue(times = 10)
+            setEditor.decreaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "1,5", reps = 12),
+                PlannedSet(weightKg = "0", reps = 13),
+                PlannedSet(weightKg = "13,5", reps = 12),
+            )
+        }
+
+    @Test
+    fun `weight steps by one and a half kilograms shown with a decimal comma`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
             setEditor.increaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "1,5", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.increaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "3", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+        }
+
+    @Test
+    fun `weight stays within 0 and 300 kg with the unavailable direction disabled`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.assertValueControls(set = 1, canDecrease = false, canIncrease = true)
             setEditor.decreaseValue()
             setEditor.assertSets(
                 PlannedSet(weightKg = "0", reps = 12),
-                PlannedSet(weightKg = "0", reps = 13),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.increaseValue(times = 200)
+            setEditor.assertValueControls(set = 1, canDecrease = true, canIncrease = false)
+            setEditor.increaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "300", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.decreaseValue()
+            setEditor.assertValueControls(set = 1, canDecrease = true, canIncrease = true)
+            setEditor.assertSets(
+                PlannedSet(weightKg = "298,5", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
                 PlannedSet(weightKg = "0", reps = 12),
             )
         }

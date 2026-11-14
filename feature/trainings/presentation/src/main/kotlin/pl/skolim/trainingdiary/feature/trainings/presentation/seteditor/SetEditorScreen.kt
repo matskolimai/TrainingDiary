@@ -31,6 +31,7 @@ import pl.skolim.trainingdiary.core.designsystem.Spacing
 import pl.skolim.trainingdiary.feature.trainings.domain.ExerciseSet
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
+import java.math.BigDecimal
 
 @Composable
 internal fun SetEditorRoot(
@@ -153,8 +154,13 @@ private fun ValueControls(
     }
 }
 
-// Whole kilograms only for now: weight can't change yet, so it is always 0 kg.
-private fun formatWeight(weightGrams: Int): String = (weightGrams / GRAMS_PER_KG).toString()
+// Kilograms with a Polish decimal comma and no „,0”: „0”, „1,5”, „3”, „13,5”.
+private fun formatWeight(weightGrams: Int): String =
+    BigDecimal(weightGrams)
+        .divide(BigDecimal(GRAMS_PER_KG))
+        .stripTrailingZeros()
+        .toPlainString()
+        .replace('.', ',')
 
 private const val GRAMS_PER_KG = 1_000
 
@@ -220,6 +226,27 @@ internal fun SetEditorPreviewMaxReps() {
                         ),
                     focusedSetIndex = 1,
                     focusedField = SetEditorField.REPS,
+                ),
+            onAction = {},
+        )
+    }
+}
+
+@Suppress("MagicNumber") // Explicit preview data at the upper weight limit.
+@Preview
+@Composable
+internal fun SetEditorPreviewMaxWeight() {
+    AppPreview {
+        SetEditorScreen(
+            state =
+                SetEditorState(
+                    sets =
+                        listOf(
+                            ExerciseSet(reps = 12, weightGrams = 1_500),
+                            ExerciseSet(reps = 12, weightGrams = 300_000),
+                            ExerciseSet(reps = 12, weightGrams = 13_500),
+                        ),
+                    focusedSetIndex = 1,
                 ),
             onAction = {},
         )

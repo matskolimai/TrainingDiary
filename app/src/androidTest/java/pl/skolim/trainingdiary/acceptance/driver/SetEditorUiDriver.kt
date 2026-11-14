@@ -95,15 +95,28 @@ class SetEditorUiDriver(
         compose.onNode(isSelected() and hasParent(setCard(set)) and value).assertExists()
     }
 
-    private fun weightPill(): SemanticsMatcher = pill(resources.getString(R.string.set_editor_weight, "0"))
+    private fun weightPill(): SemanticsMatcher =
+        valuePill("weight value from resources") { text ->
+            val weight = text.takeWhile { it.isDigit() || it == ',' }
+            weight.isNotEmpty() && text == resources.getString(R.string.set_editor_weight, weight)
+        }
 
     private fun repsPill(): SemanticsMatcher =
+        valuePill("reps value from resources") { text ->
+            val reps = text.takeWhile(Char::isDigit).toIntOrNull()
+            reps != null && text == resources.getString(R.string.set_editor_reps, reps)
+        }
+
+    private fun valuePill(
+        description: String,
+        matches: (String) -> Boolean,
+    ): SemanticsMatcher =
         hasClickAction() and
-            SemanticsMatcher("reps value from resources") { node ->
-                node.config.getOrNull(SemanticsProperties.Text).orEmpty().any { text ->
-                    val reps = text.text.takeWhile(Char::isDigit).toIntOrNull()
-                    reps != null && text.text == resources.getString(R.string.set_editor_reps, reps)
-                }
+            SemanticsMatcher(description) { node ->
+                node.config
+                    .getOrNull(SemanticsProperties.Text)
+                    .orEmpty()
+                    .any { matches(it.text) }
             }
 
     override fun increaseValue(times: Int) = changeValue(R.string.set_editor_cd_increment_value, times)

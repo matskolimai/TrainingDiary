@@ -58,19 +58,12 @@ class SetEditorViewModel(
         }
     }
 
-    private fun changeValue(delta: Int) {
+    private fun changeValue(direction: Int) {
         _state.update { state ->
-            if (state.focusedField == SetEditorField.WEIGHT) return@update state
             state.copy(
                 sets =
                     state.sets.mapIndexed { index, set ->
-                        if (index ==
-                            state.focusedSetIndex
-                        ) {
-                            set.copy(reps = (set.reps + delta).coerceIn(MIN_REPS, MAX_REPS))
-                        } else {
-                            set
-                        }
+                        if (index == state.focusedSetIndex) set.stepped(state.focusedField, direction) else set
                     },
             )
         }
