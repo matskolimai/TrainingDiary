@@ -1,6 +1,9 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
 import android.content.res.Resources
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -8,8 +11,11 @@ import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import com.google.common.truth.Truth.assertThat
 import de.mannodermaus.junit5.compose.ComposeContext
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
@@ -61,6 +67,79 @@ class SetEditorUiDriver(
         compose.waitUntilExactlyOneExists(hasText(count.toString()) and hasAnySibling(decrement))
         if (canRemove) compose.onNode(decrement).assertIsEnabled() else compose.onNode(decrement).assertIsNotEnabled()
         if (canAdd) compose.onNode(increment).assertIsEnabled() else compose.onNode(increment).assertIsNotEnabled()
+    }
+
+    override fun focusWeight(set: Int) = focus(set, weightPill())
+
+    override fun focusReps(set: Int) = focus(set, repsPill())
+
+    private fun focus(
+        set: Int,
+        value: SemanticsMatcher,
+    ) {
+        compose.waitUntilExactlyOneExists(title())
+        compose.onNode(value and hasParent(setCard(set))).performClick()
+        compose.waitForIdle()
+    }
+
+    override fun assertFocusedReps(set: Int) = assertFocused(set, repsPill())
+
+    override fun assertFocusedWeight(set: Int) = assertFocused(set, weightPill())
+
+    private fun assertFocused(
+        set: Int,
+        value: SemanticsMatcher,
+    ) {
+        compose.waitUntilExactlyOneExists(title())
+        compose.onNode(isSelected()).assertExists()
+        compose.onNode(isSelected() and hasParent(setCard(set)) and value).assertExists()
+    }
+
+    private fun weightPill(): SemanticsMatcher = pill(resources.getString(R.string.set_editor_weight, "0"))
+
+    private fun repsPill(): SemanticsMatcher =
+        hasClickAction() and
+            SemanticsMatcher("reps value from resources") { node ->
+                node.config.getOrNull(SemanticsProperties.Text).orEmpty().any { text ->
+                    val reps = text.text.takeWhile(Char::isDigit).toIntOrNull()
+                    reps != null && text.text == resources.getString(R.string.set_editor_reps, reps)
+                }
+            }
+
+    override fun increaseValue(times: Int) = changeValue(R.string.set_editor_cd_increment_value, times)
+
+    override fun decreaseValue(times: Int) = changeValue(R.string.set_editor_cd_decrement_value, times)
+
+    private fun changeValue(
+        description: Int,
+        times: Int,
+    ) {
+        val button = hasContentDescription(resources.getString(description))
+        compose.waitUntilExactlyOneExists(button)
+        if (times == 1) {
+            compose.onNode(button).performClick()
+        } else {
+            // Batch repeated presses before redraw; every press uses the real button callback.
+            compose.onNode(button).assertIsEnabled().performSemanticsAction(SemanticsActions.OnClick) { press ->
+                repeat(times) { press() }
+            }
+        }
+        compose.waitForIdle()
+    }
+
+    override fun assertValueControls(
+        set: Int,
+        canDecrease: Boolean,
+        canIncrease: Boolean,
+    ) {
+        val decrement = hasContentDescription(resources.getString(R.string.set_editor_cd_decrement_value))
+        val increment = hasContentDescription(resources.getString(R.string.set_editor_cd_increment_value))
+        compose.waitUntilExactlyOneExists(decrement)
+        compose.waitUntilExactlyOneExists(increment)
+        val decrease = compose.onNode(decrement and hasParent(setCard(set)))
+        val increase = compose.onNode(increment and hasParent(setCard(set)))
+        if (canDecrease) decrease.assertIsEnabled() else decrease.assertIsNotEnabled()
+        if (canIncrease) increase.assertIsEnabled() else increase.assertIsNotEnabled()
     }
 
     override fun tapAddToTraining() {

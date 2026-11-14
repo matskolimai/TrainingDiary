@@ -24,16 +24,55 @@ class SetEditorViewModel(
             }
 
             SetEditorAction.OnDecrementSetsClick -> {
-                _state.update { if (it.canRemoveSet) it.copy(sets = it.sets.dropLast(1)) else it }
+                _state.update {
+                    if (it.canRemoveSet) {
+                        it.copy(
+                            sets = it.sets.dropLast(1),
+                            focusedSetIndex = it.focusedSetIndex.coerceAtMost(it.sets.lastIndex - 1),
+                        )
+                    } else {
+                        it
+                    }
+                }
             }
 
             SetEditorAction.OnIncrementSetsClick -> {
                 _state.update { if (it.canAddSet) it.copy(sets = it.sets + it.sets.last()) else it }
             }
 
+            is SetEditorAction.OnValueClick -> {
+                _state.update { it.copy(focusedSetIndex = action.setIndex, focusedField = action.field) }
+            }
+
+            SetEditorAction.OnIncrementValueClick -> {
+                changeValue(1)
+            }
+
+            SetEditorAction.OnDecrementValueClick -> {
+                changeValue(-1)
+            }
+
             SetEditorAction.OnBackClick -> {
                 navigator.back(key)
             }
+        }
+    }
+
+    private fun changeValue(delta: Int) {
+        _state.update { state ->
+            if (state.focusedField == SetEditorField.WEIGHT) return@update state
+            state.copy(
+                sets =
+                    state.sets.mapIndexed { index, set ->
+                        if (index ==
+                            state.focusedSetIndex
+                        ) {
+                            set.copy(reps = (set.reps + delta).coerceIn(MIN_REPS, MAX_REPS))
+                        } else {
+                            set
+                        }
+                    },
+            )
         }
     }
 

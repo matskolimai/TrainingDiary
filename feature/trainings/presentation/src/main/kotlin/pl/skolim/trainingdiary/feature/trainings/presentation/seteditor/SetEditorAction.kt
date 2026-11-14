@@ -7,5 +7,14 @@ sealed interface SetEditorAction {
 
     data object OnIncrementSetsClick : SetEditorAction
 
+    data class OnValueClick(
+        val setIndex: Int,
+        val field: SetEditorField,
+    ) : SetEditorAction
+
+    data object OnIncrementValueClick : SetEditorAction
+
+    data object OnDecrementValueClick : SetEditorAction
+
     data object OnBackClick : SetEditorAction
 }

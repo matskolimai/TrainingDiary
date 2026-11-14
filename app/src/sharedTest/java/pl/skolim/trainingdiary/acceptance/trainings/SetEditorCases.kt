@@ -5,7 +5,111 @@ import pl.skolim.trainingdiary.acceptance.AcceptanceCases
 import pl.skolim.trainingdiary.acceptance.driver.PlannedSet
 import pl.skolim.trainingdiary.acceptance.driver.PlannedTrainingExercise
 
+@Suppress("TooManyFunctions") // One screen owns its acceptance cases and steps on both channels.
 interface SetEditorCases : AcceptanceCases {
+    @Test
+    fun `the set editor opens with only the first weight focused`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.assertFocusedWeight(set = 1)
+        }
+
+    @Test
+    fun `choosing another value keeps exactly that value focused`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.focusReps(set = 2)
+            setEditor.assertFocusedReps(set = 2)
+            setEditor.increaseValue()
+            setEditor.focusWeight(set = 3)
+            setEditor.assertFocusedWeight(set = 3)
+            setEditor.focusReps(set = 2)
+            setEditor.assertFocusedReps(set = 2)
+        }
+
+    @Test
+    fun `value changes affect only the focused reps and leave weights unchanged`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.increaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.decreaseValue()
+            setEditor.focusReps(set = 2)
+            setEditor.assertValueControls(set = 2, canDecrease = true, canIncrease = true)
+            setEditor.increaseValue()
+            setEditor.increaseValue()
+            setEditor.decreaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 13),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.focusWeight(set = 3)
+            setEditor.assertValueControls(set = 3, canDecrease = true, canIncrease = true)
+            setEditor.increaseValue()
+            setEditor.decreaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 13),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+        }
+
+    @Test
+    fun `reps stay within one and 999 with the unavailable direction disabled`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.focusReps(set = 1)
+            setEditor.decreaseValue(times = 11)
+            setEditor.assertValueControls(set = 1, canDecrease = false, canIncrease = true)
+            setEditor.decreaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 1),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.increaseValue(times = 998)
+            setEditor.assertValueControls(set = 1, canDecrease = true, canIncrease = false)
+            setEditor.increaseValue()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 999),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.decreaseValue()
+            setEditor.assertValueControls(set = 1, canDecrease = true, canIncrease = true)
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 998),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+        }
+
+    @Test
+    fun `removing the focused set keeps its field focused on the new last set`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.focusReps(set = 3)
+            setEditor.removeSet()
+            setEditor.assertFocusedReps(set = 2)
+            setEditor.removeSet()
+            setEditor.assertFocusedReps(set = 1)
+            setEditor.removeSet()
+            setEditor.assertFocusedReps(set = 1)
+            setEditor.addSet()
+            setEditor.assertFocusedReps(set = 1)
+            setEditor.focusWeight(set = 2)
+            setEditor.addSet()
+            setEditor.removeSet()
+            setEditor.assertFocusedWeight(set = 2)
+            setEditor.removeSet()
+            setEditor.assertFocusedWeight(set = 1)
+        }
+
     @Test
     fun `a training exercise cannot have fewer than one set`() =
         app {

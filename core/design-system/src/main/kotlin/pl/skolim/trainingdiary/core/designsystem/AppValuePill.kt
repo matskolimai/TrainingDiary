@@ -10,6 +10,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -26,7 +28,7 @@ fun AppValuePill(
     val colors = MaterialTheme.colorScheme
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.height(Sizes.compactButtonHeight),
+        modifier = modifier.height(Sizes.compactButtonHeight).semantics { selected = focused },
         shape = MaterialTheme.shapes.medium,
         colors =
             if (focused) {

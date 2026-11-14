@@ -19,9 +19,11 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.skolim.trainingdiary.core.designsystem.AppButton
 import pl.skolim.trainingdiary.core.designsystem.AppCountRow
+import pl.skolim.trainingdiary.core.designsystem.AppIcons
 import pl.skolim.trainingdiary.core.designsystem.AppListRow
 import pl.skolim.trainingdiary.core.designsystem.AppNumberCircle
 import pl.skolim.trainingdiary.core.designsystem.AppPreview
+import pl.skolim.trainingdiary.core.designsystem.AppRepeatIconButton
 import pl.skolim.trainingdiary.core.designsystem.AppScaffold
 import pl.skolim.trainingdiary.core.designsystem.AppTopBarWithBack
 import pl.skolim.trainingdiary.core.designsystem.AppValuePill
@@ -61,25 +63,35 @@ internal fun SetEditorScreen(
                 decrementEnabled = state.canRemoveSet,
                 incrementEnabled = state.canAddSet,
                 modifier =
-                    Modifier.padding(
-                        start = Spacing.large,
-                        top = Spacing.small,
-                        end = Spacing.large,
-                        bottom = Spacing.large,
-                    ),
+                    Modifier
+                        .padding(horizontal = Spacing.large)
+                        .padding(top = Spacing.small, bottom = Spacing.large),
             )
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                contentPadding =
-                    PaddingValues(
-                        start = Spacing.large,
-                        end = Spacing.large,
-                        bottom = Spacing.extraLarge,
-                    ),
+                contentPadding = PaddingValues(start = Spacing.large, end = Spacing.large, bottom = Spacing.extraLarge),
                 verticalArrangement = Arrangement.spacedBy(Spacing.medium),
             ) {
                 itemsIndexed(items = state.sets) { index, set ->
-                    SetCard(number = index + 1, set = set)
+                    SetCard(
+                        number = index + 1,
+                        set = set,
+                        focusedField = state.focusedField.takeIf { state.focusedSetIndex == index },
+                        onFocus = { onAction(SetEditorAction.OnValueClick(index, it)) },
+                        trailing =
+                            if (state.focusedSetIndex == index) {
+                                {
+                                    ValueControls(
+                                        canDecrement = state.canDecrementValue,
+                                        canIncrement = state.canIncrementValue,
+                                        onDecrement = { onAction(SetEditorAction.OnDecrementValueClick) },
+                                        onIncrement = { onAction(SetEditorAction.OnIncrementValueClick) },
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                    )
                 }
             }
             AppButton(
@@ -95,24 +107,49 @@ internal fun SetEditorScreen(
 private fun SetCard(
     number: Int,
     set: ExerciseSet,
-    modifier: Modifier = Modifier,
+    focusedField: SetEditorField?,
+    onFocus: (SetEditorField) -> Unit,
+    trailing: (@Composable () -> Unit)?,
 ) {
     AppListRow(
-        modifier = modifier,
         leading = { AppNumberCircle(number = number) },
+        trailing = trailing,
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
             AppValuePill(
                 text = stringResource(R.string.set_editor_weight, formatWeight(set.weightGrams)),
-                focused = false,
-                onClick = {},
+                focused = focusedField == SetEditorField.WEIGHT,
+                onClick = { onFocus(SetEditorField.WEIGHT) },
             )
             AppValuePill(
                 text = stringResource(R.string.set_editor_reps, set.reps),
-                focused = false,
-                onClick = {},
+                focused = focusedField == SetEditorField.REPS,
+                onClick = { onFocus(SetEditorField.REPS) },
             )
         }
+    }
+}
+
+@Composable
+private fun ValueControls(
+    canDecrement: Boolean,
+    canIncrement: Boolean,
+    onDecrement: () -> Unit,
+    onIncrement: () -> Unit,
+) {
+    Row {
+        AppRepeatIconButton(
+            icon = AppIcons.Remove,
+            contentDescription = stringResource(R.string.set_editor_cd_decrement_value),
+            enabled = canDecrement,
+            onClick = onDecrement,
+        )
+        AppRepeatIconButton(
+            icon = AppIcons.Add,
+            contentDescription = stringResource(R.string.set_editor_cd_increment_value),
+            enabled = canIncrement,
+            onClick = onIncrement,
+        )
     }
 }
 
@@ -147,6 +184,43 @@ internal fun SetEditorPreviewMax() {
     AppPreview {
         SetEditorScreen(
             state = SetEditorState(sets = List(10) { ExerciseSet(reps = 12, weightGrams = 0) }),
+            onAction = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+internal fun SetEditorPreviewMinReps() {
+    AppPreview {
+        SetEditorScreen(
+            state =
+                SetEditorState(
+                    sets = listOf(ExerciseSet(reps = 1, weightGrams = 0)),
+                    focusedField = SetEditorField.REPS,
+                ),
+            onAction = {},
+        )
+    }
+}
+
+@Suppress("MagicNumber") // Explicit preview data at the upper reps limit.
+@Preview
+@Composable
+internal fun SetEditorPreviewMaxReps() {
+    AppPreview {
+        SetEditorScreen(
+            state =
+                SetEditorState(
+                    sets =
+                        listOf(
+                            ExerciseSet(reps = 12, weightGrams = 0),
+                            ExerciseSet(reps = 999, weightGrams = 0),
+                            ExerciseSet(reps = 12, weightGrams = 0),
+                        ),
+                    focusedSetIndex = 1,
+                    focusedField = SetEditorField.REPS,
+                ),
             onAction = {},
         )
     }

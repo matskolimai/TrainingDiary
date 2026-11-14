@@ -1,6 +1,7 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
 /** The Set editor's steps, implemented once per channel. */
+@Suppress("TooManyFunctions") // One screen owns its acceptance cases and steps on both channels.
 interface SetEditorDriver {
     fun assertSetsInOrder(sets: List<PlannedSet>)
 
@@ -14,6 +15,24 @@ interface SetEditorDriver {
         count: Int,
         canRemove: Boolean,
         canAdd: Boolean,
+    )
+
+    fun focusWeight(set: Int)
+
+    fun focusReps(set: Int)
+
+    fun assertFocusedReps(set: Int)
+
+    fun assertFocusedWeight(set: Int)
+
+    fun increaseValue(times: Int)
+
+    fun decreaseValue(times: Int)
+
+    fun assertValueControls(
+        set: Int,
+        canDecrease: Boolean,
+        canIncrease: Boolean,
     )
 
     fun leave()

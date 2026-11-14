@@ -15,5 +15,11 @@ class SetEditorScreenshotTest {
     fun max() = paparazzi.snapshot { SetEditorPreviewMax() }
 
     @Test
+    fun minReps() = paparazzi.snapshot { SetEditorPreviewMinReps() }
+
+    @Test
+    fun maxReps() = paparazzi.snapshot { SetEditorPreviewMaxReps() }
+
+    @Test
     fun new() = paparazzi.snapshot { SetEditorPreviewNew() }
 }
