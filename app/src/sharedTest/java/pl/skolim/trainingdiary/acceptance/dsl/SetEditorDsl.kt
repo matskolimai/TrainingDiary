@@ -11,5 +11,15 @@ class SetEditorDsl(
 
     fun addToTraining() = driver.tapAddToTraining()
 
+    fun addSet() = driver.addSet()
+
+    fun removeSet() = driver.removeSet()
+
+    fun assertCount(
+        count: Int,
+        canRemove: Boolean,
+        canAdd: Boolean,
+    ) = driver.assertCount(count, canRemove, canAdd)
+
     fun leave() = driver.leave()
 }

@@ -7,6 +7,62 @@ import pl.skolim.trainingdiary.acceptance.driver.PlannedTrainingExercise
 
 interface SetEditorCases : AcceptanceCases {
     @Test
+    fun `a training exercise cannot have fewer than one set`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            repeat(2) { setEditor.removeSet() }
+            setEditor.assertCount(count = 1, canRemove = false, canAdd = true)
+            setEditor.removeSet()
+            setEditor.assertSets(PlannedSet(weightKg = "0", reps = 12))
+            setEditor.addSet()
+            setEditor.assertCount(count = 2, canRemove = true, canAdd = true)
+        }
+
+    @Test
+    fun `a training exercise cannot have more than ten sets`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            repeat(7) { setEditor.addSet() }
+            setEditor.assertCount(count = 10, canRemove = true, canAdd = false)
+            setEditor.addSet()
+            setEditor.assertCount(count = 10, canRemove = true, canAdd = false)
+            setEditor.removeSet()
+            setEditor.assertCount(count = 9, canRemove = true, canAdd = true)
+        }
+
+    @Test
+    fun `removing a set keeps the preceding sets and returns the smaller count to the training`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.removeSet()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.addToTraining()
+            trainingEditor.assertExercises(
+                PlannedTrainingExercise(name = "Pullover z hantlem", category = "Plecy", sets = 2),
+            )
+        }
+
+    @Test
+    fun `adding a set copies the last set and returns the changed count to the training`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.addSet()
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+            setEditor.addToTraining()
+            trainingEditor.assertExercises(
+                PlannedTrainingExercise(name = "Pullover z hantlem", category = "Plecy", sets = 4),
+            )
+        }
+
+    @Test
     fun `picking an exercise plans three sets of 12 reps at 0 kg`() =
         app {
             trainingList.openNewTraining()

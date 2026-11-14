@@ -6,6 +6,16 @@ interface SetEditorDriver {
 
     fun tapAddToTraining()
 
+    fun addSet()
+
+    fun removeSet()
+
+    fun assertCount(
+        count: Int,
+        canRemove: Boolean,
+        canAdd: Boolean,
+    )
+
     fun leave()
 }
 

@@ -21,7 +21,7 @@ class AppDsl(
     val exerciseCategoryPicker = ExerciseCategoryPickerDsl(exerciseCategoryPickerDriver)
     val exercisePicker = ExercisePickerDsl(exercisePickerDriver)
     val setEditor = SetEditorDsl(setEditorDriver)
-    val given = GivenDsl(trainingList, trainingEditor)
+    val given = GivenDsl(trainingList, trainingEditor, exerciseCategoryPicker, exercisePicker)
 
     fun leaveAppFor(duration: Duration) = appDriver.leaveAppFor(duration)
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import pl.skolim.trainingdiary.core.domain.ExerciseCatalogue
 import pl.skolim.trainingdiary.feature.trainings.domain.TrainingExercise
 import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
@@ -13,12 +14,26 @@ class SetEditorViewModel(
     private val catalogue: ExerciseCatalogue,
     private val navigator: SetEditorNavigator,
 ) : ViewModel() {
-    val state: StateFlow<SetEditorState> = MutableStateFlow(SetEditorState()).asStateFlow()
+    private val _state = MutableStateFlow(SetEditorState())
+    val state: StateFlow<SetEditorState> = _state.asStateFlow()
 
     fun onAction(action: SetEditorAction) {
         when (action) {
-            SetEditorAction.OnAddToTrainingClick -> addToTraining()
-            SetEditorAction.OnBackClick -> navigator.back(key)
+            SetEditorAction.OnAddToTrainingClick -> {
+                addToTraining()
+            }
+
+            SetEditorAction.OnDecrementSetsClick -> {
+                _state.update { if (it.canRemoveSet) it.copy(sets = it.sets.dropLast(1)) else it }
+            }
+
+            SetEditorAction.OnIncrementSetsClick -> {
+                _state.update { if (it.canAddSet) it.copy(sets = it.sets + it.sets.last()) else it }
+            }
+
+            SetEditorAction.OnBackClick -> {
+                navigator.back(key)
+            }
         }
     }
 
