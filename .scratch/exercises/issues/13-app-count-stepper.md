@@ -5,7 +5,7 @@ disableable. See `../spec.md` (Design system).
 
 **Blocked by:** 12 (AppRepeatIconButton).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [x] `AppCountStepper(count, onDecrement, onIncrement, decrementEnabled, incrementEnabled)` in
       `:core:design-system`.
