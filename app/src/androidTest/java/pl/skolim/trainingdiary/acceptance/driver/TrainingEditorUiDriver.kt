@@ -45,17 +45,21 @@ class TrainingEditorUiDriver(
         compose.waitUntilExactlyOneExists(nameField() and isFocused())
     }
 
-    // A card is its name with the summary beside it. Cards of every expected kind are read and ordered by position,
-    // so a missing, extra or misplaced copy of an expected Training exercise fails.
+    // Count every summary too, so an unexpected Exercise cannot hide beside the expected cards.
     override fun assertExercisesInOrder(exercises: List<PlannedTrainingExercise>) {
         compose.waitUntilExactlyOneExists(nameField())
         val kinds = exercises.distinct()
+        val summarySeparator = resources.getString(R.string.training_editor_exercise_summary, "", "")
 
         fun cards() =
             kinds.flatMap { exercise ->
                 compose.onAllNodes(card(exercise)).fetchSemanticsNodes().map { node -> node to exercise }
             }
-        compose.waitUntil { cards().size == exercises.size }
+        compose.waitUntil {
+            val summaryCount =
+                compose.onAllNodes(hasText(summarySeparator, substring = true)).fetchSemanticsNodes().size
+            cards().size == exercises.size && summaryCount == exercises.size
+        }
         val listed = cards().sortedBy { (node, _) -> node.boundsInRoot.top }.map { (_, exercise) -> exercise }
         assertThat(listed).containsExactlyElementsIn(exercises).inOrder()
     }

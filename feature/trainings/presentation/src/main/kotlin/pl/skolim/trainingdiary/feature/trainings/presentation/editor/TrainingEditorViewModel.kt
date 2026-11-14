@@ -58,7 +58,7 @@ class TrainingEditorViewModel(
         if (hasLoaded || trainingId == null) return
         hasLoaded = true
         val training = checkNotNull(repository.getTraining(trainingId))
-        _state.update { it.copy(name = training.name, isLoading = false) }
+        _state.update { it.copy(name = training.name, exercises = training.exercises, isLoading = false) }
     }
 
     // isSaving stays set after saving: the editor closes, and a second tap must not save again.
@@ -68,9 +68,9 @@ class TrainingEditorViewModel(
         _state.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             if (trainingId == null) {
-                repository.addTraining(state.name, exercises = emptyList())
+                repository.addTraining(state.name, exercises = state.exercises)
             } else {
-                repository.updateTraining(Training(id = trainingId, name = state.name, exercises = emptyList()))
+                repository.updateTraining(Training(id = trainingId, name = state.name, exercises = state.exercises))
             }
             navigator.back(key)
         }
