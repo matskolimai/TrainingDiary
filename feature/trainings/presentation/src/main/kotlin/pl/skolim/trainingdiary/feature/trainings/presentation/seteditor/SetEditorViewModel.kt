@@ -11,10 +11,11 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
 
 class SetEditorViewModel(
     private val key: SetEditorKey,
-    private val catalogue: ExerciseCatalogue,
+    catalogue: ExerciseCatalogue,
     private val navigator: SetEditorNavigator,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(SetEditorState())
+    private val exercise = checkNotNull(catalogue.exercise(key.exerciseId))
+    private val _state = MutableStateFlow(SetEditorState(isTimed = exercise.isTimed))
     val state: StateFlow<SetEditorState> = _state.asStateFlow()
 
     fun onAction(action: SetEditorAction) {
@@ -70,7 +71,6 @@ class SetEditorViewModel(
     }
 
     private fun addToTraining() {
-        val exercise = checkNotNull(catalogue.exercise(key.exerciseId))
         val trainingExercise = TrainingExercise(exercise = exercise, sets = state.value.sets)
         navigator.backToTrainingEditor(SetEditorResult.Added(trainingExercise))
     }

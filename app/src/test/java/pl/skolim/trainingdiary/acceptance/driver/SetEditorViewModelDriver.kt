@@ -85,6 +85,10 @@ class SetEditorViewModelDriver(
         assertThat(app.setEditor.state.value.canIncrementValue).isEqualTo(canIncrease)
     }
 
+    override fun assertRepsUnit(unit: RepsUnit) {
+        assertThat(app.setEditor.state.value.isTimed).isEqualTo(unit == RepsUnit.SECONDS)
+    }
+
     override fun leave() {
         app.setEditor.onAction(SetEditorAction.OnBackClick)
         app.settle()

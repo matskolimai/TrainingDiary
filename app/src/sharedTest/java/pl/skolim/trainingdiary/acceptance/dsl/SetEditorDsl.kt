@@ -1,6 +1,7 @@
 package pl.skolim.trainingdiary.acceptance.dsl
 
 import pl.skolim.trainingdiary.acceptance.driver.PlannedSet
+import pl.skolim.trainingdiary.acceptance.driver.RepsUnit
 import pl.skolim.trainingdiary.acceptance.driver.SetEditorDriver
 
 @Suppress("TooManyFunctions") // One screen owns its acceptance cases and steps on both channels.
@@ -39,6 +40,9 @@ class SetEditorDsl(
         canDecrease: Boolean,
         canIncrease: Boolean,
     ) = driver.assertValueControls(set, canDecrease, canIncrease)
+
+    /** Every Set's reps read in [unit]. */
+    fun assertRepsUnit(unit: RepsUnit) = driver.assertRepsUnit(unit)
 
     fun leave() = driver.leave()
 }
