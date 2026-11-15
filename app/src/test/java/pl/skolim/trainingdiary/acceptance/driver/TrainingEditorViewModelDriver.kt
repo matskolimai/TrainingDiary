@@ -3,6 +3,7 @@ package pl.skolim.trainingdiary.acceptance.driver
 import com.google.common.truth.Truth.assertThat
 import pl.skolim.trainingdiary.acceptance.Channel
 import pl.skolim.trainingdiary.feature.exercises.presentation.ExerciseCategoryPickerKey
+import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.editor.TrainingEditorAction
 
@@ -17,6 +18,11 @@ class TrainingEditorViewModelDriver(
     override fun tapAddExercise() {
         act(TrainingEditorAction.OnAddExerciseClick)
         assertThat(app.topKey).isEqualTo(ExerciseCategoryPickerKey)
+    }
+
+    override fun tapExercise(position: Int) {
+        act(TrainingEditorAction.OnExerciseClick(position - 1))
+        assertThat(app.topKey is SetEditorKey).isTrue()
     }
 
     override fun tapSave() {

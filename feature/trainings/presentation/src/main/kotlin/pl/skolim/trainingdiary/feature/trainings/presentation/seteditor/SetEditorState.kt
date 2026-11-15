@@ -5,7 +5,8 @@ import pl.skolim.trainingdiary.feature.trainings.domain.ExerciseSet
 data class SetEditorState(
     val focusedSetIndex: Int = 0,
     val focusedField: SetEditorField = SetEditorField.WEIGHT,
-    val sets: List<ExerciseSet> = List(NEW_SET_COUNT) { ExerciseSet(reps = NEW_SET_REPS, weightGrams = 0) },
+    val sets: List<ExerciseSet> = newTrainingExerciseSets,
+    val editedExerciseName: String? = null, // null means add mode
 ) {
     val canDecrementValue: Boolean get() = canStep(-1)
     val canIncrementValue: Boolean get() = canStep(1)
@@ -36,9 +37,12 @@ internal fun ExerciseSet.stepped(
         }
     }
 
+// A new Training exercise starts with 3 Sets of 0 kg × 12.
+internal val newTrainingExerciseSets: List<ExerciseSet> =
+    List(NEW_SET_COUNT) { ExerciseSet(reps = NEW_SET_REPS, weightGrams = 0) }
+
 private const val MAX_SET_COUNT = 10
 
-// A new Training exercise starts with 3 Sets of 0 kg × 12.
 private const val NEW_SET_COUNT = 3
 private const val NEW_SET_REPS = 12
 

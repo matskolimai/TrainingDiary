@@ -7,4 +7,9 @@ sealed interface SetEditorResult : NavResult {
     data class Added(
         val trainingExercise: TrainingExercise,
     ) : SetEditorResult
+
+    data class Replaced(
+        val index: Int,
+        val trainingExercise: TrainingExercise,
+    ) : SetEditorResult
 }

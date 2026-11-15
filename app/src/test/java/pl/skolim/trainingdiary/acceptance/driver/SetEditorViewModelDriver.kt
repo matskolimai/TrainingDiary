@@ -16,7 +16,21 @@ class SetEditorViewModelDriver(
     }
 
     override fun tapAddToTraining() {
-        app.setEditor.onAction(SetEditorAction.OnAddToTrainingClick)
+        assertThat(app.setEditor.state.value.editedExerciseName).isNull()
+        confirm()
+    }
+
+    override fun assertEditing(exercise: String) {
+        assertThat(app.setEditor.state.value.editedExerciseName).isEqualTo(exercise)
+    }
+
+    override fun tapDone() {
+        assertThat(app.setEditor.state.value.editedExerciseName).isNotNull()
+        confirm()
+    }
+
+    private fun confirm() {
+        app.setEditor.onAction(SetEditorAction.OnConfirmClick)
         app.settle()
         assertThat(app.topKey is TrainingEditorKey).isTrue()
     }

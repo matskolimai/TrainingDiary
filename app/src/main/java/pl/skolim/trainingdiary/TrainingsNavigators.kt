@@ -3,6 +3,7 @@ package pl.skolim.trainingdiary
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import pl.skolim.trainingdiary.feature.exercises.presentation.ExerciseCategoryPickerKey
+import pl.skolim.trainingdiary.feature.trainings.domain.ExerciseSet
 import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.editor.TrainingEditorNavigator
@@ -22,6 +23,12 @@ class AppTrainingEditorNavigator(
     override val setEditorResults: Flow<SetEditorResult> = navigator.results.filterIsInstance<SetEditorResult>()
 
     override fun openExercisePicker() = navigator.push(ExerciseCategoryPickerKey)
+
+    override fun openSetEditor(
+        exerciseId: Long,
+        index: Int,
+        sets: List<ExerciseSet>,
+    ) = navigator.push(SetEditorKey(exerciseId, index, sets))
 
     override fun back(key: TrainingEditorKey) = navigator.pop(key)
 }

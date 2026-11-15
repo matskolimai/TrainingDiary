@@ -26,7 +26,7 @@ class SetEditorUiDriver(
     private val resources: Resources,
 ) : SetEditorDriver {
     override fun assertSetsInOrder(sets: List<PlannedSet>) {
-        compose.waitUntilExactlyOneExists(title())
+        compose.waitUntilExactlyOneExists(setsLabel())
         val tops =
             sets.mapIndexed { index, set ->
                 val card =
@@ -77,7 +77,7 @@ class SetEditorUiDriver(
         set: Int,
         value: SemanticsMatcher,
     ) {
-        compose.waitUntilExactlyOneExists(title())
+        compose.waitUntilExactlyOneExists(setsLabel())
         compose.onNode(value and hasParent(setCard(set))).performClick()
         compose.waitForIdle()
     }
@@ -90,7 +90,7 @@ class SetEditorUiDriver(
         set: Int,
         value: SemanticsMatcher,
     ) {
-        compose.waitUntilExactlyOneExists(title())
+        compose.waitUntilExactlyOneExists(setsLabel())
         compose.onNode(isSelected()).assertExists()
         compose.onNode(isSelected() and hasParent(setCard(set)) and value).assertExists()
     }
@@ -161,6 +161,17 @@ class SetEditorUiDriver(
         compose.waitUntilDoesNotExist(addToTrainingButton())
     }
 
+    override fun assertEditing(exercise: String) {
+        compose.waitUntilExactlyOneExists(hasText(exercise) and !hasClickAction())
+        compose.onNode(doneButton()).assertExists()
+    }
+
+    override fun tapDone() {
+        compose.waitUntilExactlyOneExists(doneButton())
+        compose.onNode(doneButton()).performClick()
+        compose.waitUntilDoesNotExist(doneButton())
+    }
+
     // The Exercise picker under this screen has the same title and its own back arrow, so leaving waits for this
     // screen's back arrow, told apart by its node, to go.
     override fun leave() {
@@ -180,6 +191,10 @@ class SetEditorUiDriver(
     private fun addToTrainingButton(): SemanticsMatcher =
         hasClickAction() and hasText(resources.getString(R.string.set_editor_add_to_training))
 
-    private fun title(): SemanticsMatcher =
-        hasText(resources.getString(R.string.set_editor_title)) and !hasClickAction()
+    private fun doneButton(): SemanticsMatcher =
+        hasClickAction() and hasText(resources.getString(R.string.set_editor_done))
+
+    // The „Serie” label shows in both modes, while the title is the Exercise name in edit mode.
+    private fun setsLabel(): SemanticsMatcher =
+        hasText(resources.getString(R.string.set_editor_sets)) and !hasClickAction()
 }

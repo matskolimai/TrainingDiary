@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -80,6 +80,7 @@ internal fun TrainingEditorScreen(
                 TrainingExerciseList(
                     exercises = state.exercises,
                     onAddExerciseClick = { onAction(TrainingEditorAction.OnAddExerciseClick) },
+                    onExerciseClick = { onAction(TrainingEditorAction.OnExerciseClick(it)) },
                     modifier = Modifier.weight(1f),
                 )
             } else {
@@ -100,6 +101,7 @@ internal fun TrainingEditorScreen(
 private fun TrainingExerciseList(
     exercises: List<TrainingExercise>,
     onAddExerciseClick: () -> Unit,
+    onExerciseClick: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -107,8 +109,8 @@ private fun TrainingExerciseList(
         contentPadding = PaddingValues(vertical = Spacing.extraLarge),
         verticalArrangement = Arrangement.spacedBy(Spacing.medium),
     ) {
-        items(items = exercises) { trainingExercise ->
-            TrainingExerciseCard(trainingExercise = trainingExercise)
+        itemsIndexed(items = exercises) { index, trainingExercise ->
+            TrainingExerciseCard(trainingExercise = trainingExercise, onClick = { onExerciseClick(index) })
         }
         item {
             AppOutlinedButton(

@@ -11,16 +11,21 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
 
 class SetEditorViewModel(
     private val key: SetEditorKey,
-    private val catalogue: ExerciseCatalogue,
+    catalogue: ExerciseCatalogue,
     private val navigator: SetEditorNavigator,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(SetEditorState())
+    private val exercise = checkNotNull(catalogue.exercise(key.exerciseId))
+
+    private val _state =
+        MutableStateFlow(
+            SetEditorState(sets = key.sets, editedExerciseName = exercise.name.takeIf { key.index != null }),
+        )
     val state: StateFlow<SetEditorState> = _state.asStateFlow()
 
     fun onAction(action: SetEditorAction) {
         when (action) {
-            SetEditorAction.OnAddToTrainingClick -> {
-                addToTraining()
+            SetEditorAction.OnConfirmClick -> {
+                confirm()
             }
 
             SetEditorAction.OnDecrementSetsClick -> {
@@ -69,9 +74,15 @@ class SetEditorViewModel(
         }
     }
 
-    private fun addToTraining() {
-        val exercise = checkNotNull(catalogue.exercise(key.exerciseId))
+    private fun confirm() {
         val trainingExercise = TrainingExercise(exercise = exercise, sets = state.value.sets)
-        navigator.backToTrainingEditor(SetEditorResult.Added(trainingExercise))
+        val index = key.index
+        navigator.backToTrainingEditor(
+            if (index == null) {
+                SetEditorResult.Added(trainingExercise)
+            } else {
+                SetEditorResult.Replaced(index, trainingExercise)
+            },
+        )
     }
 }

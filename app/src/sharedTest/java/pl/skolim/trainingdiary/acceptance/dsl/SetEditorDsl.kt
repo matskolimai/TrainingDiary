@@ -12,6 +12,11 @@ class SetEditorDsl(
 
     fun addToTraining() = driver.tapAddToTraining()
 
+    /** The Set editor edits a Training exercise of [exercise] rather than adding one. */
+    fun assertEditing(exercise: String) = driver.assertEditing(exercise)
+
+    fun done() = driver.tapDone()
+
     fun addSet() = driver.addSet()
 
     fun removeSet() = driver.removeSet()

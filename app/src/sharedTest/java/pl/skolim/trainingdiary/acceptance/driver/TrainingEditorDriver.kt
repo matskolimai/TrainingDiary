@@ -1,6 +1,7 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
 /** The Training editor's steps, implemented once per channel. */
+@Suppress("TooManyFunctions") // One screen owns its acceptance cases and steps on both channels.
 interface TrainingEditorDriver {
     fun assertEmptyForAdding()
 
@@ -15,6 +16,8 @@ interface TrainingEditorDriver {
     fun replaceName(name: String)
 
     fun tapAddExercise()
+
+    fun tapExercise(position: Int)
 
     fun tapSave()
 
