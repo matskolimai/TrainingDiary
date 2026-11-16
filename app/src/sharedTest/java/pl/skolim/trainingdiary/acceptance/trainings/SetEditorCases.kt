@@ -6,6 +6,7 @@ import pl.skolim.trainingdiary.acceptance.Channel
 import pl.skolim.trainingdiary.acceptance.OnlyOn
 import pl.skolim.trainingdiary.acceptance.driver.PlannedSet
 import pl.skolim.trainingdiary.acceptance.driver.PlannedTrainingExercise
+import pl.skolim.trainingdiary.acceptance.driver.RepsUnit
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("TooManyFunctions") // One screen owns its acceptance cases and steps on both channels.
@@ -161,6 +162,20 @@ interface SetEditorCases : AcceptanceCases {
                 PlannedSet(weightKg = "0", reps = 12),
                 PlannedSet(weightKg = "0", reps = 12),
             )
+        }
+
+    @Test
+    fun `a timed exercise shows its reps in seconds`() =
+        app {
+            given.newTrainingExercise(category = "Brzuch", exercise = "Plank")
+            setEditor.assertRepsUnit(RepsUnit.SECONDS)
+        }
+
+    @Test
+    fun `a non-timed exercise shows its reps as repetitions`() =
+        app {
+            given.newTrainingExercise(category = "Brzuch", exercise = "Brzuszki")
+            setEditor.assertRepsUnit(RepsUnit.REPETITIONS)
         }
 
     @Test

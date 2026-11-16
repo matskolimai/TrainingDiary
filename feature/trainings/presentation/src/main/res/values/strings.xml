@@ -27,6 +27,7 @@
     <string name="set_editor_sets">Serie</string>
     <string name="set_editor_weight">%1$s kg</string>
     <string name="set_editor_reps">%1$d powt.</string>
+    <string name="set_editor_seconds">%1$d s</string>
     <string name="set_editor_add_to_training">Dodaj do treningu</string>
     <string name="set_editor_cd_decrement_value">Zmniejsz wartość</string>
     <string name="set_editor_cd_increment_value">Zwiększ wartość</string>

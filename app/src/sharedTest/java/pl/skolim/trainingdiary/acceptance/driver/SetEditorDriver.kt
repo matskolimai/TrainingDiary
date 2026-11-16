@@ -44,6 +44,8 @@ interface SetEditorDriver {
         canIncrease: Boolean,
     )
 
+    fun assertRepsUnit(unit: RepsUnit)
+
     fun leave()
 }
 
@@ -52,3 +54,6 @@ data class PlannedSet(
     val weightKg: String,
     val reps: Int,
 )
+
+/** What a Set's reps stand for: repetitions („12 powt.”) or, for timed Exercises, seconds („12 s”). */
+enum class RepsUnit { REPETITIONS, SECONDS }

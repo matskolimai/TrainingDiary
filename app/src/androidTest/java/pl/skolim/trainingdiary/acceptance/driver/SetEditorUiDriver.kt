@@ -5,6 +5,7 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyChild
@@ -108,11 +109,19 @@ class SetEditorUiDriver(
 
     private fun kilograms(weightKg: String) = weightKg.replace(',', '.').toBigDecimal()
 
-    private fun repsPill(): SemanticsMatcher =
-        valuePill("reps value from resources") { text ->
+    private fun repsPill(): SemanticsMatcher = repsPill(RepsUnit.REPETITIONS) or repsPill(RepsUnit.SECONDS)
+
+    private fun repsPill(unit: RepsUnit): SemanticsMatcher {
+        val format =
+            when (unit) {
+                RepsUnit.REPETITIONS -> R.string.set_editor_reps
+                RepsUnit.SECONDS -> R.string.set_editor_seconds
+            }
+        return valuePill("reps value in $unit from resources") { text ->
             val reps = text.takeWhile(Char::isDigit).toIntOrNull()
-            reps != null && text == resources.getString(R.string.set_editor_reps, reps)
+            reps != null && text == resources.getString(format, reps)
         }
+    }
 
     private fun valuePill(
         description: String,
@@ -196,6 +205,12 @@ class SetEditorUiDriver(
         compose.waitUntilExactlyOneExists(addToTrainingButton())
         compose.onNode(addToTrainingButton()).performClick()
         compose.waitUntilDoesNotExist(addToTrainingButton())
+    }
+
+    override fun assertRepsUnit(unit: RepsUnit) {
+        val other = RepsUnit.entries.single { it != unit }
+        compose.waitUntilAtLeastOneExists(repsPill(unit))
+        compose.onAllNodes(repsPill(other)).assertCountEquals(0)
     }
 
     // The Exercise picker under this screen has the same title and its own back arrow, so leaving waits for this

@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions") // One preview per Set editor snapshot.
+
 package pl.skolim.trainingdiary.feature.trainings.presentation.seteditor
 
 import androidx.compose.foundation.layout.Arrangement
@@ -77,6 +79,7 @@ internal fun SetEditorScreen(
                     SetCard(
                         number = index + 1,
                         set = set,
+                        isTimed = state.isTimed,
                         focusedField = state.focusedField.takeIf { state.focusedSetIndex == index },
                         onFocus = { onAction(SetEditorAction.OnValueClick(index, it)) },
                         trailing =
@@ -104,10 +107,12 @@ internal fun SetEditorScreen(
     }
 }
 
+@Suppress("LongParameterList") // A Set card shows its number, both values, focus and the focused row's controls.
 @Composable
 private fun SetCard(
     number: Int,
     set: ExerciseSet,
+    isTimed: Boolean,
     focusedField: SetEditorField?,
     onFocus: (SetEditorField) -> Unit,
     trailing: (@Composable () -> Unit)?,
@@ -123,7 +128,7 @@ private fun SetCard(
                 onClick = { onFocus(SetEditorField.WEIGHT) },
             )
             AppValuePill(
-                text = stringResource(R.string.set_editor_reps, set.reps),
+                text = stringResource(if (isTimed) R.string.set_editor_seconds else R.string.set_editor_reps, set.reps),
                 focused = focusedField == SetEditorField.REPS,
                 onClick = { onFocus(SetEditorField.REPS) },
             )
@@ -229,6 +234,14 @@ internal fun SetEditorPreviewMaxReps() {
                 ),
             onAction = {},
         )
+    }
+}
+
+@Preview
+@Composable
+internal fun SetEditorPreviewTimed() {
+    AppPreview {
+        SetEditorScreen(state = SetEditorState(isTimed = true), onAction = {})
     }
 }
 

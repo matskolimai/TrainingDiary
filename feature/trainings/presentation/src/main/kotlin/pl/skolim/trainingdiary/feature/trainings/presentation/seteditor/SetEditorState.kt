@@ -6,6 +6,8 @@ data class SetEditorState(
     val focusedSetIndex: Int = 0,
     val focusedField: SetEditorField = SetEditorField.WEIGHT,
     val sets: List<ExerciseSet> = List(NEW_SET_COUNT) { ExerciseSet(reps = NEW_SET_REPS, weightGrams = 0) },
+    // A timed Exercise's reps stand for seconds.
+    val isTimed: Boolean = false,
 ) {
     val canDecrementValue: Boolean get() = canStep(-1)
     val canIncrementValue: Boolean get() = canStep(1)
