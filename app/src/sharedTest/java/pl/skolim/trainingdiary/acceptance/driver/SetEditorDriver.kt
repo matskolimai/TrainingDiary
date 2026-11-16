@@ -1,5 +1,7 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
+import kotlin.time.Duration
+
 /** The Set editor's steps, implemented once per channel. */
 @Suppress("TooManyFunctions") // One screen owns its acceptance cases and steps on both channels.
 interface SetEditorDriver {
@@ -28,6 +30,13 @@ interface SetEditorDriver {
     fun increaseValue(times: Int)
 
     fun decreaseValue(times: Int)
+
+    fun holdIncreaseValue(duration: Duration)
+
+    fun assertWeightAtLeast(
+        set: Int,
+        weightKg: String,
+    )
 
     fun assertValueControls(
         set: Int,

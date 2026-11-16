@@ -2,9 +2,12 @@ package pl.skolim.trainingdiary.acceptance.trainings
 
 import org.junit.jupiter.api.Test
 import pl.skolim.trainingdiary.acceptance.AcceptanceCases
+import pl.skolim.trainingdiary.acceptance.Channel
+import pl.skolim.trainingdiary.acceptance.OnlyOn
 import pl.skolim.trainingdiary.acceptance.driver.PlannedSet
 import pl.skolim.trainingdiary.acceptance.driver.PlannedTrainingExercise
 import pl.skolim.trainingdiary.acceptance.driver.RepsUnit
+import kotlin.time.Duration.Companion.seconds
 
 @Suppress("TooManyFunctions") // One screen owns its acceptance cases and steps on both channels.
 interface SetEditorCases : AcceptanceCases {
@@ -98,6 +101,32 @@ interface SetEditorCases : AcceptanceCases {
             )
             setEditor.decreaseValue()
             setEditor.assertValueControls(set = 1, canDecrease = true, canIncrease = true)
+            setEditor.assertSets(
+                PlannedSet(weightKg = "298,5", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+        }
+
+    @OnlyOn(Channel.DEVICE)
+    @Test
+    fun `holding plus on the weight keeps stepping it until release`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.holdIncreaseValue(1.seconds)
+            setEditor.assertWeightAtLeast(set = 1, weightKg = "3")
+        }
+
+    @OnlyOn(Channel.DEVICE)
+    @Test
+    fun `holding plus on the weight stops at the limit and a later tap steps once`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.holdIncreaseValue(30.seconds)
+            setEditor.assertValueControls(set = 1, canDecrease = true, canIncrease = false)
+            setEditor.decreaseValue()
+            setEditor.increaseValue()
+            setEditor.decreaseValue()
             setEditor.assertSets(
                 PlannedSet(weightKg = "298,5", reps = 12),
                 PlannedSet(weightKg = "0", reps = 12),

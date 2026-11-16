@@ -1,11 +1,13 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
 import com.google.common.truth.Truth.assertThat
+import pl.skolim.trainingdiary.acceptance.Channel
 import pl.skolim.trainingdiary.feature.trainings.domain.ExerciseSet
 import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.TrainingEditorKey
 import pl.skolim.trainingdiary.feature.trainings.presentation.seteditor.SetEditorAction
 import pl.skolim.trainingdiary.feature.trainings.presentation.seteditor.SetEditorField
+import kotlin.time.Duration
 
 class SetEditorViewModelDriver(
     private val app: HeadlessApp,
@@ -73,6 +75,19 @@ class SetEditorViewModelDriver(
     override fun decreaseValue(times: Int) {
         repeat(times) { app.setEditor.onAction(SetEditorAction.OnDecrementValueClick) }
         app.settle()
+    }
+
+    override fun holdIncreaseValue(duration: Duration): Unit =
+        throw CannotStageException("holdIncreaseValue", Channel.VIEW_MODEL)
+
+    override fun assertWeightAtLeast(
+        set: Int,
+        weightKg: String,
+    ) {
+        val weightGrams =
+            app.setEditor.state.value.sets[set - 1]
+                .weightGrams
+        assertThat(weightGrams).isAtLeast(grams(weightKg))
     }
 
     override fun assertValueControls(
