@@ -320,4 +320,66 @@ interface SetEditorCases : AcceptanceCases {
                 PlannedTrainingExercise(name = "Wykroki z hantlami", category = "Nogi", sets = 3),
             )
         }
+
+    @Test
+    fun `tapping a training exercise opens the set editor with its exercise and sets`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.removeSet()
+            setEditor.increaseValue()
+            setEditor.addToTraining()
+            trainingEditor.editExercise(position = 1)
+            setEditor.assertEditing("Pullover z hantlem")
+            setEditor.assertSets(
+                PlannedSet(weightKg = "1,5", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+        }
+
+    @Test
+    fun `done replaces the edited training exercise in its place`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Biceps")
+            exercisePicker.pick("Uginanie młotkowe")
+            setEditor.addToTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Plecy")
+            exercisePicker.pick("Pullover z hantlem")
+            setEditor.addToTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Nogi")
+            exercisePicker.pick("Wykroki z hantlami")
+            setEditor.addToTraining()
+            trainingEditor.editExercise(position = 2)
+            setEditor.addSet()
+            setEditor.focusReps(set = 4)
+            setEditor.increaseValue()
+            setEditor.done()
+            trainingEditor.assertExercises(
+                PlannedTrainingExercise(name = "Uginanie młotkowe", category = "Biceps", sets = 3),
+                PlannedTrainingExercise(name = "Pullover z hantlem", category = "Plecy", sets = 4),
+                PlannedTrainingExercise(name = "Wykroki z hantlami", category = "Nogi", sets = 3),
+            )
+            trainingEditor.editExercise(position = 2)
+            setEditor.assertSets(
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+                PlannedSet(weightKg = "0", reps = 13),
+            )
+        }
+
+    @Test
+    fun `leaving the set editor of a training exercise returns to the training unchanged`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.addToTraining()
+            trainingEditor.editExercise(position = 1)
+            setEditor.leave()
+            trainingEditor.assertExercises(
+                PlannedTrainingExercise(name = "Pullover z hantlem", category = "Plecy", sets = 3),
+            )
+        }
 }

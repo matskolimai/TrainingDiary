@@ -5,7 +5,6 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
@@ -45,20 +44,18 @@ class TrainingEditorUiDriver(
         compose.waitUntilExactlyOneExists(nameField() and isFocused())
     }
 
-    // Count every summary too, so an unexpected Exercise cannot hide beside the expected cards.
+    // Count every card too, so an unexpected Exercise cannot hide beside the expected cards.
     override fun assertExercisesInOrder(exercises: List<PlannedTrainingExercise>) {
         compose.waitUntilExactlyOneExists(nameField())
         val kinds = exercises.distinct()
-        val summarySeparator = resources.getString(R.string.training_editor_exercise_summary, "", "")
 
         fun cards() =
             kinds.flatMap { exercise ->
                 compose.onAllNodes(card(exercise)).fetchSemanticsNodes().map { node -> node to exercise }
             }
         compose.waitUntil {
-            val summaryCount =
-                compose.onAllNodes(hasText(summarySeparator, substring = true)).fetchSemanticsNodes().size
-            cards().size == exercises.size && summaryCount == exercises.size
+            val cardCount = compose.onAllNodes(anyCard()).fetchSemanticsNodes().size
+            cards().size == exercises.size && cardCount == exercises.size
         }
         val listed = cards().sortedBy { (node, _) -> node.boundsInRoot.top }.map { (_, exercise) -> exercise }
         assertThat(listed).containsExactlyElementsIn(exercises).inOrder()
@@ -77,6 +74,14 @@ class TrainingEditorUiDriver(
     override fun tapAddExercise() {
         compose.waitUntilExactlyOneExists(addExerciseButton())
         compose.onNode(addExerciseButton()).performClick()
+        compose.waitUntilDoesNotExist(nameField())
+    }
+
+    override fun tapExercise(position: Int) {
+        compose.waitUntilExactlyOneExists(nameField())
+        val cards = compose.onAllNodes(anyCard())
+        val byTop = cards.fetchSemanticsNodes().withIndex().sortedBy { it.value.boundsInRoot.top }
+        cards[byTop[position - 1].index].performClick()
         compose.waitUntilDoesNotExist(nameField())
     }
 
@@ -111,8 +116,13 @@ class TrainingEditorUiDriver(
     private fun card(exercise: PlannedTrainingExercise): SemanticsMatcher {
         val sets = resources.getQuantityString(R.plurals.training_editor_sets, exercise.sets, exercise.sets)
         val summary = resources.getString(R.string.training_editor_exercise_summary, exercise.category, sets)
-        return hasText(exercise.name) and hasAnySibling(hasText(summary))
+        // A tappable card merges its name and summary into one node.
+        return hasText(exercise.name) and hasText(summary)
     }
+
+    private fun anyCard(): SemanticsMatcher =
+        hasClickAction() and
+            hasText(resources.getString(R.string.training_editor_exercise_summary, "", ""), substring = true)
 
     private fun hasNoInput(): SemanticsMatcher = hasInput("")
 

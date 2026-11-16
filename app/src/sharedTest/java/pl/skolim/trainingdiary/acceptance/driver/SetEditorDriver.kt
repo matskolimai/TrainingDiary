@@ -9,6 +9,10 @@ interface SetEditorDriver {
 
     fun tapAddToTraining()
 
+    fun assertEditing(exercise: String)
+
+    fun tapDone()
+
     fun addSet()
 
     fun removeSet()

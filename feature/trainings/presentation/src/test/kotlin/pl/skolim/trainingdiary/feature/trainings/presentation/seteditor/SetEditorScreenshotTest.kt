@@ -28,4 +28,7 @@ class SetEditorScreenshotTest {
 
     @Test
     fun timed() = paparazzi.snapshot { SetEditorPreviewTimed() }
+
+    @Test
+    fun edit() = paparazzi.snapshot { SetEditorPreviewEdit() }
 }

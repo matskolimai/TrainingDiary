@@ -5,7 +5,6 @@ package pl.skolim.trainingdiary.feature.trainings.presentation.seteditor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,19 +20,13 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.skolim.trainingdiary.core.designsystem.AppButton
 import pl.skolim.trainingdiary.core.designsystem.AppCountRow
-import pl.skolim.trainingdiary.core.designsystem.AppIcons
-import pl.skolim.trainingdiary.core.designsystem.AppListRow
-import pl.skolim.trainingdiary.core.designsystem.AppNumberCircle
 import pl.skolim.trainingdiary.core.designsystem.AppPreview
-import pl.skolim.trainingdiary.core.designsystem.AppRepeatIconButton
 import pl.skolim.trainingdiary.core.designsystem.AppScaffold
 import pl.skolim.trainingdiary.core.designsystem.AppTopBarWithBack
-import pl.skolim.trainingdiary.core.designsystem.AppValuePill
 import pl.skolim.trainingdiary.core.designsystem.Spacing
 import pl.skolim.trainingdiary.feature.trainings.domain.ExerciseSet
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
 import pl.skolim.trainingdiary.feature.trainings.presentation.SetEditorKey
-import java.math.BigDecimal
 
 @Composable
 internal fun SetEditorRoot(
@@ -49,10 +42,11 @@ internal fun SetEditorScreen(
     state: SetEditorState,
     onAction: (SetEditorAction) -> Unit,
 ) {
+    val isEditMode = state.editedExerciseName != null
     AppScaffold(
         topBar = {
             AppTopBarWithBack(
-                title = stringResource(R.string.set_editor_title),
+                title = state.editedExerciseName ?: stringResource(R.string.set_editor_title),
                 onBackClick = { onAction(SetEditorAction.OnBackClick) },
             )
         },
@@ -70,110 +64,80 @@ internal fun SetEditorScreen(
                         .padding(horizontal = Spacing.large)
                         .padding(top = Spacing.small, bottom = Spacing.large),
             )
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(start = Spacing.large, end = Spacing.large, bottom = Spacing.extraLarge),
-                verticalArrangement = Arrangement.spacedBy(Spacing.medium),
-            ) {
-                itemsIndexed(items = state.sets) { index, set ->
-                    SetCard(
-                        number = index + 1,
-                        set = set,
-                        isTimed = state.isTimed,
-                        focusedField = state.focusedField.takeIf { state.focusedSetIndex == index },
-                        onFocus = { onAction(SetEditorAction.OnValueClick(index, it)) },
-                        trailing =
-                            if (state.focusedSetIndex == index) {
-                                {
-                                    ValueControls(
-                                        canDecrement = state.canDecrementValue,
-                                        canIncrement = state.canIncrementValue,
-                                        onDecrement = { onAction(SetEditorAction.OnDecrementValueClick) },
-                                        onIncrement = { onAction(SetEditorAction.OnIncrementValueClick) },
-                                    )
-                                }
-                            } else {
-                                null
-                            },
-                    )
-                }
-            }
+            SetList(state = state, onAction = onAction, modifier = Modifier.weight(1f))
             AppButton(
-                text = stringResource(R.string.set_editor_add_to_training),
-                onClick = { onAction(SetEditorAction.OnAddToTrainingClick) },
+                text =
+                    stringResource(
+                        if (isEditMode) R.string.set_editor_done else R.string.set_editor_add_to_training,
+                    ),
+                onClick = { onAction(SetEditorAction.OnConfirmClick) },
                 modifier = Modifier.fillMaxWidth().padding(Spacing.large),
             )
         }
     }
 }
 
-@Suppress("LongParameterList") // A Set card shows its number, both values, focus and the focused row's controls.
 @Composable
-private fun SetCard(
-    number: Int,
-    set: ExerciseSet,
-    isTimed: Boolean,
-    focusedField: SetEditorField?,
-    onFocus: (SetEditorField) -> Unit,
-    trailing: (@Composable () -> Unit)?,
+private fun SetList(
+    state: SetEditorState,
+    onAction: (SetEditorAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    AppListRow(
-        leading = { AppNumberCircle(number = number) },
-        trailing = trailing,
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(start = Spacing.large, end = Spacing.large, bottom = Spacing.extraLarge),
+        verticalArrangement = Arrangement.spacedBy(Spacing.medium),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.small)) {
-            AppValuePill(
-                text = stringResource(R.string.set_editor_weight, formatWeight(set.weightGrams)),
-                focused = focusedField == SetEditorField.WEIGHT,
-                onClick = { onFocus(SetEditorField.WEIGHT) },
-            )
-            AppValuePill(
-                text = stringResource(if (isTimed) R.string.set_editor_seconds else R.string.set_editor_reps, set.reps),
-                focused = focusedField == SetEditorField.REPS,
-                onClick = { onFocus(SetEditorField.REPS) },
+        itemsIndexed(items = state.sets) { index, set ->
+            SetCard(
+                number = index + 1,
+                set = set,
+                isTimed = state.isTimed,
+                focusedField = state.focusedField.takeIf { state.focusedSetIndex == index },
+                onFocus = { onAction(SetEditorAction.OnValueClick(index, it)) },
+                trailing =
+                    if (state.focusedSetIndex == index) {
+                        {
+                            ValueControls(
+                                canDecrement = state.canDecrementValue,
+                                canIncrement = state.canIncrementValue,
+                                onDecrement = { onAction(SetEditorAction.OnDecrementValueClick) },
+                                onIncrement = { onAction(SetEditorAction.OnIncrementValueClick) },
+                            )
+                        }
+                    } else {
+                        null
+                    },
             )
         }
     }
 }
-
-@Composable
-private fun ValueControls(
-    canDecrement: Boolean,
-    canIncrement: Boolean,
-    onDecrement: () -> Unit,
-    onIncrement: () -> Unit,
-) {
-    Row {
-        AppRepeatIconButton(
-            icon = AppIcons.Remove,
-            contentDescription = stringResource(R.string.set_editor_cd_decrement_value),
-            enabled = canDecrement,
-            onClick = onDecrement,
-        )
-        AppRepeatIconButton(
-            icon = AppIcons.Add,
-            contentDescription = stringResource(R.string.set_editor_cd_increment_value),
-            enabled = canIncrement,
-            onClick = onIncrement,
-        )
-    }
-}
-
-// Kilograms with a Polish decimal comma and no „,0”: „0”, „1,5”, „3”, „13,5”.
-private fun formatWeight(weightGrams: Int): String =
-    BigDecimal(weightGrams)
-        .divide(BigDecimal(GRAMS_PER_KG))
-        .stripTrailingZeros()
-        .toPlainString()
-        .replace('.', ',')
-
-private const val GRAMS_PER_KG = 1_000
 
 @Preview
 @Composable
 internal fun SetEditorPreviewNew() {
     AppPreview {
         SetEditorScreen(state = SetEditorState(), onAction = {})
+    }
+}
+
+@Suppress("MagicNumber") // Explicit preview data for an edited Training exercise.
+@Preview
+@Composable
+internal fun SetEditorPreviewEdit() {
+    AppPreview {
+        SetEditorScreen(
+            state =
+                SetEditorState(
+                    sets =
+                        listOf(
+                            ExerciseSet(reps = 10, weightGrams = 12_000),
+                            ExerciseSet(reps = 8, weightGrams = 13_500),
+                        ),
+                    editedExerciseName = "Wiosłowanie hantlem w opadzie",
+                ),
+            onAction = {},
+        )
     }
 }
 

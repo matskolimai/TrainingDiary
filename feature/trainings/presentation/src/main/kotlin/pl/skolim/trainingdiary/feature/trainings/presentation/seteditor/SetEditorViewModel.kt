@@ -15,13 +15,21 @@ class SetEditorViewModel(
     private val navigator: SetEditorNavigator,
 ) : ViewModel() {
     private val exercise = checkNotNull(catalogue.exercise(key.exerciseId))
-    private val _state = MutableStateFlow(SetEditorState(isTimed = exercise.isTimed))
+
+    private val _state =
+        MutableStateFlow(
+            SetEditorState(
+                sets = key.sets,
+                isTimed = exercise.isTimed,
+                editedExerciseName = exercise.name.takeIf { key.index != null },
+            ),
+        )
     val state: StateFlow<SetEditorState> = _state.asStateFlow()
 
     fun onAction(action: SetEditorAction) {
         when (action) {
-            SetEditorAction.OnAddToTrainingClick -> {
-                addToTraining()
+            SetEditorAction.OnConfirmClick -> {
+                confirm()
             }
 
             SetEditorAction.OnDecrementSetsClick -> {
@@ -70,8 +78,15 @@ class SetEditorViewModel(
         }
     }
 
-    private fun addToTraining() {
+    private fun confirm() {
         val trainingExercise = TrainingExercise(exercise = exercise, sets = state.value.sets)
-        navigator.backToTrainingEditor(SetEditorResult.Added(trainingExercise))
+        val index = key.index
+        navigator.backToTrainingEditor(
+            if (index == null) {
+                SetEditorResult.Added(trainingExercise)
+            } else {
+                SetEditorResult.Replaced(index, trainingExercise)
+            },
+        )
     }
 }

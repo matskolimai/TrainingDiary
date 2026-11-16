@@ -17,11 +17,13 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.R
 @Composable
 internal fun TrainingExerciseCard(
     trainingExercise: TrainingExercise,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val setCount = trainingExercise.sets.size
     AppListRow(
         modifier = modifier,
+        onClick = onClick,
         minHeight = Sizes.listRowTallMinHeight,
     ) {
         Column(modifier = Modifier.padding(vertical = Spacing.medium)) {

@@ -40,6 +40,17 @@ class TrainingEditorViewModel(
                     is SetEditorResult.Added -> {
                         _state.update { it.copy(exercises = it.exercises + result.trainingExercise) }
                     }
+
+                    is SetEditorResult.Replaced -> {
+                        _state.update { state ->
+                            state.copy(
+                                exercises =
+                                    state.exercises.mapIndexed { index, trainingExercise ->
+                                        if (index == result.index) result.trainingExercise else trainingExercise
+                                    },
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -49,9 +60,15 @@ class TrainingEditorViewModel(
         when (action) {
             is TrainingEditorAction.OnNameChange -> _state.update { it.copy(name = action.name) }
             TrainingEditorAction.OnAddExerciseClick -> navigator.openExercisePicker()
+            is TrainingEditorAction.OnExerciseClick -> openSetEditor(action.index)
             TrainingEditorAction.OnSaveClick -> save()
             TrainingEditorAction.OnBackClick -> navigator.back(key)
         }
+    }
+
+    private fun openSetEditor(index: Int) {
+        val trainingExercise = _state.value.exercises[index]
+        navigator.openSetEditor(exerciseId = trainingExercise.exercise.id, index = index, sets = trainingExercise.sets)
     }
 
     private suspend fun load() {
