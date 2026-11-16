@@ -16,9 +16,11 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.test.performTouchInput
 import com.google.common.truth.Truth.assertThat
 import de.mannodermaus.junit5.compose.ComposeContext
 import pl.skolim.trainingdiary.feature.trainings.presentation.R
+import kotlin.time.Duration
 import pl.skolim.trainingdiary.core.designsystem.R as DesignSystemR
 
 class SetEditorUiDriver(
@@ -97,9 +99,14 @@ class SetEditorUiDriver(
 
     private fun weightPill(): SemanticsMatcher =
         valuePill("weight value from resources") { text ->
-            val weight = text.takeWhile { it.isDigit() || it == ',' }
+            val weight = weightOf(text)
             weight.isNotEmpty() && text == resources.getString(R.string.set_editor_weight, weight)
         }
+
+    // The leading „1,5” of a weight pill's „1,5 kg”.
+    private fun weightOf(text: String): String = text.takeWhile { it.isDigit() || it == ',' }
+
+    private fun kilograms(weightKg: String) = weightKg.replace(',', '.').toBigDecimal()
 
     private fun repsPill(): SemanticsMatcher =
         valuePill("reps value from resources") { text ->
@@ -138,6 +145,36 @@ class SetEditorUiDriver(
             }
         }
         compose.waitForIdle()
+    }
+
+    // The test clock is frozen during the gesture, so it is advanced by hand between press and release.
+    override fun holdIncreaseValue(duration: Duration) {
+        val button = hasContentDescription(resources.getString(R.string.set_editor_cd_increment_value))
+        compose.waitUntilExactlyOneExists(button)
+        compose.mainClock.autoAdvance = false
+        try {
+            compose.onNode(button).performTouchInput { down(center) }
+            compose.mainClock.advanceTimeBy(duration.inWholeMilliseconds)
+            compose.onNode(button).performTouchInput { up() }
+        } finally {
+            compose.mainClock.autoAdvance = true
+        }
+        compose.waitForIdle()
+    }
+
+    override fun assertWeightAtLeast(
+        set: Int,
+        weightKg: String,
+    ) {
+        compose.waitUntilExactlyOneExists(title())
+        val text =
+            compose
+                .onNode(weightPill() and hasParent(setCard(set)))
+                .fetchSemanticsNode()
+                .config[SemanticsProperties.Text]
+                .single()
+                .text
+        assertThat(kilograms(weightOf(text))).isAtLeast(kilograms(weightKg))
     }
 
     override fun assertValueControls(

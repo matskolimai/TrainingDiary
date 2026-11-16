@@ -2,6 +2,7 @@ package pl.skolim.trainingdiary.acceptance.dsl
 
 import pl.skolim.trainingdiary.acceptance.driver.PlannedSet
 import pl.skolim.trainingdiary.acceptance.driver.SetEditorDriver
+import kotlin.time.Duration
 
 @Suppress("TooManyFunctions") // One screen owns its acceptance cases and steps on both channels.
 class SetEditorDsl(
@@ -33,6 +34,15 @@ class SetEditorDsl(
     fun increaseValue(times: Int = 1) = driver.increaseValue(times)
 
     fun decreaseValue(times: Int = 1) = driver.decreaseValue(times)
+
+    /** Presses the focused value's + and lets go after [duration]. */
+    fun holdIncreaseValue(duration: Duration) = driver.holdIncreaseValue(duration)
+
+    /** Set [set]'s weight is at least [weightKg], written as in [PlannedSet]. */
+    fun assertWeightAtLeast(
+        set: Int,
+        weightKg: String,
+    ) = driver.assertWeightAtLeast(set, weightKg)
 
     fun assertValueControls(
         set: Int,
