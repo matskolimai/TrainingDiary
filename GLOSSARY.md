@@ -18,7 +18,7 @@ One place the user can navigate to. A Screen that does two jobs (adding and edit
 _Avoid_: Page, view
 
 **Training list**:
-The Screen that lists every Training in order and is where the user deletes one.
+The Screen that lists every Training in order; from it the user adds, opens or deletes one.
 _Avoid_: Home screen, trainings screen
 
 **Training editor**:
