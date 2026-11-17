@@ -19,6 +19,14 @@ interface TrainingEditorDriver {
 
     fun tapExercise(position: Int)
 
+    fun chooseEditExercise(position: Int)
+
+    fun chooseDeleteExercise(position: Int)
+
+    fun chooseDeleteExerciseTwiceQuickly(position: Int)
+
+    fun closeExerciseOptions(position: Int)
+
     fun tapSave()
 
     fun tapSaveTwiceQuickly()

@@ -61,8 +61,38 @@ class TrainingEditorViewModel(
             is TrainingEditorAction.OnNameChange -> _state.update { it.copy(name = action.name) }
             TrainingEditorAction.OnAddExerciseClick -> navigator.openExercisePicker()
             is TrainingEditorAction.OnExerciseClick -> openSetEditor(action.index)
+            is TrainingEditorAction.OnExerciseOptionsClick -> openOptionsSheet(action.index)
+            TrainingEditorAction.OnExerciseOptionsDismiss -> dismissOptionsSheet()
+            TrainingEditorAction.OnEditExerciseClick -> editExercise()
+            TrainingEditorAction.OnDeleteExerciseClick -> deleteExercise()
             TrainingEditorAction.OnSaveClick -> save()
             TrainingEditorAction.OnBackClick -> navigator.back(key)
+        }
+    }
+
+    private fun openOptionsSheet(index: Int) {
+        _state.update { it.copy(optionsSheetIndex = index) }
+    }
+
+    private fun dismissOptionsSheet() {
+        _state.update { it.copy(optionsSheetIndex = null) }
+    }
+
+    // Each sheet action reads the open sheet's index and closes it, so a second tap before the sheet leaves is ignored.
+    private fun editExercise() {
+        val index = _state.value.optionsSheetIndex ?: return
+        dismissOptionsSheet()
+        openSetEditor(index)
+    }
+
+    // No undo: the removal is stored only by „Zapisz”, so leaving without saving brings it back.
+    private fun deleteExercise() {
+        val index = _state.value.optionsSheetIndex ?: return
+        _state.update { state ->
+            state.copy(
+                exercises = state.exercises.filterIndexed { i, _ -> i != index },
+                optionsSheetIndex = null,
+            )
         }
     }
 

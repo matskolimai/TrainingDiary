@@ -15,6 +15,9 @@
     <string name="training_editor_name_label">Nazwa</string>
     <string name="training_editor_add_exercise">Dodaj ćwiczenie</string>
     <string name="training_editor_save">Zapisz</string>
+    <string name="training_editor_cd_exercise_more">Więcej opcji</string>
+    <string name="training_editor_exercise_edit">Edytuj</string>
+    <string name="training_editor_exercise_delete">Usuń</string>
     <string name="training_editor_exercise_summary">%1$s · %2$s</string>
     <plurals name="training_editor_sets">
         <item quantity="one">%d seria</item>

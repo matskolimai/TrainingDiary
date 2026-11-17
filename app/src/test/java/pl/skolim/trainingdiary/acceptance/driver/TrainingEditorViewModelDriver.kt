@@ -25,6 +25,41 @@ class TrainingEditorViewModelDriver(
         assertThat(app.topKey is SetEditorKey).isTrue()
     }
 
+    override fun chooseEditExercise(position: Int) {
+        openOptions(position)
+        val viewModel = app.trainingEditor
+        act(TrainingEditorAction.OnEditExerciseClick)
+        assertThat(app.topKey is SetEditorKey).isTrue()
+        // Read from the editor below, so the sheet is not still open when the Set editor returns.
+        assertThat(viewModel.state.value.optionsSheetIndex).isNull()
+    }
+
+    override fun chooseDeleteExercise(position: Int) {
+        openOptions(position)
+        act(TrainingEditorAction.OnDeleteExerciseClick)
+        assertThat(app.trainingEditor.state.value.optionsSheetIndex).isNull()
+        assertThat(app.topKey is TrainingEditorKey).isTrue()
+    }
+
+    override fun chooseDeleteExerciseTwiceQuickly(position: Int) {
+        openOptions(position)
+        val viewModel = app.trainingEditor
+        viewModel.onAction(TrainingEditorAction.OnDeleteExerciseClick)
+        viewModel.onAction(TrainingEditorAction.OnDeleteExerciseClick)
+        app.settle()
+    }
+
+    override fun closeExerciseOptions(position: Int) {
+        openOptions(position)
+        act(TrainingEditorAction.OnExerciseOptionsDismiss)
+        assertThat(app.trainingEditor.state.value.optionsSheetIndex).isNull()
+    }
+
+    private fun openOptions(position: Int) {
+        act(TrainingEditorAction.OnExerciseOptionsClick(position - 1))
+        assertThat(app.trainingEditor.state.value.optionsSheetIndex).isEqualTo(position - 1)
+    }
+
     override fun tapSave() {
         act(TrainingEditorAction.OnSaveClick)
         assertThat(app.topKey is TrainingEditorKey).isFalse()

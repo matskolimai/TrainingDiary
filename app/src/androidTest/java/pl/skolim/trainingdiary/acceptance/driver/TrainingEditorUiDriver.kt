@@ -1,17 +1,21 @@
 package pl.skolim.trainingdiary.acceptance.driver
 
 import android.content.res.Resources
+import androidx.annotation.StringRes
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.text.AnnotatedString
@@ -85,6 +89,44 @@ class TrainingEditorUiDriver(
         compose.waitUntilDoesNotExist(nameField())
     }
 
+    override fun chooseEditExercise(position: Int) {
+        chooseOption(position, R.string.training_editor_exercise_edit)
+        compose.waitUntilDoesNotExist(nameField())
+    }
+
+    override fun chooseDeleteExercise(position: Int) {
+        chooseOption(position, R.string.training_editor_exercise_delete)
+        compose.waitUntilDoesNotExist(sheetItem(R.string.training_editor_exercise_delete))
+    }
+
+    override fun chooseDeleteExerciseTwiceQuickly(position: Int): Unit =
+        throw CannotStageException("chooseDeleteExerciseTwiceQuickly", Channel.DEVICE)
+
+    // The sheet's Dismiss action is what a swipe down, a scrim tap or back triggers.
+    override fun closeExerciseOptions(position: Int) {
+        openOptions(position)
+        compose
+            .onNode(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
+            .performSemanticsAction(SemanticsActions.Dismiss)
+        compose.waitUntilDoesNotExist(sheetItem(R.string.training_editor_exercise_edit))
+    }
+
+    private fun chooseOption(
+        position: Int,
+        @StringRes option: Int,
+    ) {
+        openOptions(position)
+        compose.onNode(sheetItem(option)).performClick()
+    }
+
+    private fun openOptions(position: Int) {
+        compose.waitUntilExactlyOneExists(nameField())
+        val options = compose.onAllNodes(moreOptions())
+        val byTop = options.fetchSemanticsNodes().withIndex().sortedBy { it.value.boundsInRoot.top }
+        options[byTop[position - 1].index].performClick()
+        compose.waitUntilExactlyOneExists(sheetItem(R.string.training_editor_exercise_edit))
+    }
+
     override fun tapSave() {
         compose.onNode(saveButton()).performClick()
         compose.waitUntilDoesNotExist(nameField())
@@ -112,6 +154,13 @@ class TrainingEditorUiDriver(
 
     private fun saveButton(): SemanticsMatcher =
         hasClickAction() and hasText(resources.getString(R.string.training_editor_save))
+
+    private fun moreOptions(): SemanticsMatcher =
+        hasContentDescription(resources.getString(R.string.training_editor_cd_exercise_more))
+
+    private fun sheetItem(
+        @StringRes option: Int,
+    ): SemanticsMatcher = hasClickAction() and hasText(resources.getString(option))
 
     private fun card(exercise: PlannedTrainingExercise): SemanticsMatcher {
         val sets = resources.getQuantityString(R.plurals.training_editor_sets, exercise.sets, exercise.sets)

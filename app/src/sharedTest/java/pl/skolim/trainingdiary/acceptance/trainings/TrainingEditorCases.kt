@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import pl.skolim.trainingdiary.acceptance.AcceptanceCases
 import pl.skolim.trainingdiary.acceptance.Channel
 import pl.skolim.trainingdiary.acceptance.OnlyOn
+import pl.skolim.trainingdiary.acceptance.driver.PlannedSet
 import pl.skolim.trainingdiary.acceptance.driver.PlannedTrainingExercise
 import kotlin.time.Duration.Companion.seconds
 
@@ -188,5 +189,96 @@ interface TrainingEditorCases : AcceptanceCases {
             trainingEditor.replaceName("Nogi i pośladki")
             trainingEditor.save()
             trainingList.assertListed("Push day", "Nogi i pośladki", "Plecy")
+        }
+
+    @Test
+    fun `editing a training exercise from its options opens the set editor with its sets`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.removeSet()
+            setEditor.increaseValue()
+            setEditor.addToTraining()
+            trainingEditor.editExerciseFromOptions(position = 1)
+            setEditor.assertEditing("Pullover z hantlem")
+            setEditor.assertSets(
+                PlannedSet(weightKg = "1,5", reps = 12),
+                PlannedSet(weightKg = "0", reps = 12),
+            )
+        }
+
+    @Test
+    fun `deleting a training exercise removes only it and keeps the order of the rest`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Biceps")
+            exercisePicker.pick("Uginanie młotkowe")
+            setEditor.addToTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Plecy")
+            exercisePicker.pick("Pullover z hantlem")
+            setEditor.addToTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Nogi")
+            exercisePicker.pick("Wykroki z hantlami")
+            setEditor.addToTraining()
+            trainingEditor.deleteExercise(position = 2)
+            trainingEditor.assertExercises(
+                PlannedTrainingExercise(name = "Uginanie młotkowe", category = "Biceps", sets = 3),
+                PlannedTrainingExercise(name = "Wykroki z hantlami", category = "Nogi", sets = 3),
+            )
+        }
+
+    @Test
+    fun `saving after deleting a training exercise stores the removal`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.enterName("Push day")
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Plecy")
+            exercisePicker.pick("Pullover z hantlem")
+            setEditor.addToTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Nogi")
+            exercisePicker.pick("Wykroki z hantlami")
+            setEditor.addToTraining()
+            trainingEditor.save()
+            trainingList.openForEditing("Push day")
+            trainingEditor.deleteExercise(position = 1)
+            trainingEditor.save()
+            trainingList.openForEditing("Push day")
+            trainingEditor.assertExercises(
+                PlannedTrainingExercise(name = "Wykroki z hantlami", category = "Nogi", sets = 3),
+            )
+        }
+
+    @Test
+    fun `closing the options of a training exercise keeps it unchanged`() =
+        app {
+            given.newTrainingExercise(category = "Plecy", exercise = "Pullover z hantlem")
+            setEditor.addToTraining()
+            trainingEditor.closeExerciseOptions(position = 1)
+            trainingEditor.assertExercises(
+                PlannedTrainingExercise(name = "Pullover z hantlem", category = "Plecy", sets = 3),
+            )
+        }
+
+    @OnlyOn(Channel.VIEW_MODEL)
+    @Test
+    fun `deleting a training exercise twice quickly removes only it`() =
+        app {
+            trainingList.openNewTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Biceps")
+            exercisePicker.pick("Uginanie młotkowe")
+            setEditor.addToTraining()
+            trainingEditor.addExercise()
+            exerciseCategoryPicker.pick("Plecy")
+            exercisePicker.pick("Pullover z hantlem")
+            setEditor.addToTraining()
+            trainingEditor.deleteExerciseTwiceQuickly(position = 1)
+            trainingEditor.assertExercises(
+                PlannedTrainingExercise(name = "Pullover z hantlem", category = "Plecy", sets = 3),
+            )
         }
 }

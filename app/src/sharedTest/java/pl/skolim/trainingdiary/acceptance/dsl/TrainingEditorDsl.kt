@@ -25,6 +25,17 @@ class TrainingEditorDsl(
     /** Opens the Training exercise at [position], counted from 1, in the Set editor. */
     fun editExercise(position: Int) = driver.tapExercise(position)
 
+    /** Opens the Training exercise at [position], counted from 1, in the Set editor through its options. */
+    fun editExerciseFromOptions(position: Int) = driver.chooseEditExercise(position)
+
+    /** Removes the Training exercise at [position], counted from 1, from the unsaved Training. */
+    fun deleteExercise(position: Int) = driver.chooseDeleteExercise(position)
+
+    fun deleteExerciseTwiceQuickly(position: Int) = driver.chooseDeleteExerciseTwiceQuickly(position)
+
+    /** Opens the options of the Training exercise at [position], counted from 1, and closes them unchosen. */
+    fun closeExerciseOptions(position: Int) = driver.closeExerciseOptions(position)
+
     fun save() = driver.tapSave()
 
     fun saveTwiceQuickly() = driver.tapSaveTwiceQuickly()

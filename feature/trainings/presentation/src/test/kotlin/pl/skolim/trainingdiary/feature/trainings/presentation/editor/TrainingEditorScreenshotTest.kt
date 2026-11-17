@@ -18,6 +18,9 @@ class TrainingEditorScreenshotTest {
     fun addWithExercises() = paparazzi.snapshot { TrainingEditorPreviewAddWithExercises() }
 
     @Test
+    fun exerciseOptionsSheet() = paparazzi.snapshot { TrainingEditorPreviewExerciseOptionsSheet() }
+
+    @Test
     fun editLoading() = paparazzi.snapshot { TrainingEditorPreviewEditLoading() }
 
     @Test

@@ -9,6 +9,7 @@ data class TrainingEditorState(
     val isEditMode: Boolean = false,
     val isLoading: Boolean = false, // only while edit mode loads the Training
     val isSaving: Boolean = false,
+    val optionsSheetIndex: Int? = null, // the Training exercise whose options sheet is open
 ) {
     val canSave: Boolean get() = !isSaving && isValidTrainingName(name)
 }

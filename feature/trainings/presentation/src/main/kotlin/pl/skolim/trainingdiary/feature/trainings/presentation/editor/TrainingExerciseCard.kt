@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import pl.skolim.trainingdiary.core.designsystem.AppIconButton
+import pl.skolim.trainingdiary.core.designsystem.AppIcons
 import pl.skolim.trainingdiary.core.designsystem.AppListRow
 import pl.skolim.trainingdiary.core.designsystem.Sizes
 import pl.skolim.trainingdiary.core.designsystem.Spacing
@@ -18,12 +20,20 @@ import pl.skolim.trainingdiary.feature.trainings.presentation.R
 internal fun TrainingExerciseCard(
     trainingExercise: TrainingExercise,
     onClick: () -> Unit,
+    onOptionsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val setCount = trainingExercise.sets.size
     AppListRow(
         modifier = modifier,
         onClick = onClick,
+        trailing = {
+            AppIconButton(
+                icon = AppIcons.MoreVert,
+                contentDescription = stringResource(R.string.training_editor_cd_exercise_more),
+                onClick = onOptionsClick,
+            )
+        },
         minHeight = Sizes.listRowTallMinHeight,
     ) {
         Column(modifier = Modifier.padding(vertical = Spacing.medium)) {

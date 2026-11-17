@@ -11,6 +11,16 @@ sealed interface TrainingEditorAction {
         val index: Int,
     ) : TrainingEditorAction
 
+    data class OnExerciseOptionsClick(
+        val index: Int,
+    ) : TrainingEditorAction
+
+    data object OnExerciseOptionsDismiss : TrainingEditorAction
+
+    data object OnEditExerciseClick : TrainingEditorAction
+
+    data object OnDeleteExerciseClick : TrainingEditorAction
+
     data object OnSaveClick : TrainingEditorAction
 
     data object OnBackClick : TrainingEditorAction

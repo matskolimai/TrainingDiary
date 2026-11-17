@@ -23,11 +23,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import pl.skolim.trainingdiary.core.designsystem.AppBottomSheet
 import pl.skolim.trainingdiary.core.designsystem.AppButton
 import pl.skolim.trainingdiary.core.designsystem.AppIcons
 import pl.skolim.trainingdiary.core.designsystem.AppOutlinedButton
 import pl.skolim.trainingdiary.core.designsystem.AppPreview
 import pl.skolim.trainingdiary.core.designsystem.AppScaffold
+import pl.skolim.trainingdiary.core.designsystem.AppSheetItem
 import pl.skolim.trainingdiary.core.designsystem.AppTextField
 import pl.skolim.trainingdiary.core.designsystem.AppTopBarWithBack
 import pl.skolim.trainingdiary.core.designsystem.Spacing
@@ -81,6 +83,7 @@ internal fun TrainingEditorScreen(
                     exercises = state.exercises,
                     onAddExerciseClick = { onAction(TrainingEditorAction.OnAddExerciseClick) },
                     onExerciseClick = { onAction(TrainingEditorAction.OnExerciseClick(it)) },
+                    onExerciseOptionsClick = { onAction(TrainingEditorAction.OnExerciseOptionsClick(it)) },
                     modifier = Modifier.weight(1f),
                 )
             } else {
@@ -94,6 +97,25 @@ internal fun TrainingEditorScreen(
             )
         }
     }
+    if (state.optionsSheetIndex != null) {
+        ExerciseOptionsSheet(onAction = onAction)
+    }
+}
+
+@Composable
+private fun ExerciseOptionsSheet(onAction: (TrainingEditorAction) -> Unit) {
+    AppBottomSheet(onDismiss = { onAction(TrainingEditorAction.OnExerciseOptionsDismiss) }) {
+        AppSheetItem(
+            icon = AppIcons.Edit,
+            text = stringResource(R.string.training_editor_exercise_edit),
+            onClick = { onAction(TrainingEditorAction.OnEditExerciseClick) },
+        )
+        AppSheetItem(
+            icon = AppIcons.Delete,
+            text = stringResource(R.string.training_editor_exercise_delete),
+            onClick = { onAction(TrainingEditorAction.OnDeleteExerciseClick) },
+        )
+    }
 }
 
 // „Dodaj ćwiczenie” is the list's last item, so it scrolls with the cards and never covers one.
@@ -102,6 +124,7 @@ private fun TrainingExerciseList(
     exercises: List<TrainingExercise>,
     onAddExerciseClick: () -> Unit,
     onExerciseClick: (index: Int) -> Unit,
+    onExerciseOptionsClick: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -110,7 +133,11 @@ private fun TrainingExerciseList(
         verticalArrangement = Arrangement.spacedBy(Spacing.medium),
     ) {
         itemsIndexed(items = exercises) { index, trainingExercise ->
-            TrainingExerciseCard(trainingExercise = trainingExercise, onClick = { onExerciseClick(index) })
+            TrainingExerciseCard(
+                trainingExercise = trainingExercise,
+                onClick = { onExerciseClick(index) },
+                onOptionsClick = { onExerciseOptionsClick(index) },
+            )
         }
         item {
             AppOutlinedButton(
@@ -168,33 +195,44 @@ internal fun TrainingEditorPreviewAddFilled() {
 @Preview
 @Composable
 internal fun TrainingEditorPreviewAddWithExercises() {
-    val backCategory = ExerciseCategory(id = 2, name = "Plecy")
-    val biceps = ExerciseCategory(id = 4, name = "Biceps")
-
-    fun trainingExercise(
-        name: String,
-        category: ExerciseCategory,
-        setCount: Int,
-    ) = TrainingExercise(
-        exercise = Exercise(id = 0, name = name, category = category),
-        sets = List(setCount) { ExerciseSet(reps = 12, weightGrams = 0) },
-    )
     AppPreview {
         TrainingEditorScreen(
-            state =
-                TrainingEditorState(
-                    name = "Pull day",
-                    exercises =
-                        listOf(
-                            trainingExercise("Pullover z hantlem", backCategory, setCount = 3),
-                            trainingExercise("Uginanie młotkowe", biceps, setCount = 1),
-                            trainingExercise("Wiosłowanie hantlem w opadzie", backCategory, setCount = 5),
-                        ),
-                ),
+            state = TrainingEditorState(name = "Pull day", exercises = previewExercises),
             onAction = {},
         )
     }
 }
+
+@Preview
+@Composable
+internal fun TrainingEditorPreviewExerciseOptionsSheet() {
+    AppPreview {
+        TrainingEditorScreen(
+            state = TrainingEditorState(name = "Pull day", exercises = previewExercises, optionsSheetIndex = 1),
+            onAction = {},
+        )
+    }
+}
+
+private val previewExercises: List<TrainingExercise> =
+    run {
+        val backCategory = ExerciseCategory(id = 2, name = "Plecy")
+        val biceps = ExerciseCategory(id = 4, name = "Biceps")
+
+        fun trainingExercise(
+            name: String,
+            category: ExerciseCategory,
+            setCount: Int,
+        ) = TrainingExercise(
+            exercise = Exercise(id = 0, name = name, category = category),
+            sets = List(setCount) { ExerciseSet(reps = 12, weightGrams = 0) },
+        )
+        listOf(
+            trainingExercise("Pullover z hantlem", backCategory, setCount = 3),
+            trainingExercise("Uginanie młotkowe", biceps, setCount = 1),
+            trainingExercise("Wiosłowanie hantlem w opadzie", backCategory, setCount = 5),
+        )
+    }
 
 @Preview
 @Composable
